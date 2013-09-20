@@ -1,0 +1,64 @@
+form#ratingForm {
+	margin: 0px;
+	min-width: 300px; width : auto;
+	display: table;
+	
+	/* Custom
+	border: 3px solid #BABABA;
+	background-color: #FAFAFA;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	padding: 10px;
+	margin-top: 20px;
+	width: auto; */
+}
+
+form#ratingForm table {
+	width: 100%;
+	text-align: left;
+}
+
+form#ratingForm h4 {
+	font-weight: bold;
+}
+
+form#ratingForm table td {
+	vertical-align: top;
+}
+
+form#ratingForm table label {
+	padding-right: 10px;
+	padding-bottom: 10px;
+	font-weight: normal;
+	vertical-align: text-top;
+}
+
+form#ratingForm table .value {
+	padding-bottom: 10px;
+	text-align: right;
+}
+
+form#ratingForm table .value select {
+	min-width: 50px;
+}
+
+form#ratingForm table .action {
+	text-align: right;
+}
+
+.ratingResult {
+	display: inline-block;
+	vertical-align: top;
+	font-size: 18px;
+	font-weight: normal;
+	letter-spacing: normal;
+	text-align: left;
+	margin: 5px;
+}
+.ratingResult * {
+	line-height: normal !important;
+}
+
+
+.checkbox-label { margin-right: 10px; }
