@@ -23,6 +23,8 @@ A simple star rating plugin which allows visitors to rate a post based on multip
 * Options to apply to different post types
 * Options for position of rating form before_content or after_content and rating results before_title or after_title
 
+Here's a demo http://www.danielpowney.com/multi-rating
+
 == Installation ==
 
 1. Install plugin via the WordPress.org plugin directory. Unzip and place plugin folder in /wp-content/plugins/ directory for manual installation
