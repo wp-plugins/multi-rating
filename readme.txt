@@ -33,30 +33,37 @@ Here's a demo http://www.danielpowney.com/multi-rating
 
 == Frequently Asked Questions ==
 *How do I add a rating form into my post*
+
 There are three ways to place a rating form into a post:
-1. Setting display position of rating form in plugin settings to before_content or after_content
-1. Inserting the [displayRatingForm] shorcode into your post
-1. Modifying theme code to call API function display_rating_form()
+* Setting display position of rating form in plugin settings to before_content or after_content
+* Inserting the [displayRatingForm] shorcode into your post
+* Modifying theme code to call API function display_rating_form()
 
 *How do I add a rating results into my post*
+
 There are three ways to place the rating results into a post:
-1. Setting display position of rating results in plugin settings to before_title or after_title
-1. Inserting the [displayRatingResults] shorcode into your post
-1. Modifying theme code to call API function display_rating_results()
+* Setting display position of rating results in plugin settings to before_title or after_title
+* Inserting the [displayRatingResults] shorcode into your post
+* Modifying theme code to call API function display_rating_results()
 
 *How is the rating calculated?*
+
 Each rating item currently carries an equal weight. Each rating item is given a rating out of 5 and then the average is calculated to produce the overall rating result.
 
 *What happens if I delete a rating item even though visitors have submitted a rating previously with this rating item?*
+
 All prior rating entry results will include the deleted rating item in their rating result. The rating item is not included in any new rating entry results.
 
 *How can I change the style of the rating form or rating results?*
+
 There is a custom CSS option in the plugin settings page
 
 *Can I prevent visitors from submitting the same rating forms multiple times for the same post?*
+
 Yes, there is an option to prevent visitors this in the plugin settings page. Check the rating form IP address date time validation option. This will prevent a visitor from submitting a rating form multiple times within a 24 hour period. The visitors IP address is used to identify them.
 
-* Are the rating form and rating results responsive?*
+*Are the rating form and rating results responsive?*
+
 Yes they are OK in a responsive web design except the star rating image is 130px fixed width. The rating results text wrap onto the next line and the rating form is a HTML table.
 
 == Screenshots ==
