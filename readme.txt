@@ -43,7 +43,7 @@ There are three ways to place a rating form into a post:
 
 There are three ways to place the rating results into a post:
 * Setting display position of rating results in plugin settings to before_title or after_title
-* Inserting the [displayRatingResults] shorcode into your post
+* Inserting the [displayRatingResult] shorcode into your post
 * Modifying theme code to call API function display_rating_results()
 
 *How is the rating calculated?*
@@ -67,7 +67,7 @@ Yes, there is an option to prevent visitors this in the plugin settings page. Ch
 Yes they are OK in a responsive web design except the star rating image is 130px fixed width. The rating results text wrap onto the next line and the rating form is a HTML table.
 
 == Screenshots ==
-1. Blog post with star rating results after_title. You can change the position of the star rating results to before_title, add a shortcode [displayRatingResults] or add function call display_rating_results() in theme PHP code
+1. Blog post with star rating results after_title. You can change the position of the star rating results to before_title, add a shortcode [displayRatingResult] or add function call display_rating_results() in theme PHP code
 2. Default rating form. You can customise the CSS in the plugin options
 3. Page showing star rating results after post title, rating form after_content and top rating results widget in sidebar. You can customise the position of the rating form to before_content, after_content, add a shortcode [displayRatingForm] or add function call display_rating_form() in thme PHP code
 4. Plugin settings 1

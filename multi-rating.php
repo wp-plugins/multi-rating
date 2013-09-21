@@ -1,11 +1,11 @@
 <?php 
 /*
 Plugin Name: Multi Rating
-Plugin URI:
+Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
 Version: 1.0
 Author: Daniel Powney
-Auhtor URI: danielpowney.com
+Author URI: danielpowney.com
 License: GPL2
 */
 ?>
