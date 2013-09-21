@@ -76,6 +76,10 @@ Yes they are OK in a responsive web design except the star rating image is 130px
 
 == Changelog ==
 
+= 1.0.2 =
+* Added option to change rating results stars to small, medium or large size
+* Fixed some CSS issues
+
 = 1.0.1 =
 * Added check is_singular() to add rich snippets to rating results
 

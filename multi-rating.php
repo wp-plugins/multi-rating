@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
-Version: 1.0.1
+Version: 1.0.2
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
@@ -161,8 +161,7 @@ class Multi_Rating {
 		
 		add_settings_field( 'custom_css', 'Custom CSS', array( &$this, 'field_custom_css' ), 'general-settings', 'section_general' );
 		
-		// TODO
-		//add_settings_field( 'stars_image_height', 'Stars image height', array( &$this, 'field_stars_image_height' ), 'general-settings', 'section_general' );
+		add_settings_field( 'stars_image_height', 'Stars image height', array( &$this, 'field_stars_image_height' ), 'general-settings', 'section_general' );
 	}
 	
 		
@@ -191,14 +190,9 @@ class Multi_Rating {
 		$stars_image_height = $this->general_settings['stars_image_height'];
 		?>
 			<select name="general-settings[stars_image_height]">
-				<?php for ($i=10; $i<= 40; $i++) {
-					$option_value = 
-					$option_html = '<option value="' . $i . '"';
-					if ($i == $stars_image_height)
-						$option_html .= ' selected="selected"';
-					$option_html .= '>' . $i . 'px</option>';
-					echo $option_html;
-				}?>
+				<option value="15" <?php if ($stars_image_height == "15") { echo ' selected="selected"'; } ?>>Small 15px</option>
+				<option value="20" <?php if ($stars_image_height == "20") { echo ' selected="selected"'; } ?>>Medium 20px</option>
+				<option value="25" <?php if ($stars_image_height == "25") { echo ' selected="selected"'; } ?>>Large 25px</option>
 			</select>
 			<p class="description">Set the height of the stars image.</p>
 			<?php 
