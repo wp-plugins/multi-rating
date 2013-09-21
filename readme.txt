@@ -76,5 +76,8 @@ Yes they are OK in a responsive web design except the star rating image is 130px
 
 == Changelog ==
 
+= 1.0.1 =
+* Added check is_singular() to add rich snippets to rating results
+
 = 1.0 =
 * Initial release

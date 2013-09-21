@@ -194,12 +194,13 @@ function generate_rating_result_html($entries, $rating_result, $show_no_result_t
 		</span>
 		';
 		
-		
-		
-		$html .= '
-		<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating" class="ratingSummary" style="display: inline-block;">
-		<span itemprop="ratingValue">' . round($rating_result_star, 2) . '</span>/<span itemprop="bestRating">5</span> (<span itemprop="ratingCount">' . $entries . '</span>)
-		</div>';
+		// only add rich snippets for single post types
+		if (is_singular()) {
+			$html .= '
+			<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating" class="ratingSummary" style="display: inline-block;">
+			<span itemprop="ratingValue">' . round($rating_result_star, 2) . '</span>/<span itemprop="bestRating">5</span> (<span itemprop="ratingCount">' . $entries . '</span>)
+			</div>';
+		}
 		
 		if ($post_id != null)
 			$html .= '&nbsp;<a href="' . get_permalink($post_id) . '">' . get_the_title($post_id) . '</a>';
