@@ -68,7 +68,7 @@ form.ratingForm table .action {
 .ratingStars {
 	padding: 0px; 
 	margin: 0px; 
-	font-family: Arial, Helvetica;
+	font-size: 0px !important;
 }
 
 
