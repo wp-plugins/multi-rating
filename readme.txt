@@ -1,4 +1,4 @@
-=== Multi rating ===
+=== Multi Rating ===
 Contributors: dpowney
 Donate link: http://www.danielpowney.com/donate
 Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippets
