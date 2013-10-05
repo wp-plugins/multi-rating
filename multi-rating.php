@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
-Version: 1.0.2
+Version: 1.0.3
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
@@ -23,7 +23,7 @@ class Multi_Rating {
 
 	// constants
 	const
-	VERSION = '1.0',
+	VERSION = '1.0.3',
 	ID = 'multi_rating',
 	RATING_SUBJECT_TBL_NAME = 'rating_subject',
 	RATING_ITEM_TBL_NAME = 'rating_item',
@@ -32,6 +32,74 @@ class Multi_Rating {
 	
 	public $general_settings = array();
 	
+	/**
+	 * Activates the plugin
+	 */
+	public static function activate_plugin() {
+		global $wpdb;
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		
+		// FIXME do we need a table for subject?
+		// Subject can be a post type
+		$sql_create_rating_subject_tbl = 'CREATE TABLE '.$wpdb->prefix.Multi_Rating::RATING_SUBJECT_TBL_NAME.' (' .
+		'rating_id bigint(20) NOT NULL AUTO_INCREMENT,' .
+		'post_type varchar(20) NOT NULL,' .
+		'PRIMARY KEY (rating_id)' .
+		') ENGINE=InnoDB AUTO_INCREMENT=1;';
+		dbDelta($sql_create_rating_subject_tbl);
+		
+		// TODO
+		
+		// Subject are rated by multiple rating items
+		$sql_create_rating_item_tbl = 'CREATE TABLE '.$wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME.' ('.
+		'rating_item_id bigint(20) NOT NULL AUTO_INCREMENT,'.
+		'rating_id bigint(20) NOT NULL,'.
+		'description varchar(255) NOT NULL,'.
+		'max_rating_value int(11),'.
+		'default_rating_value int(11),'.
+		'active tinyint(1) DEFAULT 1,'.
+		'weight double precision DEFAULT 1.0,'.
+		'PRIMARY KEY (rating_item_id)'.
+		') ENGINE=InnoDB AUTO_INCREMENT=1;';
+		dbDelta($sql_create_rating_item_tbl);
+		
+		// The rating item entries are saved
+		$sql_create_rating_item_entry_tbl = 'CREATE TABLE '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME.' ('.
+		'rating_item_entry_id bigint(20) NOT NULL AUTO_INCREMENT,'.
+		'post_id bigint(20) NOT NULL,'.
+		'entry_date datetime NOT NULL,'.
+		'ip_address varchar(100),'.
+		'user_id bigint(20),'.
+		'PRIMARY KEY (rating_item_entry_id)'.
+		') ENGINE=InnoDB AUTO_INCREMENT=1;';
+		dbDelta($sql_create_rating_item_entry_tbl);
+			
+		$sql_create_rating_item_entry_value_tbl = 'CREATE TABLE '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME.' ('.
+		'rating_item_entry_value_id bigint(20) NOT NULL AUTO_INCREMENT,'.
+		'rating_item_entry_id bigint(20) NOT NULL,'.
+		'rating_item_id bigint(20) NOT NULL,'.
+		'value int(11) NOT NULL,'.
+		'PRIMARY KEY (rating_item_entry_value_id)'.
+		') ENGINE=InnoDB AUTO_INCREMENT=1;';
+		dbDelta($sql_create_rating_item_entry_value_tbl);
+		
+	}
+	
+	/**
+	 * Uninstalls the plugin
+	 */
+	public static function uninstall_plugin() {
+		
+		// TODO make option name unique
+		delete_option('general-settings');
+		
+		// Drop tables
+		global $wpdb;
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME );
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME );
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_TBL_NAME );
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . Multi_Rating::RATING_SUBJECT_TBL_NAME );
+	}
 	
 	/**
 	 * Constructor
@@ -51,60 +119,14 @@ class Multi_Rating {
 			add_action('admin_menu', array($this, 'create_options_page'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_assets' ) );
 		} else {
+
 			add_filter( 'the_content', array(&$this, 'filter_the_content' ) );
 			add_filter( 'the_title', array(&$this, 'filter_the_title' ) );
 			
 			add_action( 'wp_enqueue_scripts', array( $this, 'assets' ) );
 		}
-		
+				
 		add_action( 'widgets_init', array($this, 'register_widgets') );
-		
-		register_activation_hook(__FILE__, function() {
-			global $wpdb;
-			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-			// FIXME do we need a table for subject?
-			// Subject can be a post type
-			$sql_create_rating_subject_tbl = "CREATE TABLE ".$wpdb->prefix.Multi_Rating::RATING_SUBJECT_TBL_NAME." (
-			rating_id bigint(20) NOT NULL AUTO_INCREMENT,
-			post_type varchar(20) NOT NULL,
-			PRIMARY KEY (rating_id)
-			) ENGINE=InnoDB AUTO_INCREMENT=1;";
-			dbDelta($sql_create_rating_subject_tbl);
-
-			// Subject are rated by multiple rating items
-			$sql_create_rating_item_tbl = "CREATE TABLE ".$wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME." (
-			rating_item_id bigint(20) NOT NULL AUTO_INCREMENT,
-			rating_id bigint(20) NOT NULL,
-			description varchar(255) NOT NULL,
-			max_rating_value int(11),
-			default_rating_value int(11),
-			active tinyint(1) DEFAULT 1,
-			weight double precision DEFAULT 1.0,
-			PRIMARY KEY (rating_item_id)
-			) ENGINE=InnoDB AUTO_INCREMENT=1;";
-			dbDelta($sql_create_rating_item_tbl);
-
-			// The rating item entries are saved
-			$sql_create_rating_item_entry_tbl = "CREATE TABLE ".$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME." (
-			rating_item_entry_id bigint(20) NOT NULL AUTO_INCREMENT,
-			post_id bigint(20) NOT NULL,
-			entry_date datetime NOT NULL,
-			ip_address varchar(100),
-			user_id bigint(20),
-			PRIMARY KEY (rating_item_entry_id)
-			) ENGINE=InnoDB AUTO_INCREMENT=1;";
-			dbDelta($sql_create_rating_item_entry_tbl);
-			
-			$sql_create_rating_item_entry_value_tbl = "CREATE TABLE ".$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME." (
-			rating_item_entry_value_id bigint(20) NOT NULL AUTO_INCREMENT,
-			rating_item_entry_id bigint(20) NOT NULL,
-			rating_item_id bigint(20) NOT NULL,
-			value int(11) NOT NULL,
-			PRIMARY KEY (rating_item_entry_value_id)
-			) ENGINE=InnoDB AUTO_INCREMENT=1;";
-			dbDelta($sql_create_rating_item_entry_value_tbl);
-		});
 
 		Multi_Rating::add_ajax_actions();
 	}
@@ -685,6 +707,20 @@ class Multi_Rating {
 }
 
 
-$multi_rating = new Multi_Rating();
+// Activation and deactivation
+register_activation_hook( __FILE__, 'mr_activate_plugin');
+register_uninstall_hook( __FILE__, 'mr_uninstall_plugin' );
+//register_deactivation_hook( __FILE__, 'mr_uninstall_plugin' );
+function mr_activate_plugin() {
+	if (is_admin()) {
+		Multi_Rating::activate_plugin();
+	}
 
-?>
+}
+function mr_uninstall_plugin() {
+	if (is_admin()) {
+		Multi_Rating::uninstall_plugin();
+	}
+}
+
+$multi_rating = new Multi_Rating();
