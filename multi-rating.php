@@ -3,18 +3,18 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
-Version: 1.0.3
+Version: 1.1
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
 */
-?>
-<?php
+
 
 require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'multi-rating-table.php';
 require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'shortcodes.php';
 require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'widgets.php';
 require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'utils.php';
+require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'templates.php';
 
 /**
  * Multi_Rating class
@@ -23,7 +23,7 @@ class Multi_Rating {
 
 	// constants
 	const
-	VERSION = '1.0.3',
+	VERSION = '1.1',
 	ID = 'multi_rating',
 	RATING_SUBJECT_TBL_NAME = 'rating_subject',
 	RATING_ITEM_TBL_NAME = 'rating_item',
@@ -140,7 +140,6 @@ class Multi_Rating {
 		
 		$default_css = addslashes(
 "form.ratingForm {
-
 	/* i.e. rating form custom CSS:
 	border: 3px solid #BABABA;
 	background-color: #A1BED4;
@@ -150,7 +149,6 @@ class Multi_Rating {
 	padding: 10px;
 	margin-top: 20px;
 	width: auto; */
-
 }");
 		
 		// Merge with defaults
@@ -225,7 +223,7 @@ class Multi_Rating {
 		$post_types_checked = $this->general_settings['post_types'];
 		
 		foreach ( $post_types as $post_type ) {
-			?><input type="checkbox" name="general-settings[post_types][]" value="<?php echo $post_type ?>" <?php
+			echo '<input type="checkbox" name="general-settings[post_types][]" value="' . $post_type . '"';
 			if (is_array($post_types_checked)) {
 				if (in_array($post_type, $post_types_checked)) {
 					echo 'checked="checked"';
@@ -234,7 +232,6 @@ class Multi_Rating {
 				checked($post_type, $post_types_checked, true );
 			}
 			echo ' />&nbsp;<label class="checkbox-label">' . $post_type . '</label>'; 
-			
 		}
 		
 		?>
@@ -458,7 +455,7 @@ class Multi_Rating {
 					<tr valign="top">
 						<th scope="row">Weight</th>
 						<td>
-							<input id="weight" name="weight" type="text" value="1.0" readonly="true" />
+							<input id="weight" name="weight" type="text" value="1.0" />
 							<p class="description">Enter a weight for the rating item. (this feature is coming soon...)</p>	
 						</td>
 					</tr>

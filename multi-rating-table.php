@@ -115,9 +115,9 @@ class Multi_Rating_Table extends WP_List_Table {
 			case Multi_Rating_Table::CHECKBOX_COLUMN :
 			case Multi_Rating_Table::RATING_ITEM_ID_COLUMN :
 			case Multi_Rating_Table::RATING_ID_COLUMN :
-			case Multi_Rating_Table::WEIGHT_COLUMN:
 				return $item[ $column_name ];
 				break;
+			case Multi_Rating_Table::WEIGHT_COLUMN:
 			case Multi_Rating_Table::DESCRIPTION_COLUMN :
 			case Multi_Rating_Table::MAX_RATING_VALUE_COLUMN:
 			case Multi_Rating_Table::DEFAULT_RATING_VALUE_COLUMN:

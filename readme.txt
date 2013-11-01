@@ -21,6 +21,7 @@ A simple star rating plugin which allows visitors to rate a post based on multip
 * Widgets to display the rating form and top rating results
 * SEO rich snippets are added to markup
 * Options to apply to different post types
+* Add custom weights to each multi-rating item
 * Options for position of rating form before_content or after_content and rating results before_title or after_title
 
 Here's a demo http://www.danielpowney.com/multi-rating
@@ -66,6 +67,26 @@ Yes, there is an option to prevent visitors this in the plugin settings page. Ch
 
 Yes they are OK in a responsive web design except the star rating image is 130px fixed width. The rating results text wrap onto the next line and the rating form is a HTML table.
 
+*What is the algorithm for weighted rating?*
+
+Each multi rating is adjusted based on the weight.
+
+Let V = value of multi-rating
+M = max rating value for multi-rating item
+W = weight for multi-rating item
+C = count or multi-rating items
+TW = total weights of multi-rating items
+
+First we figure out the adjustment percentage we need to make based on the current multi-rating weight and the total multi-rating weights
+A = adjustment percentage = (W / TW) * C
+i.e. a count of 3 and a total weight of 4 (2, 1 and 1 for each multi-rating item)
+this will create the following adjustment:
+(2 / 4) * 3 = 1.5
+(1 / 4) * 3 = 0.75
+So if we add up the adjustments it equals the the count 1.5 + 0.75 + 0.75 = 3. If all the weights are the same, it will still equal the count.
+
+This adjustment is then multiplied to the overall rating result = (V / M) * A
+
 == Screenshots ==
 1. Blog post with star rating results after_title. You can change the position of the star rating results to before_title, add a shortcode [displayRatingResult] or add function call display_rating_results() in theme PHP code
 2. Default rating form. You can customise the CSS in the plugin options
@@ -75,6 +96,9 @@ Yes they are OK in a responsive web design except the star rating image is 130px
 6. Plugin settings 3
 
 == Changelog ==
+
+= 1.1 =
+* Added weight rating for multi criteria
 
 = 1.0.3=
 * Fixed activation for older versions of PHP
