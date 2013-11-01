@@ -456,7 +456,7 @@ class Multi_Rating {
 						<th scope="row">Weight</th>
 						<td>
 							<input id="weight" name="weight" type="text" value="1.0" />
-							<p class="description">Enter a weight for the rating item. (this feature is coming soon...)</p>	
+							<p class="description">Enter a weight for the rating item.</p>	
 						</td>
 					</tr>
 				</tbody>
