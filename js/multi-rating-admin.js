@@ -1,8 +1,6 @@
 // Add a rating criteria form submit
 jQuery("#createRatingItemBtn").click(function() {
 	jQuery("#formSubmitted").val("true");
-	var temp =2;
-	var t;
 });
 
 

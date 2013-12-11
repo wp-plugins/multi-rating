@@ -36,9 +36,10 @@ function generate_rating_result_html($entries, $rating_result, $show_no_result_t
 			$html .= '<div class="ratingSummary">' . round($rating_result_star, 2) . '/5 (' . $entries . ')</div>';
 		}
 		
-		if ($post_id != null)
-			$html .= '&nbsp;<a href="' . get_permalink($post_id) . '">' . get_the_title($post_id) . '</a>';
-		
+		if ($post_id != null) {
+			$post = get_post($post_id);
+			$html .= '&nbsp;<a href="' . get_permalink($post_id) . '">' . $post->title . '</a>';
+		}
 		$html .= '</div>';
 	} else if ($show_no_result_text == true) {
 		$html .= '<div class="ratingResult">';

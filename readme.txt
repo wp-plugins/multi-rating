@@ -33,41 +33,48 @@ Here's a demo http://www.danielpowney.com/multi-rating
 1. Go to 'Settings' menu 'Multi Rating' option in WordPress admin
 
 == Frequently Asked Questions ==
-*How do I add a rating form into my post*
+= How do I add a rating form into my post =
 
 There are three ways to place a rating form into a post:
 * Setting display position of rating form in plugin settings to before_content or after_content
-* Inserting the [displayRatingForm] shorcode into your post
-* Modifying theme code to call API function display_rating_form()
+* Inserting the [displayRatingForm] shorcode into your post. You can use a different post ID by adding parameter post_id i.e. [displayRatingForm post_id=10] for post ID 10
+* Modifying theme code to call API function display_rating_form(). This function must be called with the loop or the post ID must be provided as a parameter i.e. display_rating_form(array('post_id' => 10) for post ID 10.
 
-*How do I add a rating results into my post*
+= How do I add a rating results into my post =
 
 There are three ways to place the rating results into a post:
 * Setting display position of rating results in plugin settings to before_title or after_title
-* Inserting the [displayRatingResult] shorcode into your post
-* Modifying theme code to call API function display_rating_results()
+* Inserting the [displayRatingResult] shorcode into your post. You can use a different post ID by adding parameter post_id i.e. [displayRatingResult post_id=10] for post ID 10
+* Modifying theme code to call API function display_rating_result(). This function must be called with the loop or the post ID must be provided as a parameter i.e. display_rating_result(array('post_id' => 10)) for post ID 10.
 
-*How is the rating calculated?*
+= How do I display the top rating results? =
+
+There are three ways to display top rating results:
+* Add the top rating results widget to a widget area in your theme
+* Insert the [displayRatingTopResults] shortcode into your post. By default, the top 10 rating results are returned but you can customise this by passing in a parameter for the count i.e. [displayRatingTopResults count=10]
+* Modifying theme code to call API function echo display_rating_top_results(). By default, the top 10 rating results are returned but you can customise this by passing in a parameter for the count i.e. echo display_rating_top_results(array('count' => 20)) for 20 top rating results. 
+
+= How is the rating calculated? =
 
 Each rating item currently carries an equal weight. Each rating item is given a rating out of 5 and then the average is calculated to produce the overall rating result.
 
-*What happens if I delete a rating item even though visitors have submitted a rating previously with this rating item?*
+= What happens if I delete a rating item even though visitors have submitted a rating previously with this rating item? =
 
 All prior rating entry results will include the deleted rating item in their rating result. The rating item is not included in any new rating entry results.
 
-*How can I change the style of the rating form or rating results?*
+= How can I change the style of the rating form or rating results? =
 
-There is a custom CSS option in the plugin settings page
+You can change the style by adding CSS in your theme. There is a custom CSS option in the plugin settings page.
 
-*Can I prevent visitors from submitting the same rating forms multiple times for the same post?*
+= Can I prevent visitors from submitting the same rating forms multiple times for the same post? =
 
 Yes, there is an option to prevent visitors this in the plugin settings page. Check the rating form IP address date time validation option. This will prevent a visitor from submitting a rating form multiple times within a 24 hour period. The visitors IP address is used to identify them.
 
-*Are the rating form and rating results responsive?*
+= Are the rating form and rating results responsive? =
 
 Yes they are OK in a responsive web design except the star rating image is 130px fixed width. The rating results text wrap onto the next line and the rating form is a HTML table.
 
-*What is the algorithm for weighted rating?*
+= What is the algorithm for weighted rating? =
 
 Each multi rating is adjusted based on the weight.
 
@@ -96,6 +103,11 @@ This adjustment is then multiplied to the overall rating result = (V / M) * A
 6. Plugin settings 3
 
 == Changelog ==
+
+= 1.1.1 (12/12/2013) =
+* Changed shortcode parameter for post id from id to post_id
+* Fixed default values in API functions for themes
+* Fixed bug which caused only 5 top rating results being displayed
 
 = 1.1 =
 * Added weight rating for multi criteria
