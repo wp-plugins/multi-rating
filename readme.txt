@@ -37,22 +37,22 @@ Here's a demo http://www.danielpowney.com/multi-rating
 
 There are three ways to place a rating form into a post:
 * Setting display position of rating form in plugin settings to before_content or after_content
-* Inserting the [displayRatingForm] shorcode into your post. You can use a different post ID by adding parameter post_id i.e. [displayRatingForm post_id=10] for post ID 10
-* Modifying theme code to call API function display_rating_form(). This function must be called with the loop or the post ID must be provided as a parameter i.e. display_rating_form(array('post_id' => 10) for post ID 10.
+* Inserting the '[displayRatingForm]' shorcode into your post. You can use a different post ID by adding parameter post_id i.e. '[displayRatingForm post_id=10]' for post ID 10
+* Modifying theme code to call API function 'display_rating_form()'. This function must be called with the loop or the post ID must be provided as a parameter i.e. 'echo display_rating_form(array('post_id' => 10)' for post ID 10.
 
 = How do I add a rating results into my post =
 
 There are three ways to place the rating results into a post:
 * Setting display position of rating results in plugin settings to before_title or after_title
-* Inserting the [displayRatingResult] shorcode into your post. You can use a different post ID by adding parameter post_id i.e. [displayRatingResult post_id=10] for post ID 10
-* Modifying theme code to call API function display_rating_result(). This function must be called with the loop or the post ID must be provided as a parameter i.e. display_rating_result(array('post_id' => 10)) for post ID 10.
+* Inserting the '[displayRatingResult]' shorcode into your post. You can use a different post ID by adding parameter post_id i.e. '[displayRatingResult post_id=10]' for post ID 10
+* Modifying theme code to call API function 'display_rating_result()'. This function must be called with the loop or the post ID must be provided as a parameter i.e. 'echo display_rating_result(array('post_id' => 10))' for post ID 10.
 
 = How do I display the top rating results? =
 
 There are three ways to display top rating results:
 * Add the top rating results widget to a widget area in your theme
-* Insert the [displayRatingTopResults] shortcode into your post. By default, the top 10 rating results are returned but you can customise this by passing in a parameter for the count i.e. [displayRatingTopResults count=10]
-* Modifying theme code to call API function echo display_rating_top_results(). By default, the top 10 rating results are returned but you can customise this by passing in a parameter for the count i.e. echo display_rating_top_results(array('count' => 20)) for 20 top rating results. 
+* Insert the '[displayRatingTopResults]' shortcode into your post. By default, the top 10 rating results are returned but you can customise this by passing in a parameter for the count i.e. '[displayRatingTopResults count=10]'
+* Modifying theme code to call API function echo 'display_rating_top_results()'. By default, the top 10 rating results are returned but you can customise this by passing in a parameter for the count i.e.' echo display_rating_top_results(array('count' => 20))' for 20 top rating results. 
 
 = How is the rating calculated? =
 
