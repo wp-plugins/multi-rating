@@ -38,7 +38,7 @@ function generate_rating_result_html($entries, $rating_result, $show_no_result_t
 		
 		if ($post_id != null) {
 			$post = get_post($post_id);
-			$html .= '&nbsp;<a href="' . get_permalink($post_id) . '">' . $post->title . '</a>';
+			$html .= '&nbsp;<a href="' . get_permalink($post_id) . '">' . $post->post_title . '</a>';
 		}
 		$html .= '</div>';
 	} else if ($show_no_result_text == true) {

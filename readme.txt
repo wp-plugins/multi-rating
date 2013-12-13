@@ -104,6 +104,9 @@ This adjustment is then multiplied to the overall rating result = (V / M) * A
 
 == Changelog ==
 
+= 1.1.3 = (14/12/2013)
+* Fixed post title on top rating results widget
+
 = 1.1.2 = (14/12/2013)
 * Removed debugging comment accidentally left behind
 
