@@ -85,8 +85,6 @@ function display_rating_result( $atts = null ) {
 			'post_id' => null,
 			'show_no_result_text' => true
 	), $atts ) );
-
-	echo 'what/.';
 	
 	global $wpdb;
 	global $post;
