@@ -3,7 +3,7 @@ Contributors: dpowney
 Donate link: http://www.danielpowney.com/donate
 Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippets
 Requires at least: 3.0.1
-Tested up to: 3.6
+Tested up to: 3.8
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -103,6 +103,9 @@ This adjustment is then multiplied to the overall rating result = (V / M) * A
 6. Plugin settings 3
 
 == Changelog ==
+
+= 1.1.2 = (14/12/2013)
+* Removed debugging comment accidentally left behind
 
 = 1.1.1 (12/12/2013) =
 * Changed shortcode parameter for post id from id to post_id
