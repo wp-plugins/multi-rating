@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
-Version: 1.1.3
+Version: 1.1.1
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
@@ -158,7 +158,8 @@ class Multi_Rating {
 				'ip_address_datetime_validation' => true,
 				'post_types' => 'post',
 				'custom_css' => $default_css,
-				'stars_image_height' => '25'
+				'stars_image_height' => '25',
+				'character_encoding' => ''
 		), $this->general_settings );
 		
 		update_option('general-settings', $this->general_settings);
@@ -182,6 +183,8 @@ class Multi_Rating {
 		add_settings_field( 'custom_css', 'Custom CSS', array( &$this, 'field_custom_css' ), 'general-settings', 'section_general' );
 		
 		add_settings_field( 'stars_image_height', 'Stars image height', array( &$this, 'field_stars_image_height' ), 'general-settings', 'section_general' );
+		
+		add_settings_field( 'character_encoding', 'Character encoding', array( &$this, 'field_character_encoding' ), 'general-settings', 'section_general' );
 	}
 	
 		
@@ -260,6 +263,17 @@ class Multi_Rating {
 		<?php
 	}
 	
+	function field_character_encoding() {
+		?>
+			<select name="general-settings[character_encoding]">
+				 <option value="" <?php selected('', $this->general_settings['character_encoding'], true); ?>>Keep current charset (Recommended)</option>
+		        <option value="utf8_general_ci" <?php selected('utf8_general_ci', $this->general_settings['character_encoding'], true); ?>>UTF-8 (try this first)</option>
+		        <option value="latin1_swedish_ci" <?php selected('latin1_swedish_ci', $this->general_settings['character_encoding'], true); ?>>latin1_swedish_ci</option>
+			</select>
+			<p class="description"></p>
+			<?php
+		}
+	
 	/**
 	 * Sanitize and validate General settings
 	 *
@@ -274,6 +288,25 @@ class Multi_Rating {
 			$input['ip_address_datetime_validation'] = false;
 		
 		$input['custom_css'] = addslashes($input['custom_css']);
+		
+		global $wpdb;
+		$character_encoding = $input["character_encoding"];
+		
+		$old_character_set = $this->general_settings['character_encoding'];
+		if ($character_encoding != $old_character_set) {
+			$tables = array( $wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME );
+			foreach ($tables as $table) {
+				$rows = $wpdb->get_results( "DESCRIBE {$table}" );
+				foreach ($rows as $row) {
+					$name = $row->Field;
+					$type = $row->Type;
+					if (preg_match("/^varchar\((\d+)\)$/i", $type, $mat) || !strcasecmp($type, "CHAR") 
+							|| !strcasecmp($type, "TEXT") || !strcasecmp($type, "MEDIUMTEXT")) {
+						$wpdb->query('ALTER TABLE ' . $table .' CHANGE ' . $name . ' ' . $name . ' ' . $type . ' COLLATE ' . $character_encoding);
+					}
+				}
+			}
+		}
 		
 		return $input;
 	}
