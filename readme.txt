@@ -104,6 +104,9 @@ This adjustment is then multiplied to the overall rating result = (V / M) * A
 
 == Changelog ==
 
+= 1.1.5 (6/01/2014) =
+* Fixed custom title for widgets
+
 = 1.1.4 (19/12/2013) =
 * Added support for character encoding
 

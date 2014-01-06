@@ -15,11 +15,9 @@ class Multi_Rating_Widget extends WP_Widget {
 		extract($args);
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 		
-		
 		echo $before_widget;
 		
-		// multi-rating widget shortcode
-		echo display_rating_form( array(null, $title, $before_title,  $after_title) );
+		echo display_rating_form( array('title' => $title, 'before_title' => $before_title, 'after_title' => $after_title) );
 		
 		echo $after_widget;
 	}
@@ -60,8 +58,8 @@ class Multi_Rating_Top_Results_Widget extends WP_Widget {
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
 		echo $before_widget;
-
-		echo display_rating_top_results( array(null, $title, $before_title,  $after_title) );
+		
+		echo display_rating_top_results( array('title' => $title, 'before_title' => $before_title, 'after_title' => $after_title ) );
 
 		echo $after_widget;
 	}

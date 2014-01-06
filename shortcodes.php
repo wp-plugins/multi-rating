@@ -131,7 +131,7 @@ function display_rating_top_results( $atts = array() ) {
 	), $atts ) );
 	
 	global $wpdb;
-	
+
 	$html = '<div class="ratingTopResults">';
 	if ( !empty( $title ) ) {
 		$html .=  $before_title . $title . $after_title;

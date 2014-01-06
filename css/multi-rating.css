@@ -1,6 +1,7 @@
 form.ratingForm {
 	margin: 0px;
-	min-width: 300px; width : auto;
+	width : auto;
+	max-width: 100%;
 	display: table;
 	
 	/* Custom
