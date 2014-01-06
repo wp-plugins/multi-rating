@@ -104,6 +104,9 @@ This adjustment is then multiplied to the overall rating result = (V / M) * A
 
 == Changelog ==
 
+= 1.1.6 (7/01/2014) =
+* Fixed bug in displaying top results for multiple post types
+
 = 1.1.5 (6/01/2014) =
 * Fixed custom title for widgets
 

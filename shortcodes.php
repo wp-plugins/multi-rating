@@ -22,7 +22,6 @@ function display_rating_form( $atts = null) {
 		return '<p class="error">No post ID available to display multi rating form</p>';
 	}
 	
-	// get table data
 	$query = "SELECT * FROM ".$wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME;
 	$rows = $wpdb->get_results($query);
 	
@@ -35,7 +34,6 @@ function display_rating_form( $atts = null) {
 	
 	$html .= '<table>';
 	foreach ($rows as $row) {
-		// TODO use table or css
 		$html .= '<tr>';
 		
 		$select_id = 'ratingForm' . $post_id . 'ItemValue' . $row->rating_item_id;
@@ -61,7 +59,6 @@ function display_rating_form( $atts = null) {
 		$html .= '</td></tr>';
 	}
 	
-	// button
 	$html .= '<tr><td class="action" colspan="2"><button type="button" class="btn btn-default" id="' . $post_id . '">Submit</button></td></tr>';
 	$html .= '</table>';
 	
@@ -137,8 +134,9 @@ function display_rating_top_results( $atts = array() ) {
 		$html .=  $before_title . $title . $after_title;
 	}
 	
-	// iterate all posts and calculate ratings, keep top count
-	$posts = get_posts(array('numberposts' => -1)); // -1 for all posts
+	// iterate the post types and calculate ratings, keep top count
+	$general_settings = (array) get_option( 'general-settings' );
+	$posts = get_posts(array('numberposts' => -1, 'post_type' => $general_settings['post_types']));
 	
 	$rating_items = get_rating_items( 'post' );
 	
