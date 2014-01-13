@@ -3,12 +3,16 @@
 /**
  * Shortcode function for displaying the rating form. This function can also be called explicitly
  * 
- * e.g. [displayRatingForm post_id="1"]
+ * e.g. [displayRatingForm post_id="1" title="Please rate this"]
  */
-function display_rating_form( $atts = null) {
+function display_rating_form( $atts = array() ) {
+	
+	$general_settings = (array) get_option( 'general-settings' );
+	$default_rating_form_title = $general_settings[ 'default_rating_form_title' ];
+	
 	extract( shortcode_atts( array(
 			'post_id' => null,
-			'title' => 'Please rate this',
+			'title' => $default_rating_form_title,
 			'before_title' => '<h4>',
 			'after_title' => '</h4>'
 	), $atts ) );
@@ -16,9 +20,9 @@ function display_rating_form( $atts = null) {
 	global $wpdb;
 	global $post;
 
-	if (!isset($post_id) && isset($post)) {
+	if ( !isset( $post_id ) && isset( $post ) ) {
 		$post_id = $post->ID;
-	} else if (!isset($post) && !isset($post_id)) {
+	} else if ( !isset($post) && !isset( $post_id ) ) {
 		return '<p class="error">No post ID available to display multi rating form</p>';
 	}
 	
@@ -26,7 +30,6 @@ function display_rating_form( $atts = null) {
 	$rows = $wpdb->get_results($query);
 	
 	$html = '<form class="ratingForm" name="ratingForm" action="#">';
-	
 	
 	if ( !empty( $title ) ) {
 		$html .=  $before_title . $title . $after_title;
@@ -61,7 +64,6 @@ function display_rating_form( $atts = null) {
 	
 	$html .= '<tr><td class="action" colspan="2"><button type="button" class="btn btn-default" id="' . $post_id . '">Submit</button></td></tr>';
 	$html .= '</table>';
-	
 	$html .= '</form>';
 	
 	return $html;
@@ -73,11 +75,12 @@ add_shortcode( 'displayRatingForm', 'display_rating_form' );
 /**
  * Shortcode function for displaying the rating result
  * 
- * e.g. [displayRatingResult post_id=1]
+ * e.g. [displayRatingResult post_id="1" show_no_result_text="false"]
  * 
  * @param unknown_type $atts
  */
-function display_rating_result( $atts = null ) {
+function display_rating_result( $atts = array() ) {
+	
 	extract( shortcode_atts( array(
 			'post_id' => null,
 			'show_no_result_text' => true
@@ -113,16 +116,20 @@ add_shortcode( 'displayRatingResult', 'display_rating_result' );
 /**
  * Shortcode function for displaying the rating top results
  * 
- * e.g. [displayRatingTopResults count=10]
+ * e.g. [displayRatingTopResults count="10" title="Top Rating Results"]
  * 
  * 
  * @param unknown_type $atts
  * @return string
  */
 function display_rating_top_results( $atts = array() ) {
+	
+	$general_settings = (array) get_option( 'general-settings' );
+	$default_top_rating_results_title = $general_settings[ 'default_top_rating_results_title' ];
+
 	extract( shortcode_atts( array(
 			'count' => 10,
-			'title' => 'Top Rating Results',
+			'title' => $default_top_rating_results_title,
 			'before_title' => '<h4>',
 			'after_title' => '</h4>'
 	), $atts ) );

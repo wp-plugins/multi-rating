@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
-Version: 1.1.6
+Version: 1.1.7
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
@@ -23,7 +23,7 @@ class Multi_Rating {
 
 	// constants
 	const
-	VERSION = '1.1.6',
+	VERSION = '1.1.7',
 	ID = 'multi_rating',
 	RATING_SUBJECT_TBL_NAME = 'rating_subject',
 	RATING_ITEM_TBL_NAME = 'rating_item',
@@ -159,7 +159,9 @@ class Multi_Rating {
 				'post_types' => 'post',
 				'custom_css' => $default_css,
 				'stars_image_height' => '25',
-				'character_encoding' => ''
+				'character_encoding' => '',
+				'default_rating_form_title' => 'Please rate this',
+				'default_top_rating_results_title' => 'Top Rating Results'
 		), $this->general_settings );
 		
 		update_option('general-settings', $this->general_settings);
@@ -174,16 +176,14 @@ class Multi_Rating {
 	
 		add_settings_section( 'section_general', 'General Settings', array( &$this, 'section_general_desc' ), 'general-settings' );
 	
-		add_settings_field( 'rating_results_display', 'Rating results display', array( &$this, 'field_rating_results_display' ), 'general-settings', 'section_general' );
-		add_settings_field( 'rating_form_display', 'Rating form display', array( &$this, 'field_rating_form_display' ), 'general-settings', 'section_general' );
-		add_settings_field( 'ip_address_datetime_validation', 'Rating form IP address date time validation', array( &$this, 'field_ip_address_datetime_validation' ), 'general-settings', 'section_general' );
-		
+		add_settings_field( 'rating_results_display', 'Rating results display position', array( &$this, 'field_rating_results_display' ), 'general-settings', 'section_general' );
+		add_settings_field( 'rating_form_display', 'Rating form display position', array( &$this, 'field_rating_form_display' ), 'general-settings', 'section_general' );
+		add_settings_field( 'default_rating_form_title', 'Default rating form title', array( &$this, 'field_default_rating_form_title' ), 'general-settings', 'section_general' );
+		add_settings_field( 'default_top_rating_results_title', 'Default top rating results title', array( &$this, 'field_default_top_rating_results_title' ), 'general-settings', 'section_general' );
+		add_settings_field( 'ip_address_datetime_validation', 'Rating form IP address date & time validation', array( &$this, 'field_ip_address_datetime_validation' ), 'general-settings', 'section_general' );
 		add_settings_field( 'post_types', 'Post types', array( &$this, 'field_post_types' ), 'general-settings', 'section_general' );
-		
 		add_settings_field( 'custom_css', 'Custom CSS', array( &$this, 'field_custom_css' ), 'general-settings', 'section_general' );
-		
 		add_settings_field( 'stars_image_height', 'Stars image height', array( &$this, 'field_stars_image_height' ), 'general-settings', 'section_general' );
-		
 		add_settings_field( 'character_encoding', 'Character encoding', array( &$this, 'field_character_encoding' ), 'general-settings', 'section_general' );
 	}
 	
@@ -263,16 +263,30 @@ class Multi_Rating {
 		<?php
 	}
 	
-	function field_character_encoding() {
+	function field_default_rating_form_title() {
 		?>
-			<select name="general-settings[character_encoding]">
-				 <option value="" <?php selected('', $this->general_settings['character_encoding'], true); ?>>Keep current charset (Recommended)</option>
-		        <option value="utf8_general_ci" <?php selected('utf8_general_ci', $this->general_settings['character_encoding'], true); ?>>UTF-8 (try this first)</option>
-		        <option value="latin1_swedish_ci" <?php selected('latin1_swedish_ci', $this->general_settings['character_encoding'], true); ?>>latin1_swedish_ci</option>
-			</select>
-			<p class="description"></p>
+		<input type="text" name="general-settings[default_rating_form_title]" class="regular-text" value="<?php echo $this->general_settings['default_rating_form_title']; ?>" />
+		<p class="description">Enter a default title for the rating form.</p>
+		<?php
+	}
+	
+	function field_default_top_rating_results_title() {
+		?>
+			<input type="text" name="general-settings[default_top_rating_results_title]" class="regular-text" value="<?php echo $this->general_settings['default_top_rating_results_title']; ?>" />
+			<p class="description">Enter a default title for the top rating results.</p>
 			<?php
 		}
+		
+	function field_character_encoding() {
+		?>	
+		<select name="general-settings[character_encoding]">
+			 <option value="" <?php selected('', $this->general_settings['character_encoding'], true); ?>>Keep current charset (Recommended)</option>
+	        <option value="utf8_general_ci" <?php selected('utf8_general_ci', $this->general_settings['character_encoding'], true); ?>>UTF-8 (try this first)</option>
+	        <option value="latin1_swedish_ci" <?php selected('latin1_swedish_ci', $this->general_settings['character_encoding'], true); ?>>latin1_swedish_ci</option>
+		</select>
+		<p class="description"></p>
+		<?php
+	}
 	
 	/**
 	 * Sanitize and validate General settings
@@ -358,7 +372,6 @@ class Multi_Rating {
 	public function settings_page() {
 		?>
 	<div class="wrap">
-		<!--  <div id="icon" class="icon32" style="background: url('<?php // echo plugins_url( 'multi-rating-16.ico', __FILE__ ); ?>') no-repeat left top; width: 32px; height: 32px; background-size: 100%;"></div> -->
 		<h2>Multi Rating
 			<form id="paypal-form" style="display: inline-block;" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" style="display: inline-block;">
 				<input type="hidden" name="cmd" value="_s-xclick">
@@ -661,6 +674,7 @@ class Multi_Rating {
 	
 		$rating_results_display = $this->general_settings['rating_results_display'];
 		$rating_form_display = $this->general_settings['rating_form_display'];
+		$default_rating_form_title = $this->general_settings['default_rating_form_title'];
 	
 		$filtered_content = '';
 	
@@ -668,7 +682,7 @@ class Multi_Rating {
 			$filtered_content .= display_rating_result(array('show_no_result_text' => false));
 		}
 		if ($rating_form_display == 'before_content') {
-			$filtered_content .= display_rating_form('');
+			$filtered_content .= display_rating_form(array('title' => $default_rating_form_title));
 		}
 	
 		$filtered_content .= $content;
@@ -677,7 +691,7 @@ class Multi_Rating {
 			$filtered_content .= display_rating_result(array('show_no_result_text' => false));
 		}
 		if ($rating_form_display == 'after_content') {
-			$filtered_content .= display_rating_form('');
+			$filtered_content .= display_rating_form(array('title' => $default_rating_form_title));
 		}
 	
 		return $filtered_content;

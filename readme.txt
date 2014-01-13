@@ -33,26 +33,30 @@ Here's a demo http://www.danielpowney.com/multi-rating
 1. Go to 'Settings' menu 'Multi Rating' option in WordPress admin
 
 == Frequently Asked Questions ==
+
 = How do I add a rating form into my post =
 
 There are three ways to place a rating form into a post:
+
 * Setting display position of rating form in plugin settings to before_content or after_content
-* Inserting the '[displayRatingForm]' shorcode into your post. You can use a different post ID by adding parameter post_id i.e. '[displayRatingForm post_id=10]' for post ID 10
-* Modifying theme code to call API function 'display_rating_form()'. This function must be called with the loop or the post ID must be provided as a parameter i.e. 'echo display_rating_form(array('post_id' => 10)' for post ID 10.
+* Inserting the '[displayRatingForm]' shorcode into your post. You can use a different post ID by adding parameter post_id i.e. ‘[displayRatingForm post_id="10" title="My rating form"]’ for post ID 10
+* Modifying theme code to call API function 'display_rating_form()'. This function must be called with the loop or the post ID must be provided as a parameter i.e. ‘echo display_rating_form(array('post_id' => "10", 'title' => 'My rating form')’ for post ID 10.
 
 = How do I add a rating results into my post =
 
 There are three ways to place the rating results into a post:
+
 * Setting display position of rating results in plugin settings to before_title or after_title
-* Inserting the '[displayRatingResult]' shorcode into your post. You can use a different post ID by adding parameter post_id i.e. '[displayRatingResult post_id=10]' for post ID 10
-* Modifying theme code to call API function 'display_rating_result()'. This function must be called with the loop or the post ID must be provided as a parameter i.e. 'echo display_rating_result(array('post_id' => 10))' for post ID 10.
+* Inserting the '[displayRatingResult]' shorcode into your post. You can use a different post ID by adding parameter post_id i.e. ‘[displayRatingResult post_id="10"]’ for post ID 10
+* Modifying theme code to call API function 'display_rating_result()'. This function must be called with the loop or the post ID must be provided as a parameter i.e. ‘echo display_rating_result(array('post_id' => '10'))’ for post ID 10.
 
 = How do I display the top rating results? =
 
-There are three ways to display top rating results:
+There are three ways to display the top rating results:
+
 * Add the top rating results widget to a widget area in your theme
-* Insert the '[displayRatingTopResults]' shortcode into your post. By default, the top 10 rating results are returned but you can customise this by passing in a parameter for the count i.e. '[displayRatingTopResults count=10]'
-* Modifying theme code to call API function echo 'display_rating_top_results()'. By default, the top 10 rating results are returned but you can customise this by passing in a parameter for the count i.e.' echo display_rating_top_results(array('count' => 20))' for 20 top rating results. 
+* Insert the '[displayRatingTopResults]' shortcode into your post. By default, the top 10 rating results are returned but you can customise this by passing in a parameter for the count i.e. ‘[displayRatingTopResults count="10" title="My top rating results"]’
+* Modifying theme code to call API function echo ‘display_rating_top_results()’. By default, the top 10 rating results are returned but you can customise this by passing in a parameter for the count i.e. ‘echo display_rating_top_results(array('count' => '20', 'title => 'My top rating results'))’ for 20 top rating results. 
 
 = How is the rating calculated? =
 
@@ -79,17 +83,27 @@ Yes they are OK in a responsive web design except the star rating image is 130px
 Each multi rating is adjusted based on the weight.
 
 Let V = value of multi-rating
+
 M = max rating value for multi-rating item
+
 W = weight for multi-rating item
+
 C = count or multi-rating items
+
 TW = total weights of multi-rating items
 
 First we figure out the adjustment percentage we need to make based on the current multi-rating weight and the total multi-rating weights
+
 A = adjustment percentage = (W / TW) * C
+
 i.e. a count of 3 and a total weight of 4 (2, 1 and 1 for each multi-rating item)
+
 this will create the following adjustment:
+
 (2 / 4) * 3 = 1.5
+
 (1 / 4) * 3 = 0.75
+
 So if we add up the adjustments it equals the the count 1.5 + 0.75 + 0.75 = 3. If all the weights are the same, it will still equal the count.
 
 This adjustment is then multiplied to the overall rating result = (V / M) * A
@@ -103,6 +117,9 @@ This adjustment is then multiplied to the overall rating result = (V / M) * A
 6. Plugin settings 3
 
 == Changelog ==
+
+= 1.1.7 (13/01/2014) =
+* Added settings for default rating form title and default top rating results title
 
 = 1.1.6 (7/01/2014) =
 * Fixed bug in displaying top results for multiple post types
