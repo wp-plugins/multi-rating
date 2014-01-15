@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
-Version: 1.1.7
+Version: 1.1.8
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
@@ -139,17 +139,17 @@ class Multi_Rating {
 		$this->general_settings = (array) get_option( 'general-settings' );
 		
 		$default_css = addslashes(
-"form.ratingForm {
-	/* i.e. rating form custom CSS:
-	border: 3px solid #BABABA;
-	background-color: #A1BED4;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	padding: 10px;
-	margin-top: 20px;
-	width: auto; */
-}");
+				"form.ratingForm {
+				/* i.e. rating form custom CSS:
+				border: 3px solid #BABABA;
+				background-color: #A1BED4;
+				-webkit-border-radius: 10px;
+				-moz-border-radius: 10px;
+				border-radius: 10px;
+				padding: 10px;
+				margin-top: 20px;
+				width: auto; */
+	}");
 		
 		// Merge with defaults
 		$this->general_settings = array_merge( array(
@@ -248,7 +248,7 @@ class Multi_Rating {
 			<option value="before_title" <?php selected('before_title', $this->general_settings['rating_results_display'], true); ?>>Before title</option>
 			<option value="after_title" <?php selected('after_title', $this->general_settings['rating_results_display'], true); ?>>After title</option>
 		</select>
-		<p class="description">Select the display position of the rating results for all posts. You can also use a custom shortcode <code>[displayRatingResult]</code> or function <code>display_rating_result()</code>.</p>
+		<p class="description">Select the display position of the rating results for all posts. You can also use a custom shortcode <code>[displayRatingResult post_id="10"]</code> or function <code>display_rating_result(array('post_id' => "10"))</code>. If you do not provide the post_id, the current post ID in the WP loop is used.</p>
 		<?php
 	}
 	
@@ -259,21 +259,21 @@ class Multi_Rating {
 			<option value="before_content" <?php selected('before_content', $this->general_settings['rating_form_display'], true); ?>>Before content</option>
 			<option value="after_content" <?php selected('after_content', $this->general_settings['rating_form_display'], true); ?>>After content</option>
 		</select>
-		<p class="description">Select the display position of the rating form for all posts. You can also use a custom shortcode <code>[displayRatingForm]</code> or function <code>display_rating_form()</code>.</p>
+		<p class="description">Select the display position of the rating form for all posts. You can also use a custom shortcode <code>[displayRatingForm post_id="10" title="Please rate this"]</code> or function <code>display_rating_form(array('post_id' => "10", 'title' => 'Please rate this'))</code>. If you do not provide the post_id, the current post ID in the WP loop is used.</p>
 		<?php
 	}
 	
 	function field_default_rating_form_title() {
 		?>
 		<input type="text" name="general-settings[default_rating_form_title]" class="regular-text" value="<?php echo $this->general_settings['default_rating_form_title']; ?>" />
-		<p class="description">Enter a default title for the rating form.</p>
+		<p class="description">Enter a default title for the rating form. This can be overriden by the function or shortcode if a title is provided. e.g. <code>[displayRatingForm title="My rating form"]</code></p>
 		<?php
 	}
 	
 	function field_default_top_rating_results_title() {
 		?>
 			<input type="text" name="general-settings[default_top_rating_results_title]" class="regular-text" value="<?php echo $this->general_settings['default_top_rating_results_title']; ?>" />
-			<p class="description">Enter a default title for the top rating results.</p>
+			<p class="description">Enter a default title for the top rating results. This can be overriden by the function or shortcode if a title is provided. e.g. <code>[displayRatingTopResults count="5" title="My Top 5 Rating Results"]</code></p>
 			<?php
 		}
 		

@@ -8,7 +8,11 @@
 function display_rating_form( $atts = array() ) {
 	
 	$general_settings = (array) get_option( 'general-settings' );
-	$default_rating_form_title = $general_settings[ 'default_rating_form_title' ];
+	
+	$default_rating_form_title = '';
+	if (!isset($atts['title'])) {
+		$default_rating_form_title = $general_settings[ 'default_rating_form_title' ];
+	}
 	
 	extract( shortcode_atts( array(
 			'post_id' => null,
@@ -125,8 +129,11 @@ add_shortcode( 'displayRatingResult', 'display_rating_result' );
 function display_rating_top_results( $atts = array() ) {
 	
 	$general_settings = (array) get_option( 'general-settings' );
-	$default_top_rating_results_title = $general_settings[ 'default_top_rating_results_title' ];
-
+	
+	$default_top_rating_results_title = '';
+	if (!isset($atts['title'])) {
+		$default_top_rating_results_title = $general_settings[ 'default_top_rating_results_title' ];
+	}
 	extract( shortcode_atts( array(
 			'count' => 10,
 			'title' => $default_top_rating_results_title,

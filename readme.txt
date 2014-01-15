@@ -39,8 +39,8 @@ Here's a demo http://www.danielpowney.com/multi-rating
 There are three ways to place a rating form into a post:
 
 * Setting display position of rating form in plugin settings to before_content or after_content
-* Inserting the '[displayRatingForm]' shorcode into your post. You can use a different post ID by adding parameter post_id i.e. ‘[displayRatingForm post_id="10" title="My rating form"]’ for post ID 10
-* Modifying theme code to call API function 'display_rating_form()'. This function must be called with the loop or the post ID must be provided as a parameter i.e. ‘echo display_rating_form(array('post_id' => "10", 'title' => 'My rating form')’ for post ID 10.
+* Inserting the '[displayRatingForm]' shorcode into your post. You can use a different post ID by adding parameter post_id i.e. ‘[displayRatingForm post_id="10" title="My rating form"]’ for post ID 10. If you do not set a post_id, the current post ID from the WP loop is used.
+* Modifying theme code to call API function 'display_rating_form()'. This function must be called with the loop or the post ID must be provided as a parameter i.e. ‘echo display_rating_form(array('post_id' => "10", 'title' => 'My rating form')’ for post ID 10. If you do not set a post_id, the current post ID from the WP loop is used.
 
 = How do I add a rating results into my post =
 
@@ -108,6 +108,10 @@ So if we add up the adjustments it equals the the count 1.5 + 0.75 + 0.75 = 3. I
 
 This adjustment is then multiplied to the overall rating result = (V / M) * A
 
+= How do I remove the title from the rating form and top rating results? =
+
+Set an empty title for the shortcode or set an empty default title in the plugin settings. E.g. ‘[displayRatingForm post_id="1" title=""]’ and ‘[displayRatingTopResults count="10" title=""]’. If the title is not present in the shortcode, the default will be used (e.g. ‘[displayRatingForm post_id="1"]’).
+
 == Screenshots ==
 1. Blog post with star rating results after_title. You can change the position of the star rating results to before_title, add a shortcode [displayRatingResult] or add function call display_rating_results() in theme PHP code
 2. Default rating form. You can customise the CSS in the plugin options
@@ -117,6 +121,9 @@ This adjustment is then multiplied to the overall rating result = (V / M) * A
 6. Plugin settings 3
 
 == Changelog ==
+
+= 1.1.8 (15/01/2014) =
+* Allow removing title from rating form and top rating results
 
 = 1.1.7 (13/01/2014) =
 * Added settings for default rating form title and default top rating results title
