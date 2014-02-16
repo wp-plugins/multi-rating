@@ -168,7 +168,7 @@ Yes they are OK in a responsive web design except the star rating image is 130px
 == Upgrade Notice ==
 
 = 2.0 =
- Major refactor of plugin. Old Shortcodes deprecated and replaced with new shortcodes. Old settings and API functions renamed and may not backward compatible. Old rating results will not be migrated. If you wish to keep your rating results, you must continue to use the version 1.1.8.
+Major refactor of plugin. Old Shortcodes deprecated and replaced with new shortcodes. Old settings and API functions renamed and may not backward compatible. Old rating results will not be migrated. If you wish to keep your rating results, you must continue to use the version 1.1.8.
 
 == Changelog ==
 
