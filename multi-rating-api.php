@@ -220,7 +220,7 @@ class Multi_Rating_API {
 	 * 
 	 * @param unknown_type $count
 	 */
-	public static function get_top_rating_results($count) {
+	public static function get_top_rating_results($count = 10) {
 
 		$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 		$posts = get_posts(array('numberposts' => -1, 'post_type' => $general_settings[Multi_Rating::POST_TYPES_OPTION]));

@@ -172,6 +172,9 @@ Major refactor of plugin. Old Shortcodes deprecated and replaced with new shortc
 
 == Changelog ==
 
+= 2.0.1 =
+* Fixed top rating results widget bug
+
 = 2.0 =
 * Major refactor of plugin.
 * Old Shortcodes deprecated and replaced with new shortcodes. Old settings and API functions renamed and may not backward compatible.
