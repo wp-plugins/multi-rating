@@ -150,12 +150,14 @@ Yes, there is an option to prevent visitors this in the plugin settings page. Ch
 Yes they are OK in a responsive web design except the star rating image is 130px fixed width. The rating results text wrap onto the next line and the rating form is a HTML table.
 
 == Screenshots ==
-1. Post with star rating results after_title.
-2. Default rating form. You can customise the CSS in the plugin options.
-3. Post with star rating results after_title, rating form after_content and top rating results widget in sidebar.
-4. TODO
-5. TODO
-6. TODO
+1. Post with star rating results after_title and rating form after_content.
+2. Rating result entries
+3. Rating result entry values
+4. Rating items
+5. Add new rating item
+6. Settings 1
+7. Settings 2
+8. Settings 3
 
 == Upgrade Notice ==
 
