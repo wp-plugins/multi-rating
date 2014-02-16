@@ -1,0 +1,9 @@
+.form-table .widefat th,.form-table .widefat td {
+	padding: 8px 10px;
+}
+form#rating-item-entry-value-table-form div.tablenav label,form#rating-item-entry-value-table-form div.tablenav input {
+	margin-right: 6px;
+}
+table.form-table .checkbox-label {
+	margin-right: 12px;
+}

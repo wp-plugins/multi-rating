@@ -1,8 +1,9 @@
-form.ratingForm {
+form.rating-form {
 	margin: 0px;
 	width : auto;
 	max-width: 100%;
 	display: table;
+	margin-bottom: 15px;
 	
 	/* Custom
 	border: 3px solid #BABABA;
@@ -15,73 +16,74 @@ form.ratingForm {
 	width: auto; */
 }
 
-form.ratingForm table {
+form.rating-form table {
 	width: 100%;
 	text-align: left;
 }
 
-form.ratingForm h4 {
+form.rating-form h4 {
 	font-weight: bold;
 }
 
-form.ratingForm table td {
+form.rating-form table td {
 	vertical-align: top;
 }
 
-form.ratingForm table label {
+form.rating-form table label {
 	padding-right: 10px;
 	padding-bottom: 10px;
 	font-weight: normal;
 	vertical-align: text-top;
 }
 
-form.ratingForm table .value {
+form.rating-form table .value {
 	padding-bottom: 10px;
 	text-align: right;
 }
 
-form.ratingForm table .value select {
+form.rating-form table .value select {
 	min-width: 50px;
 }
 
-form.ratingForm table .action {
+form.rating-form table .action {
 	text-align: right;
 }
 
-.ratingResult {
+.rating-result {
 	display: inline-block;
-	vertical-align: top;
+	margin-top: 5px;
+	margin-left: 5px;
+	text-align: left;
+}
+.rating-result-row {
+	display: inline-block;
+	vertical-align: middle;
 	font-weight: normal;
 	letter-spacing: normal;
 	text-align: left;
-	margin-top: 5px;
-	margin-left: 5px;
-}
-.ratingTopResults {
-	margin-bottom: 10px;
-	margin-top: 10px;
 }
 
-.ratingTopResults .ratingResult {
-	display: block;
-	margin-left: 0px;
-}
-
-.ratingResult * {
+.rating-result .rating-result-row * {
 	line-height: normal !important;
 }
 
-.ratingSummary {
+.rating-result-summary {
 	display: inline-block;
-	display: inline-block; 
-	font-family: inherit !important;
+	margin-left: 5px;
 }
 
-.ratingStars {
+.rating-result-stars {
 	padding: 0px; 
 	margin: 0px; 
 	font-size: 0px !important;
 }
 
+.top-rating-results {
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
 
-.checkbox-label { margin-right: 10px; }
+.top-rating-results .rating-result {
+	display: block;
+	margin-left: 0px;
+}

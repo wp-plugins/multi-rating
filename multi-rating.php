@@ -3,33 +3,79 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
-Version: 1.1.8
+Version: 2.0
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
 */
 
-
-require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'multi-rating-table.php';
 require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'shortcodes.php';
 require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'widgets.php';
 require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'utils.php';
-require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'templates.php';
+require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'multi-rating-api.php';
+require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'rating-form-view.php';
+require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'rating-result-view.php';
+require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'filters.php';
+require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'legacy.php';
+if (is_admin()) {
+	require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'update-check.php';
+	require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'rating-item-table.php';
+	require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'rating-item-entry-table.php';
+	require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'rating-item-entry-value-table.php';
+}
 
 /**
- * Multi_Rating class
+ * Multi_Rating plugin class
  */
 class Multi_Rating {
 
 	// constants
 	const
-	VERSION = '1.1.7',
-	ID = 'multi_rating',
-	RATING_SUBJECT_TBL_NAME = 'rating_subject',
-	RATING_ITEM_TBL_NAME = 'rating_item',
-	RATING_ITEM_ENTRY_TBL_NAME = 'rating_item_entry',
-	RATING_ITEM_ENTRY_VALUE_TBL_NAME = 'rating_item_entry_value';
+	VERSION = '2.0',
+	ID = 'mr',
 	
+	// tables
+	RATING_SUBJECT_TBL_NAME 					= 'mr_rating_subject',
+	RATING_ITEM_TBL_NAME 						= 'mr_rating_item',
+	RATING_ITEM_ENTRY_TBL_NAME					= 'mr_rating_item_entry',
+	RATING_ITEM_ENTRY_VALUE_TBL_NAME 			= 'mr_rating_item_entry_value',
+	
+	// settings
+	CUSTOM_TEXT_SETTINGS 						= 'mr_custom_text_settings',
+	STYLE_SETTINGS 								= 'mr_style_settings',
+	POSITION_SETTINGS 							= 'mr_position_settings',
+	GENERAL_SETTINGS 							= 'mr_general_settings',
+	
+	// options
+	CUSTOM_CSS_OPTION 							= 'mr_custom_css',
+	STARS_IMG_HEIGHT_OPTION 					= 'mr_stars_img_height',
+	RATING_RESULTS_POSITION_OPTION				= 'mr_rating_results_position',
+	RATING_FORM_POSITION_OPTION 				= 'mr_rating_form',
+	CHAR_ENCODING_OPTION 						= 'mr_char_encoding',
+	RATING_FORM_TITLE_TEXT_OPTION 				= 'mr_rating_form_title_text',
+	TOP_RATING_RESULTS_TITLE_TEXT_OPTION 		= 'mr_top_rating_results_title_text',
+	IP_ADDRESS_DATE_VALIDATION_OPTION			= 'mr_ip_address_date_validation',
+	POST_TYPES_OPTION							= 'mr_post_types',
+	RATING_FORM_BUTTON_TEXT_OPTION				= 'mr_rating_form_button_text',
+	RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION 	= 'mr_rating_form_submit_success_message',
+	DATE_VALIDATION_FAIL_MESSAGE_OPTION			= 'mr_date_validation_fail_message',
+	NO_RATING_RESULTS_TEXT_OPTION				= 'mr_no_rating_results_text',
+	VERSION_OPTION								= 'mr_version_option',
+	
+	// pages
+	SETTINGS_PAGE_SLUG							= 'mr_settings_page',
+	RATING_ITEMS_PAGE_SLUG						= 'mr_rating_items',
+	RATING_RESULTS_PAGE_SLUG					= 'mr_rating_results',
+	ADD_NEW_RATING_ITEM_PAGE_SLUG				= 'mr_add_new_rating_item',
+	
+	// tabs
+	RATING_RESULTS_TAB							= 'mr_rating_results_tab',
+	RATING_RESULT_DETAILS_TAB					= 'mr_rating_result_details_tab'
+	;
+	
+	public $custom_text_settings = array();
+	public $style_settings = array();
+	public $position_settings = array();
 	public $general_settings = array();
 	
 	/**
@@ -39,48 +85,45 @@ class Multi_Rating {
 		global $wpdb;
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		
-		// FIXME do we need a table for subject?
-		// Subject can be a post type
+		// subjects can be a post type
 		$sql_create_rating_subject_tbl = 'CREATE TABLE '.$wpdb->prefix.Multi_Rating::RATING_SUBJECT_TBL_NAME.' (' .
-		'rating_id bigint(20) NOT NULL AUTO_INCREMENT,' .
-		'post_type varchar(20) NOT NULL,' .
-		'PRIMARY KEY (rating_id)' .
-		') ENGINE=InnoDB AUTO_INCREMENT=1;';
+				'rating_id bigint(20) NOT NULL AUTO_INCREMENT,' .
+				'post_type varchar(20) NOT NULL,' .
+				'PRIMARY KEY (rating_id)' .
+				') ENGINE=InnoDB AUTO_INCREMENT=1;';
 		dbDelta($sql_create_rating_subject_tbl);
 		
-		// TODO
-		
-		// Subject are rated by multiple rating items
+		// subjects are rated by multiple rating items
 		$sql_create_rating_item_tbl = 'CREATE TABLE '.$wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME.' ('.
-		'rating_item_id bigint(20) NOT NULL AUTO_INCREMENT,'.
-		'rating_id bigint(20) NOT NULL,'.
-		'description varchar(255) NOT NULL,'.
-		'max_rating_value int(11),'.
-		'default_rating_value int(11),'.
-		'active tinyint(1) DEFAULT 1,'.
-		'weight double precision DEFAULT 1.0,'.
-		'PRIMARY KEY (rating_item_id)'.
-		') ENGINE=InnoDB AUTO_INCREMENT=1;';
+				'rating_item_id bigint(20) NOT NULL AUTO_INCREMENT,'.
+				'rating_id bigint(20) NOT NULL,'.
+				'description varchar(255) NOT NULL,'.
+				'default_option_value int(11),'.
+				'max_option_value int(11),'.
+				'active tinyint(1) DEFAULT 1,'.
+				'weight double precision DEFAULT 1.0,'.
+				'PRIMARY KEY (rating_item_id)'.
+				') ENGINE=InnoDB AUTO_INCREMENT=1;';
 		dbDelta($sql_create_rating_item_tbl);
 		
-		// The rating item entries are saved
+		// rating item entries and results are saved
 		$sql_create_rating_item_entry_tbl = 'CREATE TABLE '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME.' ('.
-		'rating_item_entry_id bigint(20) NOT NULL AUTO_INCREMENT,'.
-		'post_id bigint(20) NOT NULL,'.
-		'entry_date datetime NOT NULL,'.
-		'ip_address varchar(100),'.
-		'user_id bigint(20),'.
-		'PRIMARY KEY (rating_item_entry_id)'.
-		') ENGINE=InnoDB AUTO_INCREMENT=1;';
+				'rating_item_entry_id bigint(20) NOT NULL AUTO_INCREMENT,'.
+				'post_id bigint(20) NOT NULL,'.
+				'entry_date datetime NOT NULL,'.
+				'ip_address varchar(100),'.
+				'username varchar(50),'.
+				'PRIMARY KEY (rating_item_entry_id)'.
+				') ENGINE=InnoDB AUTO_INCREMENT=1;';
 		dbDelta($sql_create_rating_item_entry_tbl);
-			
+
 		$sql_create_rating_item_entry_value_tbl = 'CREATE TABLE '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME.' ('.
-		'rating_item_entry_value_id bigint(20) NOT NULL AUTO_INCREMENT,'.
-		'rating_item_entry_id bigint(20) NOT NULL,'.
-		'rating_item_id bigint(20) NOT NULL,'.
-		'value int(11) NOT NULL,'.
-		'PRIMARY KEY (rating_item_entry_value_id)'.
-		') ENGINE=InnoDB AUTO_INCREMENT=1;';
+				'rating_item_entry_value_id bigint(20) NOT NULL AUTO_INCREMENT,'.
+				'rating_item_entry_id bigint(20) NOT NULL,'.
+				'rating_item_id bigint(20) NOT NULL,'.
+				'value int(11) NOT NULL,'.
+				'PRIMARY KEY (rating_item_entry_value_id)'.
+				') ENGINE=InnoDB AUTO_INCREMENT=1;';
 		dbDelta($sql_create_rating_item_entry_value_tbl);
 		
 	}
@@ -90,8 +133,10 @@ class Multi_Rating {
 	 */
 	public static function uninstall_plugin() {
 		
-		// TODO make option name unique
-		delete_option('general-settings');
+		delete_option(Multi_Rating::GENERAL_SETTINGS);
+		delete_option(Multi_Rating::CUSTOM_TEXT_SETTINGS);
+		delete_option(Multi_Rating::POSITION_SETTINGS);
+		delete_option(Multi_Rating::STYLE_SETTINGS);
 		
 		// Drop tables
 		global $wpdb;
@@ -107,126 +152,109 @@ class Multi_Rating {
 	 * @since 0.1
 	 */
 	function __construct(){
-		add_action('init', array( &$this, 'load_settings' ) );
-		add_action( 'admin_init', array( &$this, 'register_general_settings' ) );
 		
-		add_action('admin_enqueue_scripts', array($this, 'assets'));
+		add_action( 'admin_enqueue_scripts', array( $this, 'assets' ) );
 		
-		add_action('wp_head', array($this, 'custom_css_style'));
-		
-		// Create settings page, add JavaScript and CSS
 		if( is_admin() ) {
-			add_action('admin_menu', array($this, 'create_options_page'));
+			add_action( 'admin_menu', array($this, 'add_admin_menus') );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_assets' ) );
 		} else {
-
-			add_filter( 'the_content', array(&$this, 'filter_the_content' ) );
-			add_filter( 'the_title', array(&$this, 'filter_the_title' ) );
-			
 			add_action( 'wp_enqueue_scripts', array( $this, 'assets' ) );
 		}
-				
-		add_action( 'widgets_init', array($this, 'register_widgets') );
+		
+		add_action('init', array( &$this, 'load_settings' ) );
+		
+		add_action( 'admin_init', array( &$this, 'register_custom_text_settings' ) );
+		add_action( 'admin_init', array( &$this, 'register_style_settings' ) );
+		add_action( 'admin_init', array( &$this, 'register_general_settings' ) );
+		add_action( 'admin_init', array( &$this, 'register_position_settings' ) );
+		
+		add_action('wp_head', array($this, 'add_custom_css'));
 
-		Multi_Rating::add_ajax_actions();
+		$this->add_ajax_actions();
 	}
-	
 	
 	/**
 	 * Retrieve settings from DB and sets default options if not set
 	 */
 	function load_settings() {
-		$this->general_settings = (array) get_option( 'general-settings' );
+		$this->style_settings = (array) get_option( Multi_Rating::STYLE_SETTINGS );
+		$this->custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
+		$this->position_settings = (array) get_option( Multi_Rating::POSITION_SETTINGS );
+		$this->general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );	
 		
 		$default_css = addslashes(
-				"form.ratingForm {
-				/* i.e. rating form custom CSS:
-				border: 3px solid #BABABA;
-				background-color: #A1BED4;
-				-webkit-border-radius: 10px;
-				-moz-border-radius: 10px;
-				border-radius: 10px;
-				padding: 10px;
-				margin-top: 20px;
-				width: auto; */
-	}");
+				"form.rating-form {
+	/* i.e. rating form custom CSS:
+	border: 3px solid #BABABA;
+	background-color: #A1BED4;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	padding: 10px;
+	margin-top: 20px;
+	width: auto; */
+}" );
 		
 		// Merge with defaults
+		$this->style_settings = array_merge( array(
+				Multi_Rating::CUSTOM_CSS_OPTION => $default_css,
+				Multi_Rating::STARS_IMG_HEIGHT_OPTION => '25',
+		), $this->style_settings );
+		
+		$this->position_settings = array_merge( array(
+				Multi_Rating::RATING_RESULTS_POSITION_OPTION => '',
+				Multi_Rating::RATING_FORM_POSITION_OPTION => ''
+		), $this->position_settings );
+		
+		$this->custom_text_settings = array_merge( array(
+				Multi_Rating::CHAR_ENCODING_OPTION => '',
+				Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION => 'Please rate this',
+				Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION => 'Top Rating Results',
+				Multi_Rating::RATING_FORM_BUTTON_TEXT_OPTION => 'Submit rating',
+				Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION => 'Rating form has been submitted successfully.',
+				Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION => 'You cannot submit a rating form for the same post multiple times in a 24 hour period.',
+				Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION => 'No rating results yet'
+		), $this->custom_text_settings );
+		
 		$this->general_settings = array_merge( array(
-				'rating_results_display' => '',
-				'rating_form_display' => '',
-				'ip_address_datetime_validation' => true,
-				'post_types' => 'post',
-				'custom_css' => $default_css,
-				'stars_image_height' => '25',
-				'character_encoding' => '',
-				'default_rating_form_title' => 'Please rate this',
-				'default_top_rating_results_title' => 'Top Rating Results'
+				Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION => true,
+				Multi_Rating::POST_TYPES_OPTION => 'post',
 		), $this->general_settings );
 		
-		update_option('general-settings', $this->general_settings);
+		update_option( Multi_Rating::STYLE_SETTINGS, $this->style_settings);
+		update_option( Multi_Rating::POSITION_SETTINGS, $this->position_settings);
+		update_option( Multi_Rating::CUSTOM_TEXT_SETTINGS, $this->custom_text_settings);
+		update_option( Multi_Rating::GENERAL_SETTINGS, $this->general_settings);
 	}
 	
 	
 	/**
-	 * Register the General settings
+	 * General settings
 	 */
 	function register_general_settings() {
-		register_setting( 'general-settings', 'general-settings', array( &$this, 'sanitize_general_settings' ) );
+		register_setting( Multi_Rating::GENERAL_SETTINGS, Multi_Rating::GENERAL_SETTINGS, array( &$this, 'sanitize_general_settings' ) );
 	
-		add_settings_section( 'section_general', 'General Settings', array( &$this, 'section_general_desc' ), 'general-settings' );
+		add_settings_section( 'section_general', 'General Settings', array( &$this, 'section_general_desc' ), Multi_Rating::GENERAL_SETTINGS );
 	
-		add_settings_field( 'rating_results_display', 'Rating results display position', array( &$this, 'field_rating_results_display' ), 'general-settings', 'section_general' );
-		add_settings_field( 'rating_form_display', 'Rating form display position', array( &$this, 'field_rating_form_display' ), 'general-settings', 'section_general' );
-		add_settings_field( 'default_rating_form_title', 'Default rating form title', array( &$this, 'field_default_rating_form_title' ), 'general-settings', 'section_general' );
-		add_settings_field( 'default_top_rating_results_title', 'Default top rating results title', array( &$this, 'field_default_top_rating_results_title' ), 'general-settings', 'section_general' );
-		add_settings_field( 'ip_address_datetime_validation', 'Rating form IP address date & time validation', array( &$this, 'field_ip_address_datetime_validation' ), 'general-settings', 'section_general' );
-		add_settings_field( 'post_types', 'Post types', array( &$this, 'field_post_types' ), 'general-settings', 'section_general' );
-		add_settings_field( 'custom_css', 'Custom CSS', array( &$this, 'field_custom_css' ), 'general-settings', 'section_general' );
-		add_settings_field( 'stars_image_height', 'Stars image height', array( &$this, 'field_stars_image_height' ), 'general-settings', 'section_general' );
-		add_settings_field( 'character_encoding', 'Character encoding', array( &$this, 'field_character_encoding' ), 'general-settings', 'section_general' );
+		add_settings_field( Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION, 'Rating form IP address & date validation', array( &$this, 'field_ip_address_date_validation' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
+		add_settings_field( Multi_Rating::POST_TYPES_OPTION, 'Post types', array( &$this, 'field_post_types' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 	}
-	
-		
-	/**
-	 * General settings description
-	 */
 	function section_general_desc() {
 		echo "";
 	}
-	
-	function field_ip_address_datetime_validation() {
+	function field_ip_address_date_validation() {
 		?>
-		<input type="checkbox" name="general-settings[ip_address_datetime_validation]" value="true" <?php checked(true, $this->general_settings['ip_address_datetime_validation'], true); ?> />
-		<p class="description">Restrict a unique IP address from submitting a rating form only once in a 24 hour period.</p>
+		<input type="checkbox" name="<?php echo Multi_Rating::GENERAL_SETTINGS;?>[<?php echo Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION; ?>]" value="true" <?php checked(true, $this->general_settings[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION], true); ?> />
+		<p class="description">Restrict the same IP address from submitting a rating form within 24 hours for the same post.</p>
 		<?php 
 	}
-	
-	function field_custom_css() {
-	?>
-		<textarea cols="100" rows="10" name="general-settings[custom_css]"><?php echo stripslashes($this->general_settings['custom_css']); ?></textarea>
-		<p class="description">Enter custom CSS to change the default style of the rating form and rating results</p>
-		<?php 
-	}
-	
-	function field_stars_image_height() {
-		$stars_image_height = $this->general_settings['stars_image_height'];
-		?>
-			<select name="general-settings[stars_image_height]">
-				<option value="15" <?php if ($stars_image_height == "15") { echo ' selected="selected"'; } ?>>Small 15px</option>
-				<option value="20" <?php if ($stars_image_height == "20") { echo ' selected="selected"'; } ?>>Medium 20px</option>
-				<option value="25" <?php if ($stars_image_height == "25") { echo ' selected="selected"'; } ?>>Large 25px</option>
-			</select>
-			<p class="description">Set the height of the stars image.</p>
-			<?php 
-		}
-	
 	function field_post_types() {
 		$post_types = get_post_types( '', 'names' );
-		$post_types_checked = $this->general_settings['post_types'];
-		
+		$post_types_checked = $this->general_settings[Multi_Rating::POST_TYPES_OPTION];
+	
 		foreach ( $post_types as $post_type ) {
-			echo '<input type="checkbox" name="general-settings[post_types][]" value="' . $post_type . '"';
+			echo '<input type="checkbox" name="' . Multi_Rating::GENERAL_SETTINGS . '[' . Multi_Rating::POST_TYPES_OPTION . '][]" value="' . $post_type . '"';
 			if (is_array($post_types_checked)) {
 				if (in_array($post_type, $post_types_checked)) {
 					echo 'checked="checked"';
@@ -234,79 +262,159 @@ class Multi_Rating {
 			} else {
 				checked($post_type, $post_types_checked, true );
 			}
-			echo ' />&nbsp;<label class="checkbox-label">' . $post_type . '</label>'; 
+			echo ' />&nbsp;<label class="checkbox-label">' . $post_type . '</label>';
 		}
-		
+	
 		?>
-		<p class="description">Check the post types to apply multi rating to.</p>
+		<p class="description">Select the post types that are applicable for multi rating.</p>
 		<?php 
 	}
-	function field_rating_results_display() {
-		?>
-		<select name="general-settings[rating_results_display]">
-			<option value="" <?php selected('', $this->general_settings['rating_results_display'], true); ?>>None</option>
-			<option value="before_title" <?php selected('before_title', $this->general_settings['rating_results_display'], true); ?>>Before title</option>
-			<option value="after_title" <?php selected('after_title', $this->general_settings['rating_results_display'], true); ?>>After title</option>
-		</select>
-		<p class="description">Select the display position of the rating results for all posts. You can also use a custom shortcode <code>[displayRatingResult post_id="10"]</code> or function <code>display_rating_result(array('post_id' => "10"))</code>. If you do not provide the post_id, the current post ID in the WP loop is used.</p>
-		<?php
-	}
+	function sanitize_general_settings($input) {
+		if ( isset( $input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] ) && $input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] == "true")
+			$input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] = true;
+		else
+			$input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] = false;
 	
-	function field_rating_form_display() {
-		?>
-		<select name="general-settings[rating_form_display]">
-			<option value="" <?php selected('', $this->general_settings['rating_form_display'], true); ?>>None</option>
-			<option value="before_content" <?php selected('before_content', $this->general_settings['rating_form_display'], true); ?>>Before content</option>
-			<option value="after_content" <?php selected('after_content', $this->general_settings['rating_form_display'], true); ?>>After content</option>
-		</select>
-		<p class="description">Select the display position of the rating form for all posts. You can also use a custom shortcode <code>[displayRatingForm post_id="10" title="Please rate this"]</code> or function <code>display_rating_form(array('post_id' => "10", 'title' => 'Please rate this'))</code>. If you do not provide the post_id, the current post ID in the WP loop is used.</p>
-		<?php
-	}
-	
-	function field_default_rating_form_title() {
-		?>
-		<input type="text" name="general-settings[default_rating_form_title]" class="regular-text" value="<?php echo $this->general_settings['default_rating_form_title']; ?>" />
-		<p class="description">Enter a default title for the rating form. This can be overriden by the function or shortcode if a title is provided. e.g. <code>[displayRatingForm title="My rating form"]</code></p>
-		<?php
-	}
-	
-	function field_default_top_rating_results_title() {
-		?>
-			<input type="text" name="general-settings[default_top_rating_results_title]" class="regular-text" value="<?php echo $this->general_settings['default_top_rating_results_title']; ?>" />
-			<p class="description">Enter a default title for the top rating results. This can be overriden by the function or shortcode if a title is provided. e.g. <code>[displayRatingTopResults count="5" title="My Top 5 Rating Results"]</code></p>
-			<?php
-		}
-		
-	function field_character_encoding() {
-		?>	
-		<select name="general-settings[character_encoding]">
-			 <option value="" <?php selected('', $this->general_settings['character_encoding'], true); ?>>Keep current charset (Recommended)</option>
-	        <option value="utf8_general_ci" <?php selected('utf8_general_ci', $this->general_settings['character_encoding'], true); ?>>UTF-8 (try this first)</option>
-	        <option value="latin1_swedish_ci" <?php selected('latin1_swedish_ci', $this->general_settings['character_encoding'], true); ?>>latin1_swedish_ci</option>
-		</select>
-		<p class="description"></p>
-		<?php
+		return $input;
 	}
 	
 	/**
-	 * Sanitize and validate General settings
-	 *
-	 * @param unknown_type $input
-	 * @return boolean
+	 * Position settings
 	 */
-	function sanitize_general_settings($input) {
+	function register_position_settings() {
+		register_setting( Multi_Rating::POSITION_SETTINGS, Multi_Rating::POSITION_SETTINGS, array( &$this, 'sanitize_position_settings' ) );
+	
+		add_settings_section( 'section_position', 'Position Settings', array( &$this, 'section_position_desc' ), Multi_Rating::POSITION_SETTINGS );
+	
+		add_settings_field( Multi_Rating::RATING_RESULTS_POSITION_OPTION, 'Rating results position', array( &$this, 'field_rating_results_position' ), Multi_Rating::POSITION_SETTINGS, 'section_position' );
+		add_settings_field( Multi_Rating::RATING_FORM_POSITION_OPTION, 'Rating form position', array( &$this, 'field_rating_form_position' ), Multi_Rating::POSITION_SETTINGS, 'section_position' );
+	}
+	function section_position_desc() {
+	}
+	function field_rating_results_position() {
+		?>
+		<select name="<?php echo Multi_Rating::POSITION_SETTINGS; ?>[<?php echo Multi_Rating::RATING_RESULTS_POSITION_OPTION; ?>]">
+			<option value="" <?php selected('', $this->position_settings[Multi_Rating::RATING_RESULTS_POSITION_OPTION], true); ?>>None</option>
+			<option value="before_title" <?php selected('before_title', $this->position_settings[Multi_Rating::RATING_RESULTS_POSITION_OPTION], true); ?>>Before title</option>
+			<option value="after_title" <?php selected('after_title', $this->position_settings[Multi_Rating::RATING_RESULTS_POSITION_OPTION], true); ?>>After title</option>
+		</select>
+		<p class="description">Choose to automatically display the rating result before or after the post title for all selected post types.</p>
+		<?php
+	}
+	function field_rating_form_position() {
+		?>
+		<select name="<?php echo Multi_Rating::POSITION_SETTINGS; ?>[<?php echo Multi_Rating::RATING_FORM_POSITION_OPTION; ?>]">
+			<option value="" <?php selected('', $this->position_settings[Multi_Rating::RATING_FORM_POSITION_OPTION], true); ?>>None</option>
+			<option value="before_content" <?php selected('before_content', $this->position_settings[Multi_Rating::RATING_FORM_POSITION_OPTION], true); ?>>Before content</option>
+			<option value="after_content" <?php selected('after_content', $this->position_settings[Multi_Rating::RATING_FORM_POSITION_OPTION], true); ?>>After content</option>
+		</select>
+		<p class="description">Choose to automatically display the rating form before or after the post content for all selected post types.</p>
+		<?php
+	}
+	function sanitize_position_settings($input) {
+		return $input;
+	}
+	
+	
+	/**
+	 * Style settings
+	 */
+	function register_style_settings() {
+		register_setting( Multi_Rating::STYLE_SETTINGS, Multi_Rating::STYLE_SETTINGS, array( &$this, 'sanitize_style_settings' ) );
+	
+		add_settings_section( 'section_style', 'Style Settings', array( &$this, 'section_style_desc' ), Multi_Rating::STYLE_SETTINGS );
+
+		add_settings_field( Multi_Rating::CUSTOM_CSS_OPTION, 'Custom CSS', array( &$this, 'field_custom_css' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
+		add_settings_field( Multi_Rating::STARS_IMG_HEIGHT_OPTION, 'Stars image height', array( &$this, 'field_stars_img_height' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
+	}
+	function section_style_desc() {
+	}
+	function field_custom_css() {
+		?>
+		<textarea cols="50" rows="10" class="large-text" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_CSS_OPTION; ?>]"><?php echo stripslashes($this->style_settings[Multi_Rating::CUSTOM_CSS_OPTION]); ?></textarea>
+		<p class="description">Enter custom CSS to change the default style of the rating form and rating results</p>
+		<?php 
+	}	
+	function field_stars_img_height() {
+		$stars_img_height = $this->style_settings[Multi_Rating::STARS_IMG_HEIGHT_OPTION];
+		?>
+		<select name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STARS_IMG_HEIGHT_OPTION; ?>]">
+			<option value="15" <?php if ($stars_img_height == "15") { echo ' selected="selected"'; } ?>>Small 15px</option>
+			<option value="20" <?php if ($stars_img_height == "20") { echo ' selected="selected"'; } ?>>Medium 20px</option>
+			<option value="25" <?php if ($stars_img_height == "25") { echo ' selected="selected"'; } ?>>Large 25px</option>
+		</select>
+		<p class="description">Set the height of the stars image.</p>
+		<?php 
+	}
+	function sanitize_style_settings($input) {
+		$input[Multi_Rating::CUSTOM_CSS_OPTION] = addslashes($input[Multi_Rating::CUSTOM_CSS_OPTION]);
+		return $input;
+	}
+
+	/**
+	 * Custom Text settings
+	 */
+	function register_custom_text_settings() {
+		register_setting( Multi_Rating::CUSTOM_TEXT_SETTINGS, Multi_Rating::CUSTOM_TEXT_SETTINGS, array( &$this, 'sanitize_custom_text_settings' ) );
+	
+		add_settings_section( 'section_custom_text', 'Custom Text Settings', array( &$this, 'section_custom_text_desc' ), Multi_Rating::CUSTOM_TEXT_SETTINGS );
+	
+		add_settings_field( Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION, 'Rating form title text', array( &$this, 'field_rating_form_title_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION, 'Top rating results title text', array( &$this, 'field_top_rating_results_title_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::RATING_FORM_BUTTON_TEXT_OPTION, 'Rating form submit button text', array( &$this, 'field_rating_form_submit_button_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION, 'Rating form submit success message', array( &$this, 'field_rating_form_submit_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION, 'Date validation failure message', array( &$this, 'field_date_validation_fail_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION, 'No rating results text', array( &$this, 'field_no_rating_results_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::CHAR_ENCODING_OPTION, 'Character encoding', array( &$this, 'field_char_encoding' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		
-		if ( isset( $input['ip_address_datetime_validation'] ) && $input['ip_address_datetime_validation'] == "true")
-			$input['ip_address_datetime_validation'] = true;
-		else
-			$input['ip_address_datetime_validation'] = false;
-		
-		$input['custom_css'] = addslashes($input['custom_css']);
-		
+	}
+	function section_custom_text_desc() {
+		echo '<p class="description">Change the default text and messages.</p>';
+	}
+	function field_rating_form_submit_button_text() {
+		?>
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::RATING_FORM_BUTTON_TEXT_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::RATING_FORM_BUTTON_TEXT_OPTION]; ?>" />
+		<?php
+	}	
+	public function field_rating_form_submit_message() {
+		?>
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION]; ?>" />
+		<?php
+	}
+	public function field_date_validation_fail_message() {
+		?>
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION]; ?>" />
+		<?php
+	}
+	function field_rating_form_title_text() {
+		?>
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION]; ?>" />
+		<?php
+	}
+	function field_top_rating_results_title_text() {
+		?>
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION]; ?>" />
+		<?php
+	}	
+	function field_no_rating_results_text() {
+		?>
+			<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION]; ?>" />
+		<?php
+	}		
+	function field_char_encoding() {
+		?>	
+		<select name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::CHAR_ENCODING_OPTION; ?>]">
+		<option value="" <?php selected('', $this->custom_text_settings[Multi_Rating::CHAR_ENCODING_OPTION], true); ?>>Keep current charset (Recommended)</option>
+	        <option value="utf8_general_ci" <?php selected('utf8_general_ci', $this->custom_text_settings[Multi_Rating::CHAR_ENCODING_OPTION], true); ?>>UTF-8 (try this first)</option>
+	        <option value="latin1_swedish_ci" <?php selected('latin1_swedish_ci', $this->custom_text_settings[Multi_Rating::CHAR_ENCODING_OPTION], true); ?>>latin1_swedish_ci</option>
+		</select>
+		<?php
+	}
+	function sanitize_custom_text_settings($input) {
 		global $wpdb;
-		$character_encoding = $input["character_encoding"];
-		
-		$old_character_set = $this->general_settings['character_encoding'];
+		$character_encoding = $input[Multi_Rating::CHAR_ENCODING_OPTION];
+	
+		$old_character_set = $this->general_settings[Multi_Rating::CHAR_ENCODING_OPTION];
 		if ($character_encoding != $old_character_set) {
 			$tables = array( $wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME );
 			foreach ($tables as $table) {
@@ -314,224 +422,256 @@ class Multi_Rating {
 				foreach ($rows as $row) {
 					$name = $row->Field;
 					$type = $row->Type;
-					if (preg_match("/^varchar\((\d+)\)$/i", $type, $mat) || !strcasecmp($type, "CHAR") 
+					if (preg_match("/^varchar\((\d+)\)$/i", $type, $mat) || !strcasecmp($type, "CHAR")
 							|| !strcasecmp($type, "TEXT") || !strcasecmp($type, "MEDIUMTEXT")) {
 						$wpdb->query('ALTER TABLE ' . $table .' CHANGE ' . $name . ' ' . $name . ' ' . $type . ' COLLATE ' . $character_encoding);
 					}
 				}
 			}
 		}
-		
+	
 		return $input;
 	}
 
-	/**
-	 * Saves column edit in rating item table
-	 *
-	 * @since 1.0
-	 */
-	public function save_column() {
-		global $wpdb;
-		
-		$ajax_nonce = $_POST['nonce'];
-		if (wp_verify_nonce($ajax_nonce, self::ID.'-nonce')) {
-			$column = $_POST['column'];
-			
-			// prevent SQL injection
-			if (! ( $column == Multi_Rating_Table::DESCRIPTION_COLUMN || $column == Multi_Rating_Table::MAX_RATING_VALUE_COLUMN 
-					|| $column == Multi_Rating_Table::DEFAULT_RATING_VALUE_COLUMN || $column == Multi_Rating_Table::WEIGHT_COLUMN ) ) {
-				echo 'An error occured';
-				die();
-			}
-			
-			$value = isset($_POST['value']) ? addslashes($_POST['value']) : '';
-			$rating_item_id = isset($_POST['ratingItemId']) ? $_POST['ratingItemId'] : '';
-			$result = $wpdb->query('UPDATE '.$wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME.' SET '. $column . ' = "' . $value . '" WHERE ' . Multi_Rating_Table::RATING_ITEM_ID_COLUMN .' = ' .$rating_item_id) ;
-			if ($result === FALSE) {
-				echo "An error occured";
-			}
-			echo $result;
-		}
-		die();
+	public function add_admin_menus() {
+		add_menu_page( __( 'Multi Rating', Multi_Rating::ID ), __( 'Multi Rating', Multi_Rating::ID ), 'manage_options', Multi_Rating::RATING_RESULTS_PAGE_SLUG, array( &$this, 'rating_results_page' ), '', null );
+	
+		add_submenu_page(Multi_Rating::RATING_RESULTS_PAGE_SLUG,'','','manage_options',Multi_Rating::RATING_RESULTS_PAGE_SLUG, array( &$this, 'rating_results_page' ));
+		add_submenu_page(Multi_Rating::RATING_RESULTS_PAGE_SLUG,'Rating Results','Rating Results','manage_options',Multi_Rating::RATING_RESULTS_PAGE_SLUG, array( &$this, 'rating_results_page' ));
+		add_submenu_page(Multi_Rating::RATING_RESULTS_PAGE_SLUG,'Rating Items','Rating Items','manage_options',Multi_Rating::RATING_ITEMS_PAGE_SLUG, array( &$this, 'rating_items_page' ));
+		add_submenu_page(Multi_Rating::RATING_RESULTS_PAGE_SLUG,'Add New Rating Item','Add New Rating Item','manage_options',Multi_Rating::ADD_NEW_RATING_ITEM_PAGE_SLUG, array( &$this, 'add_new_rating_item_page' ));
+		add_submenu_page(Multi_Rating::RATING_RESULTS_PAGE_SLUG,'Settings','Settings','manage_options',Multi_Rating::SETTINGS_PAGE_SLUG, array( &$this, 'settings_page' ));
 	}
-
 	/**
-	 * Creates the admin options page
-	 *
-	 * @since 0.1
-	 */
-	public function create_options_page() {
-		add_options_page(__('Multi Rating', self::ID), __('Multi Rating', self::ID), 'manage_options', self::ID, array($this, 'settings_page'));
-	}
-
-	/**
-	 * Shows the admin options page
+	 * Shows the settings page
 	 *
 	 * @since 0.1
 	 */
 	public function settings_page() {
 		?>
-	<div class="wrap">
-		<h2>Multi Rating
-			<form id="paypal-form" style="display: inline-block;" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" style="display: inline-block;">
-				<input type="hidden" name="cmd" value="_s-xclick">
-				<input type="hidden" name="hosted_button_id" value="5BDJEA4KANDZW">
-				<input type="image" src="https://www.paypalobjects.com/en_AU/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
-				<img alt="" border="0" src="https://www.paypalobjects.com/en_AU/i/scr/pixel.gif" width="1" height="1">
-			</form>
-		</h2>
-		<?php 
-		
-		$error_message = "";
-		$success_message = "";
-		
-		// Save rating item form submit
-		if ( isset( $_POST['formSubmitted'] ) && $_POST['formSubmitted'] === "true" ) {
-			global $wpdb;
-			if (isset($_POST['ratingItemDesc']) && isset($_POST['maxRatingValue']) && isset($_POST['defaultRatingValue'])) {
-				// TODO check description and validate empty fields
-				
-				$description = $_POST['ratingItemDesc'];
-				if (strlen(trim($description)) == 0)
-					$error_message .= 'Description cannot be empty. ';
-				
-				if (is_numeric($_POST['maxRatingValue']) == false)
-					$error_message .= 'Max rating value must be a whole number. ';
-				
-				if (is_numeric($_POST['defaultRatingValue']) == false)
-					$error_message .= 'Default rating value must be a whole number. ';
+		<div class="wrap">
+			<h2>Settings</h2>
+			
+			<?php 
+			if ( isset( $_GET['updated'] ) && isset( $_GET['page'] ) ) {
+				add_settings_error('general', 'settings_updated', __('Settings saved.'), 'updated');
+			}
+			
+			settings_errors();
+			
+			if ( isset( $_POST['clear-database'] ) && $_POST['clear-database'] === "true" ) {
+				global $wpdb;
+				try {
+					$rows = $wpdb->get_results( 'DELETE FROM '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME.' WHERE 1' );
+					$rows = $wpdb->get_results( 'DELETE FROM '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME.' WHERE 1' );
+					echo '<div class="updated"><p>Database cleared successfully.</p></div>';
+				} catch ( Exception $e ) {
+					echo '<div class="error"><p>An error has occured. ' . $e->getMessage() . '</p></div>';
+				}
+			}
+			?>
 
+			<form method="post" name="<?php echo Multi_Rating::GENERAL_SETTINGS; ?>" action="options.php">
+				<?php
+				wp_nonce_field( 'update-options' );
+				settings_fields( Multi_Rating::GENERAL_SETTINGS );
+				do_settings_sections( Multi_Rating::GENERAL_SETTINGS );
+				submit_button(null, 'primary', 'submit', true, null);
+				?>
+			</form>
+			<form method="post" name="<?php echo Multi_Rating::POSITION_SETTINGS; ?>" action="options.php">
+				<?php
+				wp_nonce_field( 'update-options' );
+				settings_fields( Multi_Rating::POSITION_SETTINGS );
+				do_settings_sections( Multi_Rating::POSITION_SETTINGS );
+				submit_button(null, 'primary', 'submit', true, null);
+				?>
+			</form>
+			<form method="post" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>" action="options.php">
+				<?php
+				wp_nonce_field( 'update-options' );
+				settings_fields( Multi_Rating::CUSTOM_TEXT_SETTINGS );
+				do_settings_sections( Multi_Rating::CUSTOM_TEXT_SETTINGS );
+				submit_button(null, 'primary', 'submit', true, null);
+				?>
+			</form>
+			<form method="post" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>" action="options.php">
+				<?php
+				wp_nonce_field( 'update-options' );
+				settings_fields( Multi_Rating::STYLE_SETTINGS );
+				do_settings_sections( Multi_Rating::STYLE_SETTINGS );
+				submit_button(null, 'primary', 'submit', true, null);
+				?>
+			</form>
+			
+			<h3>Database</h3>
+			<form method="post">
+				<input type="hidden" name="clear-database" id="clear-database" value="false" />
+				<?php 
+				submit_button( $text = 'Clear database', $type = 'delete', $name = 'clear-database-btn', $wrap = false, $other_attributes = null );
+				?>
+				<p class="description">Clear all rating results from the database.</p>
+			</form>
+			
+		</div>
+		<?php 
+	}
+	
+	/**
+	 * Shows the rating results page
+	 *
+	 * @since 0.1
+	 */
+	public function rating_results_page() {
+		?>
+		<div class="wrap">
+			<h2 class="nav-tab-wrapper">
+				<?php
+				$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : Multi_Rating::RATING_RESULTS_TAB;
+				$page = Multi_Rating::RATING_RESULTS_PAGE_SLUG;
+				$tabs = array (Multi_Rating::RATING_RESULTS_TAB => 'Rating Results', Multi_Rating::RATING_RESULT_DETAILS_TAB => 'Rating Result Details');
+				foreach ( $tabs as $tab_key => $tab_caption ) {
+					$active = $current_tab == $tab_key ? 'nav-tab-active' : '';
+					echo '<a class="nav-tab ' . $active . '" href="?page=' . $page . '&tab=' . $tab_key . '">' . $tab_caption . '</a>';
+				} 
+				?>
+			</h2>
+			<?php 
+			
+			if ($current_tab == Multi_Rating::RATING_RESULTS_TAB) {
+				?>
+				<form method="post" id="rating-item-entry-table-form">
+					<?php 
+					$rating_item_entry_table = new Rating_Item_Entry_Table();
+					$rating_item_entry_table->prepare_items();
+					$rating_item_entry_table->display();
+					?>
+				</form>
+				<?php 
+			} else if ($current_tab == Multi_Rating::RATING_RESULT_DETAILS_TAB) {
+				?>
+				<form method="post" id="rating-item-entry-value-table-form">
+					<?php 
+					$rating_item_entry_value_table = new Rating_Item_Entry_Value_Table();
+					$rating_item_entry_value_table->prepare_items();
+					$rating_item_entry_value_table->display();
+					?>
+				</form>
+				<?php
+			}
+			?>
+		</div>
+		<?php 
+	}
+		
+	/**
+	 * Shows the rating items page
+	 *
+	 * @since 0.1
+	 */
+	public function rating_items_page() {
+		?>
+		<div class="wrap">
+			<h2>Rating Items<a class="add-new-h2" href="admin.php?page=<?php echo Multi_Rating::ADD_NEW_RATING_ITEM_PAGE_SLUG; ?>">Add New</a></h2>
+			<form method="post" id="rating-item-table-form">
+				<?php 
+				$rating_item_table = new Rating_Item_Table();
+				$rating_item_table->prepare_items();
+				$rating_item_table->display();
+				?>
+			</form>
+		</div>
+		<?php 
+	}
+	
+	public function add_new_rating_item_page() {
+		
+		if ( isset( $_POST['form-submitted'] ) && $_POST['form-submitted'] === "true" ) {
+			$error_message = '';
+			$success_message = '';
+			
+			if (isset($_POST['desciption']) && isset($_POST['max-option-value']) && isset($_POST['default-option-value'])) {
+	
+				$description = $_POST['desciption'];
+				if (strlen(trim($description)) == 0) {
+					$error_message .= 'Description cannot be empty. ';
+				}
+				
+				if (is_numeric($_POST['max-option-value']) == false) {
+					$error_message .= 'Max option value cannot be empty and must be a whole number. ';
+				}
+				
+				if (is_numeric($_POST['default-option-value']) == false) {
+					$error_message .= 'Default option value cannot be empty and must be a whole number. ';
+				}
+				
 				if (strlen($error_message) == 0) {
-					$max_rating_value = intval($_POST['maxRatingValue']);
-					$default_rating_value = intval($_POST['defaultRatingValue']);
+					global $wpdb;
+					
+					$max_option_value = intval($_POST['max-option-value']);
+					$default_option_value = intval($_POST['default-option-value']);
 					$weight = doubleval($_POST['weight']);
-					$results = $wpdb->insert(  $wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME, array( 'description' => $description, 'max_rating_value' => $max_rating_value, 'default_rating_value' => $default_rating_value, 'weight' => $weight) );
-					$success_message .= 'New rating item added successfully. ';
+					
+					$results = $wpdb->insert(  $wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME, array( 'description' => $description, 'max_option_value' => $max_option_value, 'default_option_value' => $default_option_value, 'weight' => $weight) );
+					
+					$success_message .= 'Rating item added successfully.';
 				}
 			} else {
 				$error_message .= 'An error occured. Rating item could not be added.';
 			}
-		}
-		
-		// check clear database
-		else if ( isset( $_POST['clear-database-flag'] ) && $_POST['clear-database-flag'] === "true" ) {
-			global $wpdb;
-			try {
-				$rows = $wpdb->get_results( 'DELETE FROM '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME.' WHERE 1' );
-				$rows = $wpdb->get_results( 'DELETE FROM '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME.' WHERE 1' );
-				$success_message .= 'Database rating item entries cleared successfully.';
-			} catch ( Exception $e ) {
-				$error_message .= 'An error has occured. ' . $e->getMessage();
+			
+			if ( strlen( $error_message ) > 0) {
+				echo '<div class="error"><p>' . $error_message . '</p></div>';
+			}
+			if ( strlen( $success_message ) > 0) {
+				echo '<div class="updated"><p>' . $success_message . '</p></div>';
 			}
 		}
 		
-		if ( strlen( $error_message ) > 0)
-			echo '<div class="error"><p>' . $error_message . '</p></div>';
-		if ( strlen( $success_message ) > 0)
-			echo '<div class="updated"><p>' . $success_message . '</p></div>';
-		
 		?>
+		<div class="wrap">
+			<h2>Add New Rating Item</h2>
 		
-		<form method="post" action="options.php">
-			<?php
-			wp_nonce_field( 'update-options' );
-			settings_fields( 'general-settings' );
-			do_settings_sections( 'general-settings' );
-			submit_button();
-			?>
-		</form>
-		
-		<h3>Rating Items</h3>
-		<form method="post" id="rating-items-form">
-			
-			<?php 
-			$multi_rating_table = new Multi_Rating_Table();
-			$multi_rating_table->prepare_items();
-			$multi_rating_table->display();
-			?>
-		</form>
-		
-		<br /><h3>New Rating Item</h3>
-		<form method="post" id="add-new-form">
-			<table class="form-table">
-				<tbody>
-					<tr valign="top">
-						<th scope="row">Description</th>
-						<td>
-							<textarea id="ratingItemDesc" name="ratingItemDesc" type="text" maxlength="255" cols="50"></textarea>	
-							<p class="description">Enter the rating item description.</p>
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row">Max rating value</th>
-						<td>
-							<select id="maxRatingValue" name="maxRatingValue">
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-								<option value="6">6</option>
-								<option value="7">7</option>
-								<option value="8">8</option>
-								<option value="9">9</option>
-								<option value="10">10</option>
-							</select>	
-							<p class="description">Select a maximum rating value which the user can choose.</p>
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row">Default rating value</th>
-						<td>
-							<select id="defaultRatingValue" name="defaultRatingValue">
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-								<option value="6">6</option>
-								<option value="7">7</option>
-								<option value="8">8</option>
-								<option value="9">9</option>
-								<option value="10">10</option>
-							</select>
-							<p class="description">Select a default rating value.</p>
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row">Weight</th>
-						<td>
-							<input id="weight" name="weight" type="text" value="1.0" />
-							<p class="description">Enter a weight for the rating item.</p>	
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			
-			<input id="createRatingItemBtn" class="button button-primary" value="Add New" type="submit" />
-			<input type="hidden" id="formSubmitted" name="formSubmitted" value="false" />
-		</form>
-		
-		<br /><h3>Rating Results</h3>
-		
-		<form method="post">
-			<input type="hidden" name="clear-database-flag" id="clear-database-flag" value="false" />
-			<?php 
-			submit_button( $text = 'Clear database', $type = 'delete', $name = 'clear-database-btn', $wrap = false, $other_attributes = null );
-			?>
-			<p class="description">Clear all rating results from the database..</p>
-		</form>
-
-	</div>
-	<?php 
-	}
-	
-	/**
-	 * Registers multi rating widgets
-	 */
-	function register_widgets() {
-		register_widget( 'Multi_Rating_Widget' );
-		register_widget( 'Multi_Rating_Top_Results_Widget' );
+			<form method="post" id="add-new-rating-item-form">
+				<table class="form-table">
+					<tbody>
+						<tr valign="top">
+							<th scope="row">Description</th>
+							<td>
+								<textarea id="desciption" name="desciption" type="text" maxlength="255" cols="100"></textarea>	
+								<p class="description">Enter a rating item description.</p>
+							</td>
+						</tr>
+						<tr valign="top">
+							<th scope="row">Max option value</th>
+							<td>
+								<input id="max-option-value" name="max-option-value" type="text" value="" />
+								<p class="description">This is used to determine the max rating item option value. i.e. if max option value is set to 5, the rating item options would be 0, 1, 2, 3, 4, 5.</p>
+							</td>
+						</tr>
+						<tr valign="top">
+							<th scope="row">Default option value</th>
+							<td>
+								<input id="default-option-value" name="default-option-value" type="text" value="" />
+								<p class="description">This is used to default the selected option in the drop down.</p>	
+							</td>
+							</td>
+						</tr>
+						<tr valign="top">
+							<th scope="row">Weight</th>
+							<td>
+								<input id="weight" name="weight" type="text" value="1.0" />
+								<p class="description">Each rating item can have different weights which effect the rating results. For example, a rating item with a larger weight will influence the rating result more.</p>	
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<input id="add-new-rating-item-btn" class="button button-primary" value="Add New Rating Item" type="submit" />
+				<input type="hidden" id="form-submitted" name="form-submitted" value="false" />
+			</form>
+		</div>
+		<?php
 	}
 
 	/**
@@ -541,19 +681,21 @@ class Multi_Rating {
 	 */
 	public function admin_assets(){
 		wp_enqueue_script('jquery');
+		
 		$config_array = array(
-				'ajaxUrl' => admin_url('admin-ajax.php'),
-				'ajaxNonce' => wp_create_nonce(self::ID.'-nonce')
+				'ajax_url' => admin_url('admin-ajax.php'),
+				'ajax_nonce' => wp_create_nonce(Multi_Rating::ID.'-nonce')
 		);
 
-		wp_enqueue_script('multi-rating-admin-script', plugins_url('js' . DIRECTORY_SEPARATOR . 'multi-rating-admin.js', __FILE__), array('jquery'), self::VERSION, true);
-		wp_localize_script('multi-rating-admin-script', 'multiRatingLocalData', $config_array);
+		wp_enqueue_script('mr-admin-script', plugins_url('js' . DIRECTORY_SEPARATOR . 'admin.js', __FILE__), array('jquery'), Multi_Rating::VERSION, true);
+		wp_localize_script('mr-admin-script', 'mr_admin_data', $config_array);
 
-		wp_enqueue_script('multi-rating-form-script', plugins_url('js' . DIRECTORY_SEPARATOR . 'multi-rating-form.js', __FILE__), array('jquery'), self::VERSION, true);
-		wp_localize_script('multi-rating-form-script', 'multiRatingLocalData', $config_array);
+		wp_enqueue_script('mr-frontend-script', plugins_url('js' . DIRECTORY_SEPARATOR . 'frontend.js', __FILE__), array('jquery'), Multi_Rating::VERSION, true);
+		wp_localize_script('mr-frontend-script', 'mr_frontend_data', $config_array);
 		
 		// Add simple table CSS for rating form
-		wp_enqueue_style( 'multi-rating-style', plugins_url( 'css' . DIRECTORY_SEPARATOR . 'multi-rating.css', __FILE__ ) );
+		wp_enqueue_style( 'mr-frontend-style', plugins_url( 'css' . DIRECTORY_SEPARATOR . 'frontend.css', __FILE__ ) );
+		wp_enqueue_style( 'mr-admin-style', plugins_url( 'css' . DIRECTORY_SEPARATOR . 'admin.css', __FILE__ ) );
 		
 	}
 
@@ -565,34 +707,28 @@ class Multi_Rating {
 	public function assets(){
 		wp_enqueue_script('jquery');
 		$config_array = array(
-				'ajaxUrl' => admin_url('admin-ajax.php'),
-				'ajaxNonce' => wp_create_nonce(self::ID.'-nonce')
+				'ajax_url' => admin_url('admin-ajax.php'),
+				'ajax_nonce' => wp_create_nonce(Multi_Rating::ID.'-nonce')
 		);
 		
-		wp_enqueue_script('multi-rating-form-script', plugins_url('js' . DIRECTORY_SEPARATOR . 'multi-rating-form.js', __FILE__), array('jquery'), self::VERSION, true);
-		wp_localize_script('multi-rating-form-script', 'multiRatingLocalData', $config_array);
+		wp_enqueue_script('mr-frontend-script', plugins_url('js' . DIRECTORY_SEPARATOR . 'frontend.js', __FILE__), array('jquery'), Multi_Rating::VERSION, true);
+		wp_localize_script('mr-frontend-script', 'mr_frontend_data', $config_array);
 		
 		// Add simple table CSS for rating form
-		wp_enqueue_style( 'multi-rating-style', plugins_url( 'css' . DIRECTORY_SEPARATOR . 'multi-rating.css', __FILE__ ) );
+		wp_enqueue_style( 'mr-frontend-style', plugins_url( 'css' . DIRECTORY_SEPARATOR . 'frontend.css', __FILE__ ) );
 		
 	}
 	
 	
 	/**
-	 * Register AJAX call actions
+	 * Register AJAX actions
 	 */
 	public function add_ajax_actions() {
-		add_action('wp_ajax_delete_rating_item', array($this, 'delete_rating_item'));
-		add_action('wp_ajax_nopriv_delete_rating_item', array($this, 'delete_rating_item'));
-
-		add_action('wp_ajax_save_column', array($this, 'save_column'));
-		// add_action('wp_ajax_nopriv_save_column', array($this, 'save_column'));
-		
-		// client ajax call
 		add_action('wp_ajax_submit_rating', array($this, 'submit_rating'));
 		add_action('wp_ajax_nopriv_submit_rating', array($this, 'submit_rating'));
+		
+		add_action('wp_ajax_save_rating_item_table_column', array('Rating_Item_Table', 'save_rating_item_table_column'));
 	}
-	
 	
 	/**
 	 * Submits the rating for a post
@@ -606,11 +742,14 @@ class Multi_Rating {
 			
 			$rating_items = $_POST['ratingItems'];
 			$post_id = $_POST['postId'];
-			$ip_address = get_ip_address();
+			$ip_address = mr_get_ip_address();
 			$entry_date_mysql = current_time('mysql');
-			$user_id = '';
 			
-			$ip_address_datetime_validation = $this->general_settings['ip_address_datetime_validation'];
+			global $wp_roles;
+			$current_user = wp_get_current_user();
+			$username = $current_user->user_login;
+			
+			$ip_address_datetime_validation = $this->general_settings[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION];
 			$submit_rating_check = true;
 			if ($ip_address_datetime_validation == true) {
 				// check IP address has not submitted a rating for the post ID within the last 24 hours
@@ -624,13 +763,15 @@ class Multi_Rating {
 					$submit_rating_check = false;
 			}				
 			
+			$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
+			
 			if ($submit_rating_check == true) {
 				$wpdb->insert( $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME, array(
 						'post_id' => $post_id,
 						'entry_date' => $entry_date_mysql,
 						'ip_address' => $ip_address,
-						'user_id' => $user_id
-				), array('%s', '%s', '%s', '%d') );
+						'username' => $username
+				), array('%s', '%s', '%s', '%s') );
 				
 				$rating_item_entry_id = $wpdb->insert_id;
 				
@@ -645,116 +786,25 @@ class Multi_Rating {
 						), array('%d', '%d', '%d') );
 				}
 				
-				echo 'Your rating has been submitted successfully.';
+				echo $custom_text_settings[ Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION ];
 			} else {
-				echo 'You cannot submit a rating for the same post multiple times in a 24 hour period.';
+				echo $custom_text_settings[ Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION ];
 			}
 		}
 		die();
 	
 	}
 	
-	/**
-	 * Filters the_content()
-	 *
-	 * @param $content
-	 * @return filtered content
-	 */
-	function filter_the_content($content) {
-	
-		if (!in_the_loop())
-			return $content;
-	
-		$post_types_checked = $this->general_settings['post_types'];
-		if (!isset($post_types_checked) || (isset($post_types_checked) && !is_array($post_types_checked)))
-			return $content;
-		$post_type = get_post_type();
-		if (!in_array($post_type, $post_types_checked))
-			return $content;
-	
-		$rating_results_display = $this->general_settings['rating_results_display'];
-		$rating_form_display = $this->general_settings['rating_form_display'];
-		$default_rating_form_title = $this->general_settings['default_rating_form_title'];
-	
-		$filtered_content = '';
-	
-		if ($rating_results_display == 'before_content') {
-			$filtered_content .= display_rating_result(array('show_no_result_text' => false));
-		}
-		if ($rating_form_display == 'before_content') {
-			$filtered_content .= display_rating_form(array('title' => $default_rating_form_title));
-		}
-	
-		$filtered_content .= $content;
-	
-		if ($rating_results_display == 'after_content') {
-			$filtered_content .= display_rating_result(array('show_no_result_text' => false));
-		}
-		if ($rating_form_display == 'after_content') {
-			$filtered_content .= display_rating_form(array('title' => $default_rating_form_title));
-		}
-	
-		return $filtered_content;
-	}
-	
-	
-	/**
-	 * Filters the_title()
-	 *
-	 * @param $title
-	 * @return filtered title
-	 */
-	function filter_the_title($title) {
-	
-		if (!in_the_loop())
-			return $title;
-	
-		$post_types_checked = $this->general_settings['post_types'];
-		if (!isset($post_types_checked) || (isset($post_types_checked) && !is_array($post_types_checked)))
-			return $title;
-		$post_type = get_post_type();
-		if (!in_array($post_type, $post_types_checked))
-			return $title;
-	
-		$rating_results_display = $this->general_settings['rating_results_display'];
-		$rating_form_display = $this->general_settings['rating_form_display'];
-	
-		$filtered_title = '';
-	
-		if ($rating_results_display == 'before_title') {
-			$filtered_title .= display_rating_result(array('show_no_result_text' => true));
-		}
-		if ($rating_form_display == 'before_title') {
-			$filtered_title .= display_rating_form('');
-		}
-	
-		$filtered_title .= $title;
-	
-		if ($rating_results_display == 'after_title') {
-			$filtered_title .= display_rating_result(array('show_no_result_text' => true));
-		}
-		if ($rating_form_display == 'after_title') {
-			$filtered_title .= display_rating_form('');
-		}
-	
-		return $filtered_title;
-	}
-	
-	function custom_css_style() {
-		// TODO do we need to check if HTML5 is supported?
+	function add_custom_css() {
 		?>
 		<style type="text/css">
-			<?php echo $this->general_settings['custom_css']; ?>
+			<?php echo $this->style_settings[Multi_Rating::CUSTOM_CSS_OPTION]; ?>
 		</style>
 		<?php 
 	}
 }
 
 
-// Activation and deactivation
-register_activation_hook( __FILE__, 'mr_activate_plugin');
-register_uninstall_hook( __FILE__, 'mr_uninstall_plugin' );
-//register_deactivation_hook( __FILE__, 'mr_uninstall_plugin' );
 function mr_activate_plugin() {
 	if (is_admin()) {
 		Multi_Rating::activate_plugin();
@@ -766,5 +816,8 @@ function mr_uninstall_plugin() {
 		Multi_Rating::uninstall_plugin();
 	}
 }
+// Activation and deactivation
+register_activation_hook( __FILE__, 'mr_activate_plugin');
+register_uninstall_hook( __FILE__, 'mr_uninstall_plugin' );
 
 $multi_rating = new Multi_Rating();

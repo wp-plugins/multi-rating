@@ -1,31 +1,44 @@
 <?php
 
 /**
- * Adds Multi rating form widget.
+ * Top Rating Results widget for Multi Rating plugin
  */
-class Multi_Rating_Widget extends WP_Widget {
+class Top_Rating_Results_Widget extends WP_Widget {
 	function __construct() {
-		$widget_ops = array('classname' => 'multi_rating_widget', 'description' => __('A widget to display a multi rating form'));
+		$widget_ops = array('classname' => 'top-rating-results-widget', 'description' => __('Displays the top rating results from the Multi Rating plugin and includes the 5 star rating.'));
 		$control_ops = array('width' => 400, 'height' => 350);
 
-		parent::__construct('multi_rating_widget', __('Multi Rating Widget'), $widget_ops, $control_ops);
+		parent::__construct('top_rating_results_widget', __('Top Rating Results Widget'), $widget_ops, $control_ops);
 	}
 
 	function widget( $args, $instance ) {
 		extract($args);
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 		
+		$count = empty( $instance['count'] ) ? 10 : intval($instance['count']);
+
 		echo $before_widget;
-		
-		echo display_rating_form( array('title' => $title, 'before_title' => $before_title, 'after_title' => $after_title) );
-		
-		echo $after_widget;
+
+		echo '<div class="top-rating-results">';
+	
+		if ( !empty( $title ) ) {
+			echo  $before_title . $title . $after_title;
+		}
+	
+		$top_rating_results = Multi_Rating_API::get_top_rating_results($count);
+	
+		foreach ($top_rating_results as $rating_result_obj) {
+			echo Rating_Result_View::get_rating_result_html($rating_result_obj, null, true);
+		}
+	
+		echo'</div>';
+			echo $after_widget;
 	}
 
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 		$instance['title'] = strip_tags($new_instance['title']);
-		
+		$instance['count'] = intval($new_instance['count']);
 		$instance['filter'] = isset($new_instance['filter']);
 		return $instance;
 	}
@@ -33,53 +46,22 @@ class Multi_Rating_Widget extends WP_Widget {
 	function form( $instance ) {
 		$instance = wp_parse_args( (array) $instance, array( 'title' => '' ) );
 		$title = strip_tags($instance['title']);
+		$count = intval($instance['count']);
 		?>
 		<p>
 			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
 			<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
 		</p>
-		<?php
-	}
-}
-
-/**
- * Adds Multi rating top results widget.
- */
-class Multi_Rating_Top_Results_Widget extends WP_Widget {
-	function __construct() {
-		$widget_ops = array('classname' => 'multi_rating_top_results_widget', 'description' => __('A widget to display multi rating top results'));
-		$control_ops = array('width' => 400, 'height' => 350);
-
-		parent::__construct('multi_rating_top_results_widget', __('Multi Rating Top Results Widget'), $widget_ops, $control_ops);
-	}
-
-	function widget( $args, $instance ) {
-		extract($args);
-		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
-
-		echo $before_widget;
-		
-		echo display_rating_top_results( array('title' => $title, 'before_title' => $before_title, 'after_title' => $after_title ) );
-
-		echo $after_widget;
-	}
-
-	function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
-		$instance['title'] = strip_tags($new_instance['title']);
-
-		$instance['filter'] = isset($new_instance['filter']);
-		return $instance;
-	}
-
-	function form( $instance ) {
-		$instance = wp_parse_args( (array) $instance, array( 'title' => '' ) );
-		$title = strip_tags($instance['title']);
-		?>
 		<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
-			<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
+			<label for="<?php echo $this->get_field_id('count'); ?>"><?php _e('Count:'); ?></label>
+			<input class="widefat" id="<?php echo $this->get_field_id('count'); ?>" name="<?php echo $this->get_field_name('count'); ?>" type="text" value="<?php echo esc_attr($count); ?>" />
 		</p>
 		<?php
 	}
 }
+
+function mr_register_widgets() {
+	register_widget( 'Top_Rating_Results_Widget' );
+}
+add_action( 'widgets_init', 'mr_register_widgets' );
+?>
