@@ -15,6 +15,7 @@ The simplest star rating plugin which allows visitors to rate a post based on mu
 The simplest star rating plugin which allows visitors to rate a post based on multiple criteria and questions
 
 = Features =
+
 * Star rating is based on multuple rating criteria and questions
 * Shortcodes to display the rating form, single rating results and top rating results
 * API functions for using Multi Rating in your theme
@@ -29,27 +30,32 @@ The simplest star rating plugin which allows visitors to rate a post based on mu
 Here's a demo http://www.danielpowney.com/multi-rating
 
 = Shortcode Examples =
-'[display_rating_form]'
-'[display_rating_form post_id="100" title="My rating form" submit_button_text="Submit"]'
-'[display_rating_result]'
-'[display_rating_result post_id="100" no_rating_results_text="No rating result yet"]'
-'[display_top_rating_results]'
-'[display_top_rating_results title="Top Rating Results" count="10"]'
+
+* '[display_rating_form]'
+* '[display_rating_form post_id="100" title="My rating form" submit_button_text="Submit"]'
+* '[display_rating_result]'
+* '[display_rating_result post_id="100" no_rating_results_text="No rating result yet"]'
+* '[display_top_rating_results]'
+* '[display_top_rating_results title="Top Rating Results" count="10"]'
 
 = API Functions =
-'get_rating_items( $post_type? )'
-'get_rating_items_by_rating_item_entry( $rating_item_entry_id )'
-'get_total_weight( $rating_items )'
-'calculate_rating_result( $post_id, $rating_items )'
-'calculate_rating_item_entry_result( $rating_item_entry_id, $rating_items? )'
-'get_top_rating_results( $count )'
-'display_rating_form( $post_id? , $title? , $before_title? , $after_title? , $submit_button_text? )'
-'display_rating_result( $post_id?, $no_rating_results_text?  )'
-'display_top_rating_results( $count?, $title?, $before_title?, $after_title? )'
+
+* 'get_rating_items( $post_type? )'
+* 'get_rating_items_by_rating_item_entry( $rating_item_entry_id )'
+* 'get_total_weight( $rating_items )'
+* 'calculate_rating_result( $post_id, $rating_items )'
+* 'calculate_rating_item_entry_result( $rating_item_entry_id, $rating_items? )'
+* 'get_top_rating_results( $count )'
+* 'display_rating_form( $post_id? , $title? , $before_title? , $after_title? , $submit_button_text? )'
+* 'display_rating_result( $post_id?, $no_rating_results_text?  )'
+* 'display_top_rating_results( $count?, $title?, $before_title?, $after_title? )'
+
 where ? = optional
 
 = Settings =
+
 There following settings are available:
+
 * Select the post types that are applicable for multi rating
 * Choose to automatically display the rating form before or after the post content for all selected post types
 * Choose to automatically display the rating result before or after the post title for all selected post types
