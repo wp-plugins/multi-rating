@@ -1,0 +1,87 @@
+form.ratingForm {
+	margin: 0px;
+	width : auto;
+	max-width: 100%;
+	display: table;
+	
+	/* Custom
+	border: 3px solid #BABABA;
+	background-color: #FAFAFA;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	padding: 10px;
+	margin-top: 20px;
+	width: auto; */
+}
+
+form.ratingForm table {
+	width: 100%;
+	text-align: left;
+}
+
+form.ratingForm h4 {
+	font-weight: bold;
+}
+
+form.ratingForm table td {
+	vertical-align: top;
+}
+
+form.ratingForm table label {
+	padding-right: 10px;
+	padding-bottom: 10px;
+	font-weight: normal;
+	vertical-align: text-top;
+}
+
+form.ratingForm table .value {
+	padding-bottom: 10px;
+	text-align: right;
+}
+
+form.ratingForm table .value select {
+	min-width: 50px;
+}
+
+form.ratingForm table .action {
+	text-align: right;
+}
+
+.ratingResult {
+	display: inline-block;
+	vertical-align: top;
+	font-weight: normal;
+	letter-spacing: normal;
+	text-align: left;
+	margin-top: 5px;
+	margin-left: 5px;
+}
+.ratingTopResults {
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+
+.ratingTopResults .ratingResult {
+	display: block;
+	margin-left: 0px;
+}
+
+.ratingResult * {
+	line-height: normal !important;
+}
+
+.ratingSummary {
+	display: inline-block;
+	display: inline-block; 
+	font-family: inherit !important;
+}
+
+.ratingStars {
+	padding: 0px; 
+	margin: 0px; 
+	font-size: 0px !important;
+}
+
+
+.checkbox-label { margin-right: 10px; }
