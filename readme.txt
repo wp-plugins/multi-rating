@@ -172,6 +172,9 @@ Major refactor of plugin. Old Shortcodes deprecated and replaced with new shortc
 
 == Changelog ==
 
+= 2.0.2 =
+* Rating results table in WP-admin query updated to order by entry_date desc
+
 = 2.0.1 =
 * Fixed top rating results widget bug
 

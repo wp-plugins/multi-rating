@@ -91,6 +91,8 @@ class Rating_Item_Entry_Table extends WP_List_Table {
 		// get table data
 		$query = "SELECT * FROM ".$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME;;
 		
+		$query .= ' ORDER BY entry_date DESC';
+		
 		// pagination
 		$item_count = $wpdb->query( $query ); //return the total number of affected rows
 		$items_per_page = 10;
