@@ -30,7 +30,6 @@ The simplest star rating plugin which allows visitors to rate a post based on mu
 Here's a demo http://www.danielpowney.com/multi-rating
 
 Multi Rating Pro has the folowing advanced features:
-
 * Multiple rating forms with different rating items that can be used in the shortcodes, API and widget. There is a default rating form and rating results are displayed per rating form
 * User can also submit their name, e-mail and comments on a rating form
 * Shortcode to return each rating item result individually
