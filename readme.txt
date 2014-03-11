@@ -29,28 +29,32 @@ The simplest star rating plugin which allows visitors to rate a post based on mu
 
 Here's a demo http://www.danielpowney.com/multi-rating
 
+Multi Rating Pro has the folowing advanced features:
+
+* Multiple rating forms with different rating items that can be used in the shortcodes, API and widget. There is a default rating form and rating results are displayed per rating form
+* User can also submit their name, e-mail and comments on a rating form
+* Shortcode to return each rating item result individually
+* Replace rating item select option values with text descriptions
+* Show the rating result back to the user when the rating form is submitted
+* Modify the duration in days for the IP address & date validation check for users submitting the rating form
+* View rating results per post and rating form in WP-admin backend
+* Post and category filters to include (whitelist) or exclude (blacklist) certain posts from displaying the rating form and rating result
+* More filters on WP-admin rating results tables
+
+For more information visit http://danielpowney.com/downloads/multi-rating-pro/
+
 = Shortcode Examples =
 
-* '[display_rating_form]'
-* '[display_rating_form post_id="100" title="My rating form" submit_button_text="Submit"]'
-* '[display_rating_result]'
-* '[display_rating_result post_id="100" no_rating_results_text="No rating result yet"]'
-* '[display_top_rating_results]'
-* '[display_top_rating_results title="Top Rating Results" count="10"]'
+* [display_rating_form]
+* [display_rating_form post_id="100" title="My rating form" submit_button_text="Submit"]
+* [display_rating_result]
+* [display_rating_result post_id="100" no_rating_results_text="No rating result yet"]
+* [display_top_rating_results]
+* [display_top_rating_results title="Top Rating Results" count="10"]
 
 = API Functions =
 
-* 'get_rating_items( $post_type? )'
-* 'get_rating_items_by_rating_item_entry( $rating_item_entry_id )'
-* 'get_total_weight( $rating_items )'
-* 'calculate_rating_result( $post_id, $rating_items )'
-* 'calculate_rating_item_entry_result( $rating_item_entry_id, $rating_items? )'
-* 'get_top_rating_results( $count )'
-* 'display_rating_form( $post_id? , $title? , $before_title? , $after_title? , $submit_button_text? )'
-* 'display_rating_result( $post_id?, $no_rating_results_text?  )'
-* 'display_top_rating_results( $count?, $title?, $before_title?, $after_title? )'
-
-where ? = optional
+Look at PHP functions available in multi-rating-api.php. e.g. Multi_Rating_API::calculate_rating_result($post_id, $rating_items)
 
 = Settings =
 
@@ -171,6 +175,9 @@ Yes they are OK in a responsive web design except the star rating image is 130px
 Major refactor of plugin. Old Shortcodes deprecated and replaced with new shortcodes. Old settings and API functions renamed and may not backward compatible. Old rating results will not be migrated. If you wish to keep your rating results, you must continue to use the version 1.1.8.
 
 == Changelog ==
+
+= 2.0.3 =
+* Information on multi-rating-pro plugin features added
 
 = 2.0.2 =
 * Rating results table in WP-admin query updated to order by entry_date desc

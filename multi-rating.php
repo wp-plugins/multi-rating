@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
-Version: 2.0.2
+Version: 2.0.3
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
@@ -513,6 +513,11 @@ class Multi_Rating {
 				<p class="description">Clear all rating results from the database.</p>
 			</form>
 			
+			<div class="clear" />
+			<br />
+			<hr />
+			<p>Multi Rating Pro adds advanced features into the Multi Rating plugin. <a href="http://danielpowney.com/downloads/multi-rating-pro/">Click here</a> for more information and a demo.</p>
+			
 		</div>
 		<?php 
 	}
@@ -560,6 +565,12 @@ class Multi_Rating {
 				<?php
 			}
 			?>
+			
+			<div class="clear" />
+			<br />
+			<hr />
+			<p>Multi Rating Pro adds advanced features into the Multi Rating plugin. <a href="http://danielpowney.com/downloads/multi-rating-pro/">Click here</a> for more information and a demo.</p>
+			
 		</div>
 		<?php 
 	}
@@ -580,6 +591,12 @@ class Multi_Rating {
 				$rating_item_table->display();
 				?>
 			</form>
+			
+			<div class="clear" />
+			<br />
+			<hr />
+			<p>Multi Rating Pro adds advanced features into the Multi Rating plugin. <a href="http://danielpowney.com/downloads/multi-rating-pro/">Click here</a> for more information and a demo.</p>
+			
 		</div>
 		<?php 
 	}
@@ -670,6 +687,11 @@ class Multi_Rating {
 				<input id="add-new-rating-item-btn" class="button button-primary" value="Add New Rating Item" type="submit" />
 				<input type="hidden" id="form-submitted" name="form-submitted" value="false" />
 			</form>
+			
+			<div class="clear" />
+			<br />
+			<hr />
+			<p>Multi Rating Pro adds advanced features into the Multi Rating plugin. <a href="http://danielpowney.com/downloads/multi-rating-pro/">Click here</a> for more information and a demo.</p>
 		</div>
 		<?php
 	}
