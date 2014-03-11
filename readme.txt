@@ -29,19 +29,6 @@ The simplest star rating plugin which allows visitors to rate a post based on mu
 
 Here's a demo http://www.danielpowney.com/multi-rating
 
-Multi Rating Pro has the folowing advanced features:
-* Multiple rating forms with different rating items that can be used in the shortcodes, API and widget. There is a default rating form and rating results are displayed per rating form
-* User can also submit their name, e-mail and comments on a rating form
-* Shortcode to return each rating item result individually
-* Replace rating item select option values with text descriptions
-* Show the rating result back to the user when the rating form is submitted
-* Modify the duration in days for the IP address & date validation check for users submitting the rating form
-* View rating results per post and rating form in WP-admin backend
-* Post and category filters to include (whitelist) or exclude (blacklist) certain posts from displaying the rating form and rating result
-* More filters on WP-admin rating results tables
-
-For more information visit http://danielpowney.com/downloads/multi-rating-pro/
-
 = Shortcode Examples =
 
 * [display_rating_form]
@@ -74,6 +61,22 @@ You can view the details of all rating results and entry values in the WP admin 
 
 = Weights =
 By default, each rating item has a weight of 1.0. You can modify the weights of each rating item to adjust the rating results.
+
+= Multi Rating Pro =
+
+Multi Rating Pro adds advanced features into the Multi Rating plugin.
+
+* Multiple rating forms with different rating items that can be used in the shortcodes, API and widget. There is a default rating form and rating results are displayed per rating form
+* User can also submit their name, e-mail and comments on a rating form
+* Shortcode to return each rating item result individually
+* Replace rating item select option values with text descriptions
+* Show the rating result back to the user when the rating form is submitted
+* Modify the duration in days for the IP address & date validation check for users submitting the rating form
+* View rating results per post and rating form in WP-admin backend
+* Post and category filters to include (whitelist) or exclude (blacklist) certain posts from displaying the rating form and rating result
+* More filters on WP-admin rating results tables
+
+For more information visit http://danielpowney.com/downloads/multi-rating-pro/
 
 
 == Installation ==
