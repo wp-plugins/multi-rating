@@ -66,16 +66,21 @@ By default, each rating item has a weight of 1.0. You can modify the weights of 
 
 Multi Rating Pro adds advanced features into the Multi Rating plugin.
 
-* Multiple rating forms with different rating items that can be used in the shortcodes, API and widget. There is a default rating form and rating results are displayed per rating form
-* User can also submit their name, e-mail and comments on a rating form
+* Multiple rating forms with different rating items
+* Logged in users can update and delete their existing ratings
+* Allow/disallow anonymous user ratings option
 * Shortcode to return each rating item result individually
-* Replace rating item select option values with text descriptions
-* Show the rating result back to the user when the rating form is submitted
+* Set rating item select option values with text descriptions
+* Widget to display existing ratings of a logged in user
+* Apply category filters to the Top Rating Results and User Ratings widgets
+* Post meta box in the WP-admin edit post page to change the defaults for the rating form, allow anonymous ratings option and change the display position settings of the rating form and rating results
+* Rating forms can optionally include a name, e-mail and comment fields
+* Option to display the rating result back to the user when they submit a rating form
 * Modify the duration in days for the IP address & date validation check for users submitting the rating form
 * View rating results per post and rating form in WP-admin backend
-* Post and category filters to include (whitelist) or exclude (blacklist) certain posts from displaying the rating form and rating result
+* Post and category filters to include (whitelist) or exclude (blacklist) certain posts
 * More filters on WP-admin rating results tables
-
+* More star rating image sprites
 For more information visit http://danielpowney.com/downloads/multi-rating-pro/
 
 
