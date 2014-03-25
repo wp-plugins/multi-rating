@@ -81,6 +81,7 @@ Multi Rating Pro adds advanced features into the Multi Rating plugin.
 * Post and category filters to include (whitelist) or exclude (blacklist) certain posts
 * More filters on WP-admin rating results tables
 * More star rating image sprites
+
 For more information visit http://danielpowney.com/downloads/multi-rating-pro/
 
 
