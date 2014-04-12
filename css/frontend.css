@@ -4,16 +4,6 @@ form.rating-form {
 	max-width: 100%;
 	display: table;
 	margin-bottom: 15px;
-	
-	/* Custom
-	border: 3px solid #BABABA;
-	background-color: #FAFAFA;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	padding: 10px;
-	margin-top: 20px;
-	width: auto; */
 }
 
 form.rating-form table {
