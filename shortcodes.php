@@ -5,35 +5,40 @@
  */
 function mr_display_rating_form( $atts = array() ) {
 	
-	extract( shortcode_atts( array(
-			'post_id' => null,
-			'title' => '',
-			'before_title' => '<h4>',
-			'after_title' => '</h4>',
-			'submit_button_text' => null
-	), $atts ) );
-
+	if (is_admin())
+		return;
+	
 	global $post;
-
-	if ( !isset( $post_id ) && isset( $post ) ) {
+	
+	$post_id = null;
+	if (isset( $post ) ) {
 		$post_id = $post->ID;
-	} else if ( !isset($post) && !isset( $post_id ) ) {
-		return; // No post Id available to display rating form
 	}
 	
+	$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 	$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
 	
-	if (!isset($atts['title'])) {
-		$title = $custom_text_settings[Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION];
+	extract( shortcode_atts( array(
+			'post_id' => $post_id,
+			'title' => $custom_text_settings[Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION],
+			'before_title' => '<h4>',
+			'after_title' => '</h4>',
+			'submit_button_text' => $custom_text_settings[Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION]
+	), $atts ) );
+	
+	if ($post_id == null) {
+		return; // No post Id available
 	}
-	
-	if ($submit_button_text == null) {
-		$submit_button_text = $custom_text_settings[Multi_Rating::RATING_FORM_BUTTON_TEXT_OPTION];
-	}
-	
-	$rating_items = Multi_Rating_API::get_rating_items();
-	
-	return Rating_Form_View::get_rating_form($rating_items, $post_id, $title, $before_title, $after_title, $submit_button_text);
+
+	return Multi_Rating_API::display_rating_form(
+			array(
+					'post_id' => $post_id,
+					'title' => $title,
+					'before_title' => $before_title,
+					'after_title' => $after_title,
+					'submit_button_text' => $submit_button_text,
+					'echo' => false
+			));
 }
 add_shortcode( 'display_rating_form', 'mr_display_rating_form' );
 
@@ -43,28 +48,53 @@ add_shortcode( 'display_rating_form', 'mr_display_rating_form' );
  */
 function mr_display_rating_result( $atts = array() ) {
 
-	extract( shortcode_atts( array(
-			'post_id' => null,
-			'no_rating_results_text' => null
-	), $atts ) );
-
+	if (is_admin())
+		return;
+	
 	global $post;
-
-	if ( !isset( $post_id ) && isset( $post ) ) {
+	
+	$post_id = null;
+	if (isset( $post ) ) {
 		$post_id = $post->ID;
-	} else if ( !isset($post) && !isset( $post_id ) ) {
-		return; // No post Id available to display rating form
 	}
-
+	
+	$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 	$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
-
-	if (!isset($atts['no_rating_results_text'])) {
-		$no_rating_results_text = $custom_text_settings[Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION];
+	
+	extract( shortcode_atts( array(
+			'post_id' => $post_id,
+			'no_rating_results_text' =>  $custom_text_settings[Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION],
+			'show_rich_snippets' => false,
+			'show_title' => false,
+			'show_count' => true
+	), $atts ) );
+	
+	if ($post_id == null) {
+		return; // No post Id available
 	}
-
-	$rating_items = Multi_Rating_API::get_rating_items();
-	$rating_result = Multi_Rating_API::calculate_rating_result($post_id, $rating_items);
-	return Rating_Result_View::get_rating_result_html($rating_result, $no_rating_results_text);
+	
+	if (is_string($show_rich_snippets)) {
+		$show_rich_snippets = $show_rich_snippets == "true" ? true : false;
+	}
+	if (is_string($show_title)) {
+		$show_title = $show_title == "true" ? true : false;
+	}
+	if (is_string($show_count)) {
+		$show_count = $show_count == "true" ? true : false;
+	}
+	
+	// TODO result types: percentage, star and aggregate
+	
+	return Multi_Rating_API::display_rating_result(
+			array(
+					'post_id' => $post_id,
+					'no_rating_results_text' => $no_rating_results_text,
+					'show_rich_snippets' => $show_rich_snippets,
+					'show_title' => $show_title,
+					'show_date' => false,
+					'show_count' => $show_count,
+					'echo' => false
+			));
 	
 }
 add_shortcode( 'display_rating_result', 'mr_display_rating_result' );
@@ -79,35 +109,42 @@ add_shortcode( 'display_rating_result', 'mr_display_rating_result' );
  */
 function mr_display_top_rating_results( $atts = array() ) {
 
-	extract( shortcode_atts( array(
-			'count' => 10,
-			'title' => '',
-			'before_title' => '<h4>',
-			'after_title' => '</h4>'
-	), $atts ) );
+	if (is_admin())
+		return;
 	
+	$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 	$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
 	
-	if (!isset($atts['title'])) {
-		$title = $custom_text_settings[Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION];
-	}
-
-	global $wpdb;
-
-	$html = '<div class="top-rating-results">';
+	extract( shortcode_atts( array(
+			'count' => 10,
+			'title' => $custom_text_settings[Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION],
+			'before_title' => '<h4>',
+			'after_title' => '</h4>',
+			'no_rating_results_text' => $custom_text_settings[Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION],
+			'show_title' => true,
+			'show_count' => true,
+	), $atts ) );
 	
-	if ( !empty( $title ) ) {
-		$html .=  $before_title . $title . $after_title;
+	if (is_string($show_title)) {
+		$show_title = $show_title == "true" ? true : false;
 	}
-
-	$top_rating_results = Multi_Rating_API::get_top_rating_results($count);
-
-	foreach ($top_rating_results as $rating_result_obj) {
-		$html .= Rating_Result_View::get_rating_result_html($rating_result_obj, null, true);
+	if (is_string($show_count)) {
+		$show_count = $show_count == "true" ? true : false;
 	}
+	
+	// TODO result types: percentage, star and aggregate
 
-	$html .= '</div>';
-	return $html;
+	return Multi_Rating_API::display_top_rating_results(
+			array(
+					'show_title' => true,
+					'no_rating_results_text' => $no_rating_results_text,
+					'show_title' => $show_title,
+					'show_rich_snippets' => false,
+					'show_count' => $show_count,
+					'show_date' => false,
+					'title' => $title,
+					'echo' => false
+			));
 }
 add_shortcode( 'display_top_rating_results', 'mr_display_top_rating_results' );
 

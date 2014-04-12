@@ -18,21 +18,10 @@ class Top_Rating_Results_Widget extends WP_Widget {
 		$count = empty( $instance['count'] ) ? 10 : intval($instance['count']);
 
 		echo $before_widget;
-
-		echo '<div class="top-rating-results">';
-	
-		if ( !empty( $title ) ) {
-			echo  $before_title . $title . $after_title;
-		}
-	
-		$top_rating_results = Multi_Rating_API::get_top_rating_results($count);
-	
-		foreach ($top_rating_results as $rating_result_obj) {
-			echo Rating_Result_View::get_rating_result_html($rating_result_obj, null, true);
-		}
-	
-		echo'</div>';
-			echo $after_widget;
+		
+		Multi_Rating_API::display_top_rating_results(array('count' => $count, 'title' => $title));
+		
+		echo $after_widget;
 	}
 
 	function update( $new_instance, $old_instance ) {

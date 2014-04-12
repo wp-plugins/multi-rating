@@ -179,10 +179,14 @@ Yes they are OK in a responsive web design except the star rating image is 130px
 
 == Upgrade Notice ==
 
-= 2.0 =
-Major refactor of plugin. Old Shortcodes deprecated and replaced with new shortcodes. Old settings and API functions renamed and may not backward compatible. Old rating results will not be migrated. If you wish to keep your rating results, you must continue to use the version 1.1.8.
+= 2.0.4 =
+API functions have been modified and some have been renamed. If your theme calls the API functions directly it is recommended to test locally before updating. Shortcodes will still work the same.
 
 == Changelog ==
+
+= 2.0.4 (12/04/2014) =
+* Fixed rich snippets bug
+* Refactored API functions and added more params that can be used in shortcodes
 
 = 2.0.3 =
 * Information on multi-rating-pro plugin features added

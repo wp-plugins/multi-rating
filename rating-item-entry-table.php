@@ -41,12 +41,7 @@ class Rating_Item_Entry_Table extends WP_List_Table {
 	 */
 	function extra_tablenav( $which ) {
 		if ( $which == "top" ){
-			// TODO select of post names and id values
-			// TODO category list
-			// TODO post types
-			// TODO today, 1 day, 7 days, 14 days weeks, last 30 days
-			// TODO sort by low/high rating result
-			// TODO echo '<input type="submit" class="button" value="Filter" />';
+			echo '';
 		}
 		if ( $which == "bottom" ){
 			echo '';
@@ -60,7 +55,7 @@ class Rating_Item_Entry_Table extends WP_List_Table {
 	function get_columns() {
 		return $columns= array(
 				Rating_Item_Entry_Table::CHECKBOX_COLUMN => '<input type="checkbox" />',
-				Rating_Item_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN =>__('Rating Item Entry Id'),
+				Rating_Item_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN =>__('Rating Result Entry Id'),
 				Rating_Item_Entry_Table::POST_ID_COLUMN => __('Post Id'),
 				Rating_Item_Entry_Table::ENTRY_DATE_COLUMN =>__('Entry Date'),
 				Rating_Item_Entry_Table::IP_ADDRESS_COLUMN	=>__('IP Address'),

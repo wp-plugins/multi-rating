@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
-Version: 2.0.3
+Version: 2.0.4
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
@@ -31,7 +31,7 @@ class Multi_Rating {
 
 	// constants
 	const
-	VERSION = '2.0',
+	VERSION = '2.0.4',
 	ID = 'mr',
 	
 	// tables
@@ -56,7 +56,7 @@ class Multi_Rating {
 	TOP_RATING_RESULTS_TITLE_TEXT_OPTION 		= 'mr_top_rating_results_title_text',
 	IP_ADDRESS_DATE_VALIDATION_OPTION			= 'mr_ip_address_date_validation',
 	POST_TYPES_OPTION							= 'mr_post_types',
-	RATING_FORM_BUTTON_TEXT_OPTION				= 'mr_rating_form_button_text',
+	SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION		= 'mr_rating_form_button_text',
 	RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION 	= 'mr_rating_form_submit_success_message',
 	DATE_VALIDATION_FAIL_MESSAGE_OPTION			= 'mr_date_validation_fail_message',
 	NO_RATING_RESULTS_TEXT_OPTION				= 'mr_no_rating_results_text',
@@ -209,9 +209,9 @@ class Multi_Rating {
 		
 		$this->custom_text_settings = array_merge( array(
 				Multi_Rating::CHAR_ENCODING_OPTION => '',
-				Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION => 'Please rate this',
+				Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION => 'Please rate this post',
 				Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION => 'Top Rating Results',
-				Multi_Rating::RATING_FORM_BUTTON_TEXT_OPTION => 'Submit rating',
+				Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION => 'Submit Rating',
 				Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION => 'Rating form has been submitted successfully.',
 				Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION => 'You cannot submit a rating form for the same post multiple times in a 24 hour period.',
 				Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION => 'No rating results yet'
@@ -361,7 +361,7 @@ class Multi_Rating {
 	
 		add_settings_field( Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION, 'Rating form title text', array( &$this, 'field_rating_form_title_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION, 'Top rating results title text', array( &$this, 'field_top_rating_results_title_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
-		add_settings_field( Multi_Rating::RATING_FORM_BUTTON_TEXT_OPTION, 'Rating form submit button text', array( &$this, 'field_rating_form_submit_button_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION, 'Rating form submit button text', array( &$this, 'field_rating_form_submit_button_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION, 'Rating form submit success message', array( &$this, 'field_rating_form_submit_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION, 'Date validation failure message', array( &$this, 'field_date_validation_fail_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION, 'No rating results text', array( &$this, 'field_no_rating_results_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
@@ -373,7 +373,7 @@ class Multi_Rating {
 	}
 	function field_rating_form_submit_button_text() {
 		?>
-		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::RATING_FORM_BUTTON_TEXT_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::RATING_FORM_BUTTON_TEXT_OPTION]; ?>" />
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION]; ?>" />
 		<?php
 	}	
 	public function field_rating_form_submit_message() {
