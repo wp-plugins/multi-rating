@@ -1,7 +1,7 @@
 === Multi Rating ===
 Contributors: dpowney
 Donate link: http://www.danielpowney.com/donate
-Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippets
+Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippet, testimonial, review
 Requires at least: 3.0.1
 Tested up to: 3.8
 Stable tag: trunk
@@ -12,64 +12,41 @@ The simplest star rating plugin which allows visitors to rate a post based on mu
 
 == Description ==
 
-The simplest star rating plugin which allows visitors to rate a post based on multiple criteria and questions
+The simplest star rating plugin which allows visitors to rate a post based on multiple criteria and questions.
 
 = Features =
 
 * Star rating is based on multuple rating criteria and questions
-* Shortcodes to display the rating form, single rating results and top rating results
+* Shortcodes to display the rating form, rating results and top rating results
 * API functions for using Multi Rating in your theme
 * View the rating results and entry values from the WP-admin
 * Widgets to display the top rating results
 * SEO rich snippets are added to markup
 * Options to apply to different post types
-* Add custom weights to each multi-rating item
-* Position settings for the placement of the rating form before_content or after_contens and also rating results before_title or after_title
+* Add custom weights to each multi-rating item to adjust overall rating results
+* Position settings for the automatic placement of the rating form before_content or after_contens and also rating results before_title or after_title
 * Settings to modify text, apply different styles, clear database etc...
 
 Here's a demo http://www.danielpowney.com/multi-rating
 
-= Shortcode Examples =
-
-* [display_rating_form]
-* [display_rating_form post_id="100" title="My rating form" submit_button_text="Submit"]
-* [display_rating_result]
-* [display_rating_result post_id="100" no_rating_results_text="No rating result yet"]
-* [display_top_rating_results]
-* [display_top_rating_results title="Top Rating Results" count="10"]
+= Shortcodes =
+[display_rating_form]
+[display_rating_form post_id="100" title="My rating form" submit_button_text="Submit"]
+[display_rating_result]
+[display_rating_result post_id="100" no_rating_results_text="No rating result yet" show_rich_snippets="false" show_count="true" show_title="false"]
+[display_top_rating_results]
+[display_top_rating_results title="Top Rating Results" count="10"]
 
 = API Functions =
-
-Look at PHP functions available in multi-rating-api.php. e.g. Multi_Rating_API::calculate_rating_result($post_id, $rating_items)
-
-= Settings =
-
-There following settings are available:
-
-* Select the post types that are applicable for multi rating
-* Choose to automatically display the rating form before or after the post content for all selected post types
-* Choose to automatically display the rating result before or after the post title for all selected post types
-* Change the default text and messages
-* Restrict the same IP address from submitting a rating form within 24 hours for the same post
-* Custom styles and star height
-* Clear all rating results
-
-= Rating Results =
-You can view the details of all rating results and entry values in the WP admin including:
-* Rating result entry details including the post id, entry date, IP address, WP username, rating result and shortcode
-* Rating Result entry values: Each rating item value selected as a part of the rating result entry along with the description and max option value for each rating item
-
-= Weights =
-By default, each rating item has a weight of 1.0. You can modify the weights of each rating item to adjust the rating results.
+Look at PHP functions available in multi-rating-api.php. e.g. Multi_Rating_API::display_rating_form()
 
 = Multi Rating Pro =
-
-Multi Rating Pro adds advanced features into the Multi Rating plugin.
-
+Multi Rating Pro adds advanced features into the Multi Rating plugin:
 * Multiple rating forms with different rating items
 * Logged in users can update and delete their existing ratings
 * Allow/disallow anonymous user ratings option
-* Shortcode to return each rating item result individually
+* Shortcode & API functions to display each rating item result individually
+* Shortcode & API functions to display rating reviews (with comments, star rating, each rating item result and name). e.g. can be used for testimonials etc...
 * Set rating item select option values with text descriptions
 * Widget to display existing ratings of a logged in user
 * Apply category filters to the Top Rating Results and User Ratings widgets
