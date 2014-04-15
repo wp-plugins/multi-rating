@@ -31,22 +31,18 @@ Here's a demo http://www.danielpowney.com/multi-rating
 
 = Shortcodes =
 
-[display_rating_form]
-
-[display_rating_form post_id="100" title="My rating form" submit_button_text="Submit"]
-
-[display_rating_result]
-
-[display_rating_result post_id="100" no_rating_results_text="No rating result yet" show_rich_snippets="false" show_count="true" show_title="false"]
-
-[display_top_rating_results]
-
-[display_top_rating_results title="Top Rating Results" count="10"]
+* [display_rating_form]
+* [display_rating_form post_id="100" title="My rating form" submit_button_text="Submit"]
+* [display_rating_result]
+* [display_rating_result post_id="100" no_rating_results_text="No rating result yet" show_rich_snippets="false" show_count="true" show_title="false"]
+* [display_top_rating_results]
+* [display_top_rating_results title="Top Rating Results" count="10"]
 
 = API Functions =
 Look at PHP functions available in multi-rating-api.php. e.g. Multi_Rating_API::display_rating_form()
 
 = Multi Rating Pro =
+
 Multi Rating Pro adds advanced features into the Multi Rating plugin:
 
 * Multiple rating forms with different rating items
@@ -67,7 +63,6 @@ Multi Rating Pro adds advanced features into the Multi Rating plugin:
 * More star rating image sprites
 
 For more information visit http://danielpowney.com/downloads/multi-rating-pro/
-
 
 == Installation ==
 
