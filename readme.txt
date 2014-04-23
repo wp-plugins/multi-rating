@@ -48,17 +48,18 @@ Multi Rating Pro adds advanced features into the Multi Rating plugin:
 * Multiple rating forms with different rating items
 * Logged in users can update and delete their existing ratings
 * Allow/disallow anonymous user ratings option
-* Shortcode & API functions to display each rating item result individually
-* Shortcode & API functions to display rating reviews (with comments, star rating, each rating item result and name). e.g. can be used for testimonials etc...
+* Shortcode and API functions to display each rating item result individually
+* Shortcode and API functions to display rating reviews (with comments, star rating, each rating item result and name)
 * Set rating item select option values with text descriptions
-* Widget to display existing ratings of a logged in user
+* Shortcode, API functions and widget to display existing ratings of a logged in user
 * Apply category filters to the Top Rating Results and User Ratings widgets
 * Post meta box in the WP-admin edit post page to change the defaults for the rating form, allow anonymous ratings option and change the display position settings of the rating form and rating results
 * Rating forms can optionally include a name, e-mail and comment fields
 * Option to display the rating result back to the user when they submit a rating form
 * Modify the duration in days for the IP address & date validation check for users submitting the rating form
 * View rating results per post and rating form in WP-admin backend
-* Post and category filters to include (whitelist) or exclude (blacklist) certain posts
+* Post, category and specific page URL filters to include (whitelist) or exclude (blacklist) displaying the rating form and rating result set positions
+* Option to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages) from displaying the rating form and rating result set positions
 * More filters on WP-admin rating results tables
 * More star rating image sprites
 
