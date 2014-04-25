@@ -47,19 +47,17 @@ Multi Rating Pro adds advanced features into the Multi Rating plugin:
 
 * Multiple rating forms with different rating items
 * Logged in users can update and delete their existing ratings
-* Allow/disallow anonymous user ratings option
-* Shortcode and API functions to display each rating item result individually
-* Shortcode and API functions to display rating reviews (with comments, star rating, each rating item result and name)
-* Set rating item select option values with text descriptions
-* Shortcode, API functions and widget to display existing ratings of a logged in user
-* Apply category filters to the Top Rating Results and User Ratings widgets
-* Post meta box in the WP-admin edit post page to change the defaults for the rating form, allow anonymous ratings option and change the display position settings of the rating form and rating results
+* New shortcodes, API functions and widgets for displaying rating results in a review format, displaying individual rating item results and displaying rating results belonging to a specific user
 * Rating forms can optionally include a name, e-mail and comment fields
-* Option to display the rating result back to the user when they submit a rating form
-* Modify the duration in days for the IP address & date validation check for users submitting the rating form
+* Ability to use text descriptions for select options instead of numbers
 * View rating results per post and rating form in WP-admin backend
 * Post, category and specific page URL filters to include (whitelist) or exclude (blacklist) displaying the rating form and rating result set positions
-* Option to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages) from displaying the rating form and rating result set positions
+* Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages) from displaying the rating form and rating result set positions
+* Allow/disallow anonymous user ratings option
+* Apply category filters to the Top Rating Results and User Ratings widgets
+* Change the defaults settings for each post in the Edit Post page including the default rating form, allow anonymous ratings option and display settings for the rating form and rating results positions
+* Option to display the rating result back to the user when they submit a rating form
+* Modify the duration in days for the IP address date validation check for users submitting the rating form
 * More filters on WP-admin rating results tables
 * More star rating image sprites
 
