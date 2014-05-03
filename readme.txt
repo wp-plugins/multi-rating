@@ -27,7 +27,7 @@ The simplest star rating plugin which allows visitors to rate a post based on mu
 * Position settings for the automatic placement of the rating form before_content or after_contens and also rating results before_title or after_title
 * Settings to modify text, apply different styles, clear database etc...
 
-Here's a demo http://www.danielpowney.com/multi-rating
+Here's a demo http://danielpowney.com/downloads/multi-rating-pro/
 
 = Shortcodes =
 
