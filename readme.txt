@@ -14,6 +14,8 @@ Multi Rating is a simple rating plugin which allows visitors to rate a post base
 
 Multi Rating is a simple rating plugin which allows visitors to rate a post based on multiple criteria and questions. It is responsive, easy to use and integrates seamlessly into any WordPress theme.
 
+Here's a live demo: http://danielpowney.com/multi-rating/
+
 I developed Multi Rating because I could not find a single multi rating plugin for WordPress that a) worked, b) was simple and easy to use, and c) had the right features. GD Star Rating was far too complicated and the other rating plugins were either too basic or did not work at all.
 
 = Features =
@@ -30,33 +32,25 @@ I developed Multi Rating because I could not find a single multi rating plugin f
 * Meta box on the edit post page to override the default automatic placement settings
 * Settings to restrict post types, turn on validation, modify text, apply different styles and clear the database etc...
 
-Here's a live demo: http://danielpowney.com/multi-rating/
-
-Full documentation available at: http://danielpowney.com/multi-rating/
-
-= Shortcode Examples =
+= Shortcodes =
+The following shortcodes are available.
 
 * [display_rating_form]
-* [display_rating_form post_id="100" title="My rating form" submit_button_text="Submit"]
 * [display_rating_result]
-* [display_rating_result post_id="100" no_rating_results_text="No rating result yet" show_rich_snippets="false" show_count="true" show_title="false"]
 * [display_top_rating_results]
-* [display_top_rating_results title="Top Rating Results" limit="10"]
 
-The Pro version contains 3 additonal shortcodes [display_user_rating_results], [display_rating_result_reviews] and [display_rating_item_results].
+There are several attributes available to customise each shortcode. e.g. [display_rating_form post_id="100" title="My Rating Form" submit_button_text="Submit" class="my-css-class" before_title="" after_title""]
 
 = API Functions =
-The API functions are located in the multi-rating-api.php file which contains a static class called Multi_Rating_API. The key API functions are:
+The key API functions are:
 
 * display_top_rating_results
 * display_rating_result
 * display_rating_form
 
-The pro version contains 3 additional key API functions: display_user_rating_results, display_rating_result_reviews and display_rating_item_results
-
 = Multi Rating Pro =
 
-The following key features are available in the Pro version:
+The following key features are available in the Pro version (http://danielpowney.com/downloads/multi-rating-pro/):
 
 * Multiple rating forms with different rating items
 * Logged in users can update and delete their existing ratings
@@ -77,7 +71,7 @@ Other features available in the Pro version include:
 * More filters on WP-admin rating results tables
 * More star rating image sprites
 
-To learn more go to http://danielpowney.com/downloads/multi-rating-pro/
+Details here: http://danielpowney.com/downloads/multi-rating-pro/
 
 == Installation ==
 
@@ -87,7 +81,7 @@ To learn more go to http://danielpowney.com/downloads/multi-rating-pro/
 
 == Frequently Asked Questions ==
 
-Full documentation available at: http://danielpowney.com/multi-rating/
+Documentation here: http://danielpowney.com/multi-rating/
 
 == Screenshots ==
 1. Demo of rating results after page title, rating form and top rating results
