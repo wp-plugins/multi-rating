@@ -56,14 +56,13 @@ The following key features are available in the Pro version:
 * Rating forms can optionally include a name, e-mail and comment fields
 * Ability to use text descriptions for select options instead of numbers
 * View rating results per post and rating form in WP-admin backend
-* Post, category and specific page URL filters to include (whitelist) or exclude (blacklist) displaying the rating form and rating result set positions
-* Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages) from displaying the rating form and rating result set positions
+* Post, category and specific page filters to include (whitelist) or exclude (blacklist) automatic placement of the rating form and rating results
+* Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages)
 
 Other features available in the Pro version include:
 
 * Allow/disallow anonymous user ratings option
-* Apply category filters to the Top Rating Results and User Ratings widgets
-* Change the defaults settings for each post in the Edit Post page including the default rating form, allow anonymous ratings option and display settings for the rating form and rating results positions
+* Change the defaults settings for each post in the Edit Post page including the default rating form and allow anonymous ratings option
 * Option to display the rating result back to the user when they submit a rating form
 * Modify the duration in days for the IP address date validation check for users submitting the rating form
 * More filters on WP-admin rating results tables
