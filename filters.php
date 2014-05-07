@@ -30,14 +30,26 @@ function mr_filter_the_content($content) {
 		return; // No post id available to display rating form
 	}
 
-	$position_settings = (array) get_option( Multi_Rating::POSITION_SETTINGS );
-
 	// use default rating form position
-	$rating_form_position = $position_settings[Multi_Rating::RATING_FORM_POSITION_OPTION ];
+	$rating_form_position = get_post_meta( $post->ID, Multi_Rating::RATING_FORM_POSITION_POST_META, true );
+	if ($rating_form_position == Multi_Rating::DO_NOT_SHOW)
+		return $content;
+	
+	$position_settings = (array) get_option( Multi_Rating::POSITION_SETTINGS );
+	
+	// use default rating form position
+	if ($rating_form_position == "") {
+		$rating_form_position = $position_settings[Multi_Rating::RATING_FORM_POSITION_OPTION ];
+	}
 
-	$rating_form_ = null;
+	$rating_form = null;
 	if ($rating_form_position == 'before_content' || $rating_form_position == 'after_content') {
-		$rating_form = Multi_Rating_API::display_rating_form(array('post_id' => $post_id, 'echo' => false));
+		$rating_form = Multi_Rating_API::display_rating_form(
+				array(
+						'post_id' => $post_id,
+						'echo' => false,
+						'class' => $rating_form_position
+		));
 	}
 
 	$filtered_content = '';
@@ -87,10 +99,16 @@ function mr_filter_the_title($title) {
 		return; // No post id available to display rating form
 	}
 	
+	$rating_results_position = get_post_meta( $post->ID, Multi_Rating::RATING_RESULTS_POSITION_POST_META, true );
+	if ($rating_results_position == Multi_Rating::DO_NOT_SHOW)
+		return $title;
+	
 	$position_settings = (array) get_option( Multi_Rating::POSITION_SETTINGS );
-
+	
 	// use default rating results position
-	$rating_results_position = $position_settings[Multi_Rating::RATING_RESULTS_POSITION_OPTION ];
+	if ($rating_results_position == "") {
+		$rating_results_position = $position_settings[Multi_Rating::RATING_RESULTS_POSITION_OPTION ];
+	}
 
 
 	$rating_result = Multi_Rating_API::display_rating_result(
@@ -98,7 +116,8 @@ function mr_filter_the_title($title) {
 					'post_id' => $post_id,
 					'echo' => false,
 					'show_date' => false,
-					'show_rich_snippets' => true
+					'show_rich_snippets' => true,
+					'class' => $rating_results_position
 			));
 
 	$filtered_title = '';

@@ -1,62 +1,75 @@
-form.rating-form {
+/* Rating Form */
+div.rating-form form {
 	margin: 0px;
 	width : auto;
 	max-width: 100%;
 	display: table;
-	margin-bottom: 15px;
+	margin-bottom: 30px;
+	margin-top: 15px;
 }
-
-form.rating-form table {
+div.rating-form form table {
 	width: 100%;
 	text-align: left;
 }
-
-form.rating-form h4 {
+div.rating-form form h4 {
 	font-weight: bold;
 }
-
-form.rating-form table td {
+div.rating-form form table td {
 	vertical-align: top;
 }
-
-form.rating-form table label {
+div.rating-form form table label {
 	padding-right: 10px;
-	padding-bottom: 10px;
 	font-weight: normal;
 	vertical-align: text-top;
 }
-
-form.rating-form table .value {
-	padding-bottom: 10px;
+div.rating-form form table .value {
 	text-align: right;
 }
-
-form.rating-form table .value select {
+div.rating-form form table .value select {
 	min-width: 50px;
 }
-
-form.rating-form table .action {
+div.rating-form form table textarea, div.rating-form form table input {
+	min-weight: 100%;
+	width: 100%;
+}
+div.rating-form form table input[type=button] {
+	width: auto;
+}
+div.rating-form form table label.textarea-label, div.rating-form form table label.input-label {
+	display: block;
+	padding-bottom: 0px;
+}
+div.rating-form form table .action {
 	text-align: right;
 }
 
-.rating-result {
+
+/* Rating Results */
+h1 > div.rating-result {
+	font-size: 60%;
+	text-transform: none;
+	font-weight: normal;
 	display: inline-block;
-	margin-top: 5px;
 	margin-left: 5px;
 	text-align: left;
+	vertical-align: top;
 }
-.rating-result-row {
+.rating-result .rating-result-row {
 	display: inline-block;
 	vertical-align: middle;
 	font-weight: normal;
 	letter-spacing: normal;
 	text-align: left;
 }
-
 .rating-result .rating-result-row * {
 	line-height: normal !important;
 }
-
+.rating-result .rating-result-row + span.star-result {
+	display: inline-block;
+}
+.rating-item-result-summary span.description + span.result {
+	margin-left: 5px;
+}
 .rating-result-summary {
 	display: inline-block;
 	margin-left: 5px;
@@ -68,12 +81,38 @@ form.rating-form table .action {
 	font-size: 0px !important;
 }
 
-.top-rating-results {
-	margin-bottom: 10px;
-	margin-top: 10px;
+
+
+/* Top Rating Results */
+.top-rating-results table tbody tr td {
+	vertical-align: top;
+}
+.top-rating-results table tbody tr + tr td {
+	margin-top: 2px;
+}
+.top-rating-results .rank, .top-rating-results .rating-result, .top-rating-results .title, .top-rating-results .count {
+	margin-right: 5px;
 }
 
-.top-rating-results .rating-result {
+
+
+
+/** 
+ * Common
+ */
+.top-rating-results {
+	margin-top: 10px;
+	padding-bottom: 10px;
+}
+form.category-id-filter {
 	display: block;
-	margin-left: 0px;
+}
+form.category-id-filter label {
+	font-weight: normal;
+}
+form.category-id-filter select {
+	margin-left: 5px;
+}
+.category-id input[type=submit] {
+	margin-left: 5px;
 }

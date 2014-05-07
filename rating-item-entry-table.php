@@ -117,20 +117,24 @@ class Rating_Item_Entry_Table extends WP_List_Table {
 			case Rating_Item_Entry_Table::SHORTCODE_COLUMN :
 				echo '[display_rating_result post_id="' . $item[Rating_Item_Entry_Table::POST_ID_COLUMN] . '"]';
 				break;
+			case Rating_Item_Entry_Table::ENTRY_DATE_COLUMN :
+				echo date("F j, Y, g:i a", strtotime($item[$column_name]));
+				break;
 			case Rating_Item_Entry_Table::CHECKBOX_COLUMN :
 				return $item[ $column_name ];
 				break;
 			case Rating_Item_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN :
 			case Rating_Item_Entry_Table::POST_ID_COLUMN :
-			case Rating_Item_Entry_Table::ENTRY_DATE_COLUMN :
 			case Rating_Item_Entry_Table::IP_ADDRESS_COLUMN :
 			case Rating_Item_Entry_Table::USERNAME_COLUMN :
 				echo $item[ $column_name ];
 				break;
 			case Rating_Item_Entry_Table::RATING_RESULT_COLUMN :
-				$rating_item_entry_result = Multi_Rating_API::calculate_rating_item_entry_result( $item[ Rating_Item_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN ] );
-				$result = round(doubleval($rating_item_entry_result['rating_item_entry_result']) * doubleval($rating_item_entry_result['total_max_option_value']), 2);
-				echo $result . '/' . $rating_item_entry_result['total_max_option_value'];
+				$rating_result = Multi_Rating_API::calculate_rating_item_entry_result( $item[ Rating_Item_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN ] );
+				
+				echo '5 Star: ' . $rating_result['adjusted_star_result'] . '/5<br />'
+				. 'Score: ' . $rating_result['adjusted_score_result'] . '/' . $rating_result['total_max_option_value'] . '<br />'
+				. 'Percentage: ' . $rating_result['adjusted_percentage_result'] . '%';
 				break;
 			case Rating_Item_Entry_Table::ACTION_COLUMN :
 				?>

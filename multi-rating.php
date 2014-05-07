@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple star rating plugin which allows visitors to rate a post based on multiple criteria and questions
-Version: 2.0.4
+Version: 2.1
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
@@ -31,8 +31,9 @@ class Multi_Rating {
 
 	// constants
 	const
-	VERSION = '2.0.4',
+	VERSION = '2.1',
 	ID = 'mr',
+	PRO_HTML = '<p>Multi Rating Pro has advanced features including multiple rating forms, reviews, individual rating item results, update/delete existing ratings, select option text and heaps more!<br /><a href="http://danielpowney.com/downloads/multi-rating-pro/">Click here to learn more.</a></p>',
 	
 	// tables
 	RATING_SUBJECT_TBL_NAME 					= 'mr_rating_subject',
@@ -62,6 +63,12 @@ class Multi_Rating {
 	NO_RATING_RESULTS_TEXT_OPTION				= 'mr_no_rating_results_text',
 	VERSION_OPTION								= 'mr_version_option',
 	
+	//values
+	SCORE_RESULT_TYPE							= 'score',
+	STAR_RATING_RESULT_TYPE						= 'star_rating',
+	PERCENTAGE_RESULT_TYPE						= 'percentage',
+	DO_NOT_SHOW									= 'do_not_show',
+	
 	// pages
 	SETTINGS_PAGE_SLUG							= 'mr_settings_page',
 	RATING_ITEMS_PAGE_SLUG						= 'mr_rating_items',
@@ -70,7 +77,11 @@ class Multi_Rating {
 	
 	// tabs
 	RATING_RESULTS_TAB							= 'mr_rating_results_tab',
-	RATING_RESULT_DETAILS_TAB					= 'mr_rating_result_details_tab'
+	RATING_RESULT_DETAILS_TAB					= 'mr_rating_result_details_tab',
+	
+	// post meta box
+	RATING_FORM_POSITION_POST_META				= 'rating_form_position',
+	RATING_RESULTS_POSITION_POST_META			= 'rating_results_position'
 	;
 	
 	public $custom_text_settings = array();
@@ -169,9 +180,93 @@ class Multi_Rating {
 		add_action( 'admin_init', array( &$this, 'register_general_settings' ) );
 		add_action( 'admin_init', array( &$this, 'register_position_settings' ) );
 		
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
+		add_action( 'save_post', array( $this, 'save_post_meta' ) );
+		
 		add_action('wp_head', array($this, 'add_custom_css'));
 
 		$this->add_ajax_actions();
+	}
+	
+	/**
+	 * Adds the meta box container
+	 */
+	public function add_meta_box( $post_type ) {
+		$post_types = $this->general_settings[Multi_Rating::POST_TYPES_OPTION];
+	
+		if ( in_array( $post_type, $post_types )) {
+			add_meta_box( 'mr_meta_box', 'Multi Rating', array( $this, 'display_meta_box_content' ), $post_type, 'side', 'high');
+		}
+	}
+	
+	/**
+	 * Save the meta when the post is saved.
+	 *
+	 * @param int $post_id The ID of the post being saved.
+	 */
+	public function save_post_meta( $post_id ) {
+			
+		if ( ! isset( $_POST['meta_box_nonce_action'] ) )
+			return $post_id;
+	
+		if ( ! wp_verify_nonce( $_POST['meta_box_nonce_action'], 'meta_box_nonce' ) )
+			return $post_id;
+	
+		// If this is an autosave, our form has not been submitted, so we don't want to do anything.
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+			return $post_id;
+	
+		// Check the user's permissions.
+		if ( 'page' == $_POST['post_type'] ) {
+			if ( ! current_user_can( 'edit_page', $post_id ) )
+				return $post_id;
+	
+		} else {
+			if ( ! current_user_can( 'edit_post', $post_id ) )
+				return $post_id;
+		}
+	
+		$rating_form_position = $_POST['rating-form-position'];
+		$rating_results_position = $_POST['rating-results-position'];
+	
+		// Update the meta field.
+		update_post_meta( $post_id, Multi_Rating::RATING_FORM_POSITION_POST_META, $rating_form_position );
+		update_post_meta( $post_id, Multi_Rating::RATING_RESULTS_POSITION_POST_META, $rating_results_position );
+	}
+	
+	
+	/**
+	 * Displays the meta box content
+	 *
+	 * @param WP_Post $post The post object.
+	 */
+	public function display_meta_box_content( $post ) {
+	
+		wp_nonce_field( 'meta_box_nonce', 'meta_box_nonce_action' );
+	
+		$rating_form_position = get_post_meta( $post->ID, Multi_Rating::RATING_FORM_POSITION_POST_META, true );
+		$rating_results_position = get_post_meta( $post->ID, Multi_Rating::RATING_RESULTS_POSITION_POST_META, true );
+	
+		?>
+		<p>
+			<label for="rating-form-position">Rating Form Position</label>
+			<select class="widefat" name="rating-form-position">
+				<option value="<?php echo Multi_Rating::DO_NOT_SHOW; ?>" <?php selected('do_not_show', $rating_form_position, true );?>>Do not show</option>
+				<option value="" <?php selected('', $rating_form_position, true );?>>Use default settings</option>
+				<option value="before_content" <?php selected('before_content', $rating_form_position, true );?>>Before content</option>
+				<option value="after_content" <?php selected('after_content', $rating_form_position, true );?>>After content</option>
+			</select>
+		</p>
+		<p>
+			<label for="rating-results-position">Rating Result Position</label>
+			<select class="widefat" name="rating-results-position">
+				<option value="<?php echo Multi_Rating::DO_NOT_SHOW; ?>" <?php selected('do_not_show', $rating_results_position, true );?>>Do not show</option>
+				<option value="" <?php selected('', $rating_results_position, true );?>>Use default settings</option>
+				<option value="before_title" <?php selected('before_title', $rating_results_position, true );?>>Before title</option>
+				<option value="after_title" <?php selected('after_title', $rating_results_position, true );?>>After title</option>
+			</select>
+		</p>
+		<?php
 	}
 	
 	/**
@@ -184,16 +279,19 @@ class Multi_Rating {
 		$this->general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );	
 		
 		$default_css = addslashes(
-				"form.rating-form {
-	/* i.e. rating form custom CSS:
-	border: 3px solid #BABABA;
-	background-color: #A1BED4;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	padding: 10px;
-	margin-top: 20px;
-	width: auto; */
+				".top-rating-results .rank {
+   background-color: #DDDDDD;
+   -webkit-border-radius: 50%; 
+   -moz-border-radius:  50%; 
+   border-radius: 50%; 
+   padding-left: 8px;
+   padding-right: 8px;
+}
+.rating-result .percentage-result, .rating-result .score-result {
+   font-weight: bold;
+}
+.top-rating-results tr {
+	margin-bottom: 10px;
 }" );
 		
 		// Merge with defaults
@@ -450,7 +548,9 @@ class Multi_Rating {
 	public function settings_page() {
 		?>
 		<div class="wrap">
+		
 			<h2>Settings</h2>
+			<?php echo Multi_Rating::PRO_HTML; ?>
 			
 			<?php 
 			if ( isset( $_GET['updated'] ) && isset( $_GET['page'] ) ) {
@@ -516,7 +616,7 @@ class Multi_Rating {
 			<div class="clear" />
 			<br />
 			<hr />
-			<p>Multi Rating Pro adds advanced features into the Multi Rating plugin. <a href="http://danielpowney.com/downloads/multi-rating-pro/">Click here</a> for more information and a demo.</p>
+			<?php echo Multi_Rating::PRO_HTML; ?>
 			
 		</div>
 		<?php 
@@ -530,6 +630,7 @@ class Multi_Rating {
 	public function rating_results_page() {
 		?>
 		<div class="wrap">
+			<?php echo Multi_Rating::PRO_HTML; ?>
 			<h2 class="nav-tab-wrapper">
 				<?php
 				$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : Multi_Rating::RATING_RESULTS_TAB;
@@ -569,7 +670,7 @@ class Multi_Rating {
 			<div class="clear" />
 			<br />
 			<hr />
-			<p>Multi Rating Pro adds advanced features into the Multi Rating plugin. <a href="http://danielpowney.com/downloads/multi-rating-pro/">Click here</a> for more information and a demo.</p>
+			<?php echo Multi_Rating::PRO_HTML; ?>
 			
 		</div>
 		<?php 
@@ -584,6 +685,7 @@ class Multi_Rating {
 		?>
 		<div class="wrap">
 			<h2>Rating Items<a class="add-new-h2" href="admin.php?page=<?php echo Multi_Rating::ADD_NEW_RATING_ITEM_PAGE_SLUG; ?>">Add New</a></h2>
+			<?php echo Multi_Rating::PRO_HTML; ?>
 			<form method="post" id="rating-item-table-form">
 				<?php 
 				$rating_item_table = new Rating_Item_Table();
@@ -595,7 +697,7 @@ class Multi_Rating {
 			<div class="clear" />
 			<br />
 			<hr />
-			<p>Multi Rating Pro adds advanced features into the Multi Rating plugin. <a href="http://danielpowney.com/downloads/multi-rating-pro/">Click here</a> for more information and a demo.</p>
+			<?php echo Multi_Rating::PRO_HTML; ?>
 			
 		</div>
 		<?php 
@@ -648,6 +750,7 @@ class Multi_Rating {
 		?>
 		<div class="wrap">
 			<h2>Add New Rating Item</h2>
+			<?php echo Multi_Rating::PRO_HTML; ?>
 		
 			<form method="post" id="add-new-rating-item-form">
 				<table class="form-table">
@@ -691,7 +794,7 @@ class Multi_Rating {
 			<div class="clear" />
 			<br />
 			<hr />
-			<p>Multi Rating Pro adds advanced features into the Multi Rating plugin. <a href="http://danielpowney.com/downloads/multi-rating-pro/">Click here</a> for more information and a demo.</p>
+			<?php echo Multi_Rating::PRO_HTML; ?>
 		</div>
 		<?php
 	}

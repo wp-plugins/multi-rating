@@ -1,7 +1,7 @@
 <?php 
 
 /**
- * API functions for multi rating:
+ * API functions for multi rating
  *
  */
 class Multi_Rating_API {
@@ -135,7 +135,7 @@ class Multi_Rating_API {
 	 * @param array $params post_id, rating_items
 	 * @return rating result
 	 */
-	public static function calculate_rating_result($params = array()) {
+	public static function calculate_rating_result( $params = array() ) {
 	
 		if (!isset($params['rating_items']) || !isset($params['post_id']) ) {
 			return;
@@ -143,12 +143,16 @@ class Multi_Rating_API {
 	
 		$rating_items = $params['rating_items'];
 		$post_id = $params['post_id'];
-		
+	
 		$rating_item_entries = Multi_Rating_API::get_rating_item_entries(array('post_id' => $post_id));
 			
 		$total_weight = Multi_Rating_API::get_total_weight($rating_items);
-		$rating_item_entry_result_total = 0;
-		$entries = 0;
+	
+		$score_result_total = 0;
+		$adjusted_score_result_total = 0;
+		$total_max_option_value = 0;
+	
+		$count = 0;
 		// process all entries for the post and construct a rating result for each post
 		foreach ($rating_item_entries as $rating_item_entry) {
 			$total_value = 0;
@@ -156,19 +160,50 @@ class Multi_Rating_API {
 			// retrieve the entry values for each rating item
 			$rating_item_entry_id = $rating_item_entry['rating_item_entry_id'];
 				
-			$rating_item_entry_result = Multi_Rating_API::calculate_rating_item_entry_result($rating_item_entry_id, $rating_items);
-			$rating_item_entry_result_total += $rating_item_entry_result['rating_item_entry_result'];
+			$rating_result = Multi_Rating_API::calculate_rating_item_entry_result($rating_item_entry_id, $rating_items);
 				
-			$entries++;
+				
+			$score_result_total += $rating_result['score_result'];
+			$adjusted_score_result_total += $rating_result['adjusted_score_result'];
+			if ($total_max_option_value == 0) { // no need to set again
+				$total_max_option_value = $rating_result['total_max_option_value'];
+			}
+				
+			$count++;
 		}
 	
-		$result = 0;
-		if ($entries > 0) {
-			$result = round(doubleval($rating_item_entry_result_total) / doubleval($entries), 2);
+		$score_result = 0;
+		$adjusted_score_result = 0;
+		$star_result = 0;
+		$adjusted_star_result = 0;
+		$percentage_result = 0;
+		$adjusted_percentage_result = 0;
+	
+		if ($count > 0) {
+			// calculate 5 star result
+			$score_result = round(doubleval($score_result_total) / $count, 2);
+			$adjusted_score_result =round(doubleval($adjusted_score_result_total) / $count, 2);
+				
+			// calculate star result
+			$star_result = round(doubleval($score_result) / doubleval($total_max_option_value), 2) * 5;
+			$adjusted_star_result = round(doubleval($adjusted_score_result) / doubleval($total_max_option_value), 2) * 5;
+				
+			// calculate percentage result
+			$percentage_result = round(doubleval($score_result) / doubleval($total_max_option_value), 2) * 100;
+			$adjusted_percentage_result = round(doubleval($adjusted_score_result) / doubleval($total_max_option_value), 2) * 100;
 		}
 	
-		return array('result' => $result, 'rating_item_entry_result_total' => $rating_item_entry_result_total, 'entries' => $entries, 'post_id' => $post_id);
-	
+		return array(
+				'adjusted_star_result' => $adjusted_star_result,
+				'star_result' => $star_result,
+				'total_max_option_value' => $total_max_option_value,
+				'adjusted_score_result' => $adjusted_score_result,
+				'score_result' => $score_result,
+				'percentage_result' => $percentage_result,
+				'adjusted_percentage_result' => $adjusted_percentage_result,
+				'count' => $count,
+				'post_id' => $post_id,
+		);
 	}
 	
 	/**
@@ -256,39 +291,58 @@ class Multi_Rating_API {
 	}
 	
 	/**
-	 * Calculates the result for single rating item
+	 * Calculates the result for a single rating item
 	 *
 	 * @param array $rating_item
 	 * @param int $post_id
-	 * @return rating item result
 	 */
 	public static function calculate_rating_item_result($rating_item, $post_id) {
 		$max_option_value = $rating_item['max_option_value'];
 		$total_value = 0;
-		$count = 0;
 	
 		global $wpdb;
 	
 		$rating_item_entry_value_query = 'SELECT * FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME
 		. ' as riev, ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' as rie WHERE riev.rating_item_id = "' . $rating_item['rating_item_id']
-		. '" AND riev.rating_item_entry_id = rie.rating_item_entry_id AND rie.post_id = "' . $post_id . '"';
+		. '" AND rie.rating_form_id = "' . $rating_form_id . '" AND riev.rating_item_entry_id = rie.rating_item_entry_id AND rie.post_id = "' . $post_id . '"';
 	
-		$rating_item_entry_value_rows = $wpdb->get_results($rating_item_entry_value_query);
+		$total_max_option_value = 0;
+		$star_result = 0;
+		$adjusted_star_result = 0;
+		$score_result = 0;
+		$adjusted_score_result = 0;
+		$percentage_result = 0;
+		$adjusted_percentage_result = 0;
 	
 		foreach ($rating_item_entry_value_rows as $rating_item_entry_value_row) {
 			$value = $rating_item_entry_value_row->value;
-			$total_value += intval($value);
-			$count++;
+			$score_result += intval($value);
 		}
 	
-		$total_max_option_value = 0;
-		$avg_value = 0;
+		$count = count($rating_item_entry_value_rows);
 		if ($count > 0) {
-			$total_max_option_value = $count * $max_option_value;
-			$avg_value = round(doubleval($total_value / $count), 2);
+			$score_result = round(doubleval($score_result) / $count, 2);
+			$adjusted_score_result = $score_result; // TODO weights
+				
+			// calculate 5 star result
+			$star_result = round(doubleval($score_result) / doubleval($max_option_value), 10) * 5;
+			$adjusted_star_result = round(doubleval($adjusted_score_result) / doubleval($max_option_value), 2) * 5;
+	
+			// calculate percentage result
+			$percentage_result = round(doubleval($score_result) / doubleval($max_option_value), 10) * 100;
+			$adjusted_percentage_result = round(doubleval($adjusted_score_result) / doubleval($max_option_value), 2) * 100;
 		}
 	
-		return array('total_max_option_value' => $total_max_option_value, 'count' => $count, 'total_value' => $total_value, 'max_option_value' => $max_option_value, 'avg_value' => $avg_value);
+		return array(
+				'adjusted_star_result' => $adjusted_star_result,
+				'star_result' => $star_result,
+				'total_max_option_value' => $max_option_value,
+				'adjusted_score_result' => $adjusted_score_result,
+				'score_result' => $score_result,
+				'percentage_result' => $percentage_result,
+				'adjusted_percentage_result' => $adjusted_percentage_result,
+				'count' => $count
+		);
 	}
 	
 	
@@ -308,13 +362,17 @@ class Multi_Rating_API {
 		$rating_item_entry_value_query = 'SELECT * FROM ' . $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME . ' WHERE rating_item_entry_id = ' . $rating_item_entry_id;
 		$rating_item_entry_value_rows = $wpdb->get_results($rating_item_entry_value_query);
 	
-		$rating_item_entries = count($rating_item_entry_value_rows);
+		$count_rating_item_entry_value_rows = count($rating_item_entry_value_rows);
+		$count_rating_items = count($rating_items);
 	
-		$rating_item_entry_result_total = 0;
 		$total_max_option_value = 0;
-	
+		$star_result = 0;
+		$adjusted_star_result = 0;
+		$score_result = 0;
+		$adjusted_score_result = 0;
+		$percentage_result = 0;
+		$adjusted_percentage_result = 0;
 		$total_weight = Multi_Rating_API::get_total_weight($rating_items);
-		$count = count($rating_items);
 	
 		foreach ($rating_item_entry_value_rows as $rating_item_entry_value_row) {
 			$rating_item_id = $rating_item_entry_value_row->rating_item_id;
@@ -326,33 +384,46 @@ class Multi_Rating_API {
 				$value = $rating_item_entry_value_row->value;
 				$max_option_value = $rating_items[$rating_item_id]['max_option_value'];
 				$total_max_option_value = $total_max_option_value + intval($max_option_value);
+	
 				// make adjustments to the rating for weights
 				$weight = $rating_items[$rating_item_id]['weight'];
-				$adjustment = ($weight / $total_weight) * $count;
+				$adjustment = ($weight / $total_weight) * $count_rating_items;
 	
-				$rating_item_entry_result = round(doubleval($value) / doubleval($max_option_value), 10);
-				$rating_item_entry_result_total += $rating_item_entry_result * $adjustment;
-	
+				// score result
+				$score_result += intval($value);
+				$adjusted_score_result += $value * $adjustment;
 			} else {
 				break; // skip
 			}
 		}
 	
-		$rating_item_entry_result = 0;
-		if ($rating_item_entries > 0) {
-			$rating_item_entry_result = round(doubleval($rating_item_entry_result_total) / doubleval($rating_item_entries), 10);
+		if (count($rating_item_entry_value_rows) > 0) {
+			// calculate 5 star result
+			$star_result = round(doubleval($score_result) / doubleval($total_max_option_value), 10) * 5;
+			$adjusted_star_result = round(doubleval($adjusted_score_result) / doubleval($total_max_option_value), 2) * 5;
+	
+			// calculate percentage result
+			$percentage_result = round(doubleval($score_result) / doubleval($total_max_option_value), 10) * 100;
+			$adjusted_percentage_result = round(doubleval($adjusted_score_result) / doubleval($total_max_option_value), 2) * 100;
 		}
 	
-		return array('rating_item_entry_result' => $rating_item_entry_result, 'total_max_option_value' => $total_max_option_value);
-	
+		return array(
+				'adjusted_star_result' => $adjusted_star_result,
+				'star_result' => $star_result,
+				'total_max_option_value' => $total_max_option_value,
+				'adjusted_score_result' => $adjusted_score_result,
+				'score_result' => $score_result,
+				'percentage_result' => $percentage_result,
+				'adjusted_percentage_result' => $adjusted_percentage_result,
+		);
 	}
 	
 	
-	private static function sort_rating_results($a, $b) {
-		if ($a['result'] == $b['result']) {
+	private static function sort_top_rating_results($a, $b) {
+		if ($a['score_result'] == $b['score_result']) {
 			return 0;
 		}
-		return ($a['result'] > $b['result']) ? -1 : 1;
+		return ($a['score_result'] > $b['score_result']) ? -1 : 1;
 	}	
 	
 	
@@ -363,7 +434,7 @@ class Multi_Rating_API {
 	 * @param int $rating_form_id
 	 * @return array top rating results
 	 */
-	public static function get_top_rating_results($count = 10) {
+	public static function get_top_rating_results($limit = 10) {
 	
 		$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 		$posts = get_posts(array('numberposts' => -1, 'post_type' => $general_settings[Multi_Rating::POST_TYPES_OPTION]));
@@ -376,26 +447,21 @@ class Multi_Rating_API {
 				
 			$rating_result = Multi_Rating_API::calculate_rating_result(array('post_id' => $current_post->ID, 'rating_items' => $rating_items));
 				
-			if (intval($rating_result['entries']) > 0) {
+			if (intval($rating_result['count']) > 0) {
 				array_push($rating_results, $rating_result);
 			}
 		}
 	
-		uasort($rating_results, array('Multi_Rating_API' , 'sort_rating_results'));
+		uasort($rating_results, array('Multi_Rating_API' , 'sort_top_rating_results'));
 	
-		$rating_results = array_slice($rating_results, 0, $count);
+		$rating_results = array_slice($rating_results, 0, $limit);
 		return $rating_results;
 	}
-	
 	
 	/**
 	 * Displays the rating form
 	 *
-	 * @param unknown_type $post_id
-	 * @param unknown_type $title
-	 * @param unknown_type $before_title
-	 * @param unknown_type $after_title
-	 * @param unknown_type $submit_button_text
+	 * @param unknown_type $params
 	 */
 	public static function display_rating_form( $params = array()) {
 	
@@ -409,7 +475,8 @@ class Multi_Rating_API {
 				'before_title' => '<h4>',
 				'after_title' => '</h4>',
 				'submit_button_text' => $custom_text_settings[Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION],
-				'echo' => true
+				'echo' => true,
+				'class' => ''
 		) ) );
 	
 		global $post;
@@ -421,13 +488,14 @@ class Multi_Rating_API {
 		}
 	
 		$rating_items = Multi_Rating_API::get_rating_items(array());
-		
+	
 		$html = Rating_Form_View::get_rating_form($rating_items, $post_id,
 				array(
 						'title' => $title,
 						'before_title' => $before_title,
 						'after_title' => $after_title,
-						'submit_button_text' => $submit_button_text
+						'submit_button_text' => $submit_button_text,
+						'class' => $class
 				));
 	
 		if ($echo == true) {
@@ -455,7 +523,9 @@ class Multi_Rating_API {
 				'show_title' => false,
 				'show_date' => true,
 				'show_count' => true,
-				'echo' => true
+				'echo' => true,
+				'result_type' => Multi_Rating::STAR_RATING_RESULT_TYPE,
+				'class' => ''
 		) ) );
 	
 		if (is_string($show_rich_snippets)) {
@@ -470,8 +540,9 @@ class Multi_Rating_API {
 		if (is_string($show_count)) {
 			$show_count = $show_count == "true" ? true : false;
 		}
-	
-		// TODO result types: percentage, star and aggregate
+		if (is_string($echo)) {
+			$echo = $echo == "true" ? true : false;
+		}
 	
 		global $post;
 	
@@ -488,13 +559,17 @@ class Multi_Rating_API {
 						'post_id' => $post_id,
 						'rating_items' => $rating_items
 				));
+	
 		$html = Rating_Result_View::get_rating_result_html($rating_result,
 				array(
 						'no_rating_results_text' => $no_rating_results_text,
 						'show_rich_snippets' => $show_rich_snippets,
 						'show_title' => $show_title,
 						'show_date' => $show_date,
-						'show_count' => $show_count
+						'show_count' => $show_count,
+						'no_rating_results_text' => $no_rating_results_text,
+						'result_type' => $result_type,
+						'class' => $class
 				));
 	
 		if ($echo == true) {
@@ -504,65 +579,81 @@ class Multi_Rating_API {
 		return $html;
 	}
 	
-	
-	
 	/**
 	 * Displays the top rating results
-	 * 
-	 * @param unknown_type $count
-	 * @param unknown_type $title
-	 * @param unknown_type $before_title
-	 * @param unknown_type $after_title
+	 *
+	 * @param params rating_form_id
 	 */
-	static function display_top_rating_results( $params = array() ) {
+	public static function display_top_rating_results( $params = array()) {
 	
 		$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
-		
+	
 		$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
-		
+	
 		extract( wp_parse_args( $params, array(
-				'count' => 10,
 				'title' => $custom_text_settings[Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION],
 				'before_title' => '<h4>',
 				'after_title' => '</h4>',
 				'no_rating_results_text' => $custom_text_settings[Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION ],
-				'show_title' => true,
 				'show_count' => true,
-				'echo' => true
+				'echo' => true,
+				'show_category_filter' => true,
+				'category_id' => 0, // 0 = All,
+				'limit' => 10, // modified was count
+				'show_rank' => true,
+				'result_type' => Multi_Rating::STAR_RATING_RESULT_TYPE,
+		        'show_title' => true,
+				'class' => ''
 		) ) );
 	
-		global $wpdb;
-	
-		$html = '<div class="top-rating-results">';
-	
-		if ( !empty( $title ) ) {
-			$html .=  $before_title . $title . $after_title;
+		if (is_string($show_count)) {
+			$show_count = $show_count == "true" ? true : false;
 		}
-		
-		$top_rating_results = Multi_Rating_API::get_top_rating_results($count);
-		
-		if (count($top_rating_results) > 0) {
-			foreach ($top_rating_results as $rating_result) {
-				$html .= Rating_Result_View::get_rating_result_html($rating_result, 
-						array(
-								'show_title' => true,
-								'no_rating_results_text' => $no_rating_results_text,
-								'show_title' => $show_title,
-								'show_rich_snippets' => false,
-								'show_count' => $show_count,
-								'show_date' => false
-						));
+		if (is_string($echo)) {
+			$echo = $echo == "true" ? true : false;
+		}
+		if (is_string($show_category_filter)) {
+			$show_category_filter = $show_category_filter == "true" ? true : false;
+		}
+		if (is_string($show_rank)) {
+			$show_rank = $show_rank == "true" ? true : false;
+		}
+		if (is_string($show_title)) {
+			$show_title = $show_title == "true" ? true : false;
+		}
+	
+		// show the filter for categories
+		if ($show_category_filter == true) {
+			// override category id if set in HTTP request
+			if (isset($_REQUEST['category-id'])) {
+				$category_id = $_REQUEST['category-id'];
 			}
-		} else {
-			$html .= $no_rating_results_text;
 		}
-		
-		$html .= '</div>';
-		
+	
+		if ($category_id == 0) {
+			$category_id = null; // so that all categories are returned
+		}
+	
+		$top_rating_result_rows = Multi_Rating_API::get_top_rating_results($limit, $category_id);
+	
+		$html = Rating_Result_View::get_top_rating_results_html($top_rating_result_rows,
+				array(
+						'show_title' => $show_title,
+						'show_count' => $show_count,
+						'show_category_filter' => $show_category_filter,
+						'category_id' => $category_id,
+						'before_title' => $before_title,
+						'after_title' => $after_title,
+						'title' => $title,
+						'show_rank' => $show_rank,
+						'no_rating_results_text' => $no_rating_results_text,
+						'result_type' => $result_type,
+						'class' => $class
+				));
 		if ($echo == true) {
 			echo $html;
 		}
-		
+	
 		return $html;
 	}
 }
