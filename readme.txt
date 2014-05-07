@@ -33,24 +33,22 @@ Here's a live demo: http://danielpowney.com/multi-rating/
 * Settings to restrict post types, turn on validation, modify text, apply different styles and clear the database etc...
 
 = Shortcodes =
-The following shortcodes are available.
-
 * [display_rating_form]
 * [display_rating_result]
 * [display_top_rating_results]
 
-There are several attributes available to customise each shortcode. e.g. [display_rating_form post_id="100" title="My Rating Form" submit_button_text="Submit" class="my-css-class" before_title="" after_title""]
+e.g. [display_rating_form post_id="100" title="My Rating Form" submit_button_text="Submit" class="my-css-class" before_title="" after_title""]
 
 = API Functions =
-The key API functions are:
-
 * display_top_rating_results
 * display_rating_result
 * display_rating_form
 
 = Multi Rating Pro =
 
-The following key features are available in the Pro version (http://danielpowney.com/downloads/multi-rating-pro/):
+Check it out here: http://danielpowney.com/downloads/multi-rating-pro/
+
+The following key features are available in the Pro version:
 
 * Multiple rating forms with different rating items
 * Logged in users can update and delete their existing ratings
@@ -70,8 +68,6 @@ Other features available in the Pro version include:
 * Modify the duration in days for the IP address date validation check for users submitting the rating form
 * More filters on WP-admin rating results tables
 * More star rating image sprites
-
-Details here: http://danielpowney.com/downloads/multi-rating-pro/
 
 == Installation ==
 
