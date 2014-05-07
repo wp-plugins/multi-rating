@@ -12,11 +12,11 @@ Multi Rating is a simple rating plugin which allows visitors to rate a post base
 
 == Description ==
 
+I developed Multi Rating because I could not find a single multi rating plugin for WordPress that a) worked, b) was simple and easy to use, and c) had the right features. GD Star Rating was far too complicated and the other rating plugins were either too basic or did not work at all.
+
 Multi Rating is a simple rating plugin which allows visitors to rate a post based on multiple criteria and questions. It is responsive, easy to use and integrates seamlessly into any WordPress theme.
 
 Here's a live demo: http://danielpowney.com/multi-rating/
-
-I developed Multi Rating because I could not find a single multi rating plugin for WordPress that a) worked, b) was simple and easy to use, and c) had the right features. GD Star Rating was far too complicated and the other rating plugins were either too basic or did not work at all.
 
 = Features =
 
