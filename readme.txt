@@ -58,6 +58,7 @@ The following key features are available in the Pro version:
 * View rating results per post and rating form in WP-admin backend
 * Post, category and specific page filters to include (whitelist) or exclude (blacklist) automatic placement of the rating form and rating results
 * Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages)
+* Ability to choose either radio buttons or select drop down boxes for the rating item options
 
 Other features available in the Pro version include:
 
