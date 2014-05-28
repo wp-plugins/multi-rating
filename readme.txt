@@ -45,7 +45,7 @@ Full documentation available at: http://danielpowney.com/multi-rating/
 * [display_top_rating_results]
 * [display_top_rating_results title="Top Rating Results" limit="10"]
 
-The Pro version contains 3 additonal shortcodes [display_user_rating_results], [display_rating_result_reviews] and [display_rating_item_results].
+The Pro version contains 4 additonal shortcodes [display_user_rating_results], [display_rating_result_reviews], [display_rating_item_results] and [display_comment_rating_form].
 
 = API Functions =
 The API functions are located in the multi-rating-api.php file which contains a static class called Multi_Rating_API. The key API functions are:
@@ -54,16 +54,16 @@ The API functions are located in the multi-rating-api.php file which contains a 
 * display_rating_result
 * display_rating_form
 
-The pro version contains 3 additional key API functions: display_user_rating_results, display_rating_result_reviews and display_rating_item_results
+The pro version contains 4 additional key API functions: display_user_rating_results, display_rating_result_reviews, display_rating_item_results and display_comment_rating_form
 
 = Multi Rating Pro =
 
 The following key features are available in the Pro version:
 
 * Multiple rating forms with different rating items
-* WordPress comments integration
+* WordPress comments integration - show rating items in comments form and display results in comments
 * Logged in users can update and delete their existing ratings
-* New shortcodes, API functions and widgets for displaying rating results in a review format, displaying individual rating item results and displaying rating results belonging to a specific user
+* New shortcodes, API functions and widgets for displaying rating results in a review format, displaying individual rating item results, displaying rating results belonging to a specific user and displaying the WordPress comments form with rating items
 * Rating forms can optionally include a name, e-mail and comment fields
 * Ability to use text descriptions for select and radio options instead of numbers
 * View rating results per post and rating form in WP-admin backend
