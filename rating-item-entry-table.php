@@ -132,7 +132,7 @@ class Rating_Item_Entry_Table extends WP_List_Table {
 			case Rating_Item_Entry_Table::RATING_RESULT_COLUMN :
 				$rating_result = Multi_Rating_API::calculate_rating_item_entry_result( $item[ Rating_Item_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN ] );
 				
-				echo '5 Star: ' . $rating_result['adjusted_star_result'] . '/5<br />'
+				echo 'Out of 5: ' . $rating_result['adjusted_star_result'] . '/5<br />'
 				. 'Score: ' . $rating_result['adjusted_score_result'] . '/' . $rating_result['total_max_option_value'] . '<br />'
 				. 'Percentage: ' . $rating_result['adjusted_percentage_result'] . '%';
 				break;

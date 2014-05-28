@@ -12,18 +12,18 @@ Multi Rating is a simple rating plugin which allows visitors to rate a post base
 
 == Description ==
 
-I developed Multi Rating because I could not find a single multi rating plugin for WordPress that a) worked, b) was simple and easy to use, and c) had the right features. GD Star Rating was far too complicated and the other rating plugins were either too basic or did not work at all.
-
 Multi Rating is a simple rating plugin which allows visitors to rate a post based on multiple criteria and questions. It is responsive, easy to use and integrates seamlessly into any WordPress theme.
 
-Here's a live demo: http://danielpowney.com/multi-rating/
+I developed Multi Rating because I could not find a single multi rating plugin for WordPress that a) worked, b) was simple and easy to use, and c) had the right features. GD Star Rating was far too complicated and the other rating plugins were either too basic or did not work at all.
 
 = Features =
 
-* 5 star rating, percentage and score results based on multuple rating criteria and questions
+* 5 star rating, percentage and score results
+* Multuple rating criteria and questions using star ratings, select drop downs or radio buttons to choose answers from
+* Fontawesome used for star rating icons
 * Shortcodes to display the rating form, rating results and top rating results
-* Rich snippet added to markup for 5 star rating results
-* View the rating results and entry values from the WP-admin
+* Rich snippet added to page markup for 5 star rating results - appears in search results
+* View the rating results and selected values from the WP-admin
 * API functions for using Multi Rating in your theme
 * Widget to display the top rating results
 * Options to apply to different post types
@@ -32,42 +32,54 @@ Here's a live demo: http://danielpowney.com/multi-rating/
 * Meta box on the edit post page to override the default automatic placement settings
 * Settings to restrict post types, turn on validation, modify text, apply different styles and clear the database etc...
 
-= Shortcodes =
-* [display_rating_form]
-* [display_rating_result]
-* [display_top_rating_results]
+Here's a live demo: http://danielpowney.com/multi-rating/
 
-e.g. [display_rating_form post_id="100" title="My Rating Form" submit_button_text="Submit" class="my-css-class" before_title="" after_title""]
+Full documentation available at: http://danielpowney.com/multi-rating/
+
+= Shortcode Examples =
+
+* [display_rating_form]
+* [display_rating_form post_id="100" title="My rating form" submit_button_text="Submit"]
+* [display_rating_result]
+* [display_rating_result post_id="100" no_rating_results_text="No rating result yet" show_rich_snippets="false" show_count="true" show_title="false"]
+* [display_top_rating_results]
+* [display_top_rating_results title="Top Rating Results" limit="10"]
+
+The Pro version contains 3 additonal shortcodes [display_user_rating_results], [display_rating_result_reviews] and [display_rating_item_results].
 
 = API Functions =
+The API functions are located in the multi-rating-api.php file which contains a static class called Multi_Rating_API. The key API functions are:
+
 * display_top_rating_results
 * display_rating_result
 * display_rating_form
 
-= Multi Rating Pro =
+The pro version contains 3 additional key API functions: display_user_rating_results, display_rating_result_reviews and display_rating_item_results
 
-Check it out here: http://danielpowney.com/downloads/multi-rating-pro/
+= Multi Rating Pro =
 
 The following key features are available in the Pro version:
 
 * Multiple rating forms with different rating items
+* WordPress comments integration
 * Logged in users can update and delete their existing ratings
 * New shortcodes, API functions and widgets for displaying rating results in a review format, displaying individual rating item results and displaying rating results belonging to a specific user
 * Rating forms can optionally include a name, e-mail and comment fields
-* Ability to use text descriptions for select options instead of numbers
+* Ability to use text descriptions for select and radio options instead of numbers
 * View rating results per post and rating form in WP-admin backend
-* Post, category and specific page filters to include (whitelist) or exclude (blacklist) automatic placement of the rating form and rating results
-* Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages)
-* Ability to choose either radio buttons or select drop down boxes for the rating item options
+* Post, category and specific page URL filters to include (whitelist) or exclude (blacklist) displaying the rating form and rating result set positions
+* Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages) from displaying the rating form and rating result set positions
 
 Other features available in the Pro version include:
 
 * Allow/disallow anonymous user ratings option
-* Change the defaults settings for each post in the Edit Post page including the default rating form and allow anonymous ratings option
+* Apply category filters to the Top Rating Results and User Ratings widgets
+* Change the defaults settings for each post in the Edit Post page including the default rating form, allow anonymous ratings option and display settings for the rating form and rating results positions
 * Option to display the rating result back to the user when they submit a rating form
 * Modify the duration in days for the IP address date validation check for users submitting the rating form
 * More filters on WP-admin rating results tables
-* More star rating image sprites
+
+To learn more go to http://danielpowney.com/downloads/multi-rating-pro/
 
 == Installation ==
 
@@ -77,7 +89,7 @@ Other features available in the Pro version include:
 
 == Frequently Asked Questions ==
 
-Documentation here: http://danielpowney.com/multi-rating/
+Full documentation available at: http://danielpowney.com/multi-rating/
 
 == Screenshots ==
 1. Demo of rating results after page title, rating form and top rating results
@@ -91,17 +103,22 @@ Documentation here: http://danielpowney.com/multi-rating/
 
 == Upgrade Notice ==
 
-= 2.1 =
-Changes to the generated HTML and CSS styles
+= 2.2 =
+Changes to star ratings. Font awesome now used instead of image sprites. Changes to layouts and CSS in frontend.
 
 == Changelog ==
+
+= 2.2 (28/05/2014) =
+* Added Fontawesome star icons instead of using image sprites
+* Added radio options and star ratings along with the select drop down to select rating item values
+* Some template and style changes to improve the layout
+* Fixed a couple of misc bugs
 
 = 2.1 (07/05/2014) =
 * Refactored HTML for rating form and rating results including CSS styles
 * Added Multi Rating meta box in edit page to override default settings for automatic placements of rating form and rating results per post or page
+* Added class shortcode attribute
 * Refactored how rating results are returned in API
-* Added more params to API functions and more attributes to shortcodes e.g. class, result_type, show_category_filter, show_rich_snippets etc...
-* Added show category filter to widget
 
 = 2.0.4 (12/04/2014) =
 * Fixed rich snippets bug
