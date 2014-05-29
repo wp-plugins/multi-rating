@@ -108,6 +108,9 @@ Changes to star ratings. Font awesome now used instead of image sprites. Changes
 
 == Changelog ==
 
+= 2.2.2 (29/05/2014) =
+* Fixed missing category_id attribute to display_top_rating_results shortcode
+
 = 2.2.1 (29/05/2014) =
 * Fixed category filter
 

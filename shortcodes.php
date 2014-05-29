@@ -130,7 +130,8 @@ function mr_display_top_rating_results( $atts = array() ) {
 			'result_type' => Multi_Rating::STAR_RATING_RESULT_TYPE,
 			'show_rank' => true,
 			'show_title' => true,
-			'class' => ''
+			'class' => '',
+			'category_id' => 0 // 0 = All,
 	), $atts ) );
 	
 	if (is_string($show_category_filter)) {
@@ -151,7 +152,8 @@ function mr_display_top_rating_results( $atts = array() ) {
 					'result_type' => $result_type,
 					'show_rank' => $show_rank,
 					'show_title' => $show_title,
-					'class' => $class
+					'class' => $class,
+					'category_id' => $category_id
 			));
 }
 add_shortcode( 'display_top_rating_results', 'mr_display_top_rating_results' );
