@@ -438,7 +438,7 @@ class Multi_Rating_API {
 	 * @param int $rating_form_id
 	 * @return array top rating results
 	 */
-	public static function get_top_rating_results($limit = 10) {
+	public static function get_top_rating_results($limit = 10, $category_id = null) {
 	
 		$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 		$posts = get_posts(array('numberposts' => -1, 'post_type' => $general_settings[Multi_Rating::POST_TYPES_OPTION]));
@@ -448,6 +448,13 @@ class Multi_Rating_API {
 		// iterate the post types and calculate rating results
 		$rating_results = array();
 		foreach ($posts as $current_post) {
+			
+			if ($category_id != null) {
+				// skip if not in category
+				if (!in_category($category_id, $current_post->ID)) {
+					continue;
+				}
+			}
 				
 			$rating_result = Multi_Rating_API::calculate_rating_result(array('post_id' => $current_post->ID, 'rating_items' => $rating_items));
 				

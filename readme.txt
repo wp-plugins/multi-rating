@@ -108,6 +108,9 @@ Changes to star ratings. Font awesome now used instead of image sprites. Changes
 
 == Changelog ==
 
+= 2.2.1 (29/05/2014) =
+* Fixed category filter
+
 = 2.2 (28/05/2014) =
 * Added Fontawesome star icons instead of using image sprites
 * Added radio options and star ratings along with the select drop down to select rating item values
