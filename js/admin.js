@@ -3,6 +3,7 @@ jQuery(document).ready(function() {
 	jQuery("#add-new-rating-item-btn").click(function() {
 		jQuery("#form-submitted").val("true");
 	});
+
 	jQuery("#clear-database-btn").live('click',function(e) {
 		jQuery("#clear-database").val("true");
 	});
@@ -20,12 +21,15 @@ jQuery(document).ready(function() {
 				jQuery("#view-section-" + column + "-" + rowId).css("display", "none");
 				jQuery("#edit-section-" + column + "-" + rowId).css("display", "block");
 			} else if (action === "save") {
-				// save
+			
+				var field_id = "#field-" + column + "-" + rowId;
+				var value = null;
+				if (jQuery(field_id).is(":checkbox")) {
+					value = jQuery(field_id).is(':checked');
+				} else {
+					value = jQuery(field_id).val();
+				}
 				
-				// get value
-				
-				field_id = "#field-" + column + "-" + rowId;
-				var value = jQuery(field_id).val();
 				var data =  { 
 						
 						action : "save_rating_item_table_column",
@@ -55,6 +59,10 @@ jQuery(document).ready(function() {
 	    jQuery('#star-rating-colorpicker').hide();
 	    jQuery('#star-rating-colorpicker').farbtastic("#star-rating-colour");
 	    jQuery("#star-rating-colour").click(function(){jQuery('#star-rating-colorpicker').slideToggle();});
+	    
+	    jQuery('#star-rating-hover-colorpicker').hide();
+	    jQuery('#star-rating-hover-colorpicker').farbtastic("#star-rating-hover-colour");
+	    jQuery("#star-rating-hover-colour").click(function(){jQuery('#star-rating-hover-colorpicker').slideToggle();});
 	});
 	
 });

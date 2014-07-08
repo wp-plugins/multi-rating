@@ -103,10 +103,13 @@ Full documentation available at: http://danielpowney.com/multi-rating/
 
 == Upgrade Notice ==
 
-= 2.2 =
-Changes to star ratings. Font awesome now used instead of image sprites. Changes to layouts and CSS in frontend.
+= 2.2.3 =
+On hover CSS changes to star icons. No functional changes.
 
 == Changelog ==
+
+= 2.2.3 (07/07/2014) =
+* added on hover color for star rating select
 
 = 2.2.2 (29/05/2014) =
 * Fixed missing category_id attribute to display_top_rating_results shortcode

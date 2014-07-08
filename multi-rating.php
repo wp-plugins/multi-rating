@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple rating plugin which allows visitors to rate a post based on multiple criteria and questions.
-Version: 2.2.2
+Version: 2.2.3
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
@@ -31,9 +31,9 @@ class Multi_Rating {
 
 	// constants
 	const
-	VERSION = '2.2.2',
+	VERSION = '2.2.3',
 	ID = 'mr',
-	PRO_HTML = '<p><a href="http://danielpowney.com/downloads/multi-rating-pro/">Multi Rating Pro</a> has extra features including multiple rating forms, displaying reviews, WordPress comments integration, showing individual rating item results, updating/deleting existing ratings and loads more!</p>',
+	PRO_HTML = '<p>Check out <a href="http://danielpowney.com/downloads/multi-rating-pro/">Multi Rating Pro</a>. Pro features include WordPress comments system integration, multiple rating forms, displaying reviews, showing individual rating item results and loads more! Help promote this plugin and make it better by giving it a <a href="https://wordpress.org/plugins/multi-rating/">5 star rating</a>.</p>',	
 	
 	// tables
 	RATING_SUBJECT_TBL_NAME 					= 'mr_rating_subject',
@@ -50,6 +50,7 @@ class Multi_Rating {
 	// options
 	CUSTOM_CSS_OPTION 							= 'mr_custom_css',
 	STAR_RATING_COLOUR_OPTION					= 'mr_star_rating_colour',
+	STAR_RATING_HOVER_COLOUR_OPTION				= 'mr_star_rating_hover_colour',
 	RATING_RESULTS_POSITION_OPTION				= 'mr_rating_results_position',
 	RATING_FORM_POSITION_OPTION 				= 'mr_rating_form',
 	CHAR_ENCODING_OPTION 						= 'mr_char_encoding',
@@ -288,7 +289,8 @@ class Multi_Rating {
 		// Merge with defaults
 		$this->style_settings = array_merge( array(
 				Multi_Rating::CUSTOM_CSS_OPTION => $default_css,
-				Multi_Rating::STAR_RATING_COLOUR_OPTION => '#ffd700'
+				Multi_Rating::STAR_RATING_COLOUR_OPTION => '#ffd700',
+				Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION => '#ffba00'
 		), $this->style_settings );
 		
 		$this->position_settings = array_merge( array(
@@ -416,7 +418,7 @@ class Multi_Rating {
 
 		add_settings_field( Multi_Rating::CUSTOM_CSS_OPTION, 'Custom CSS', array( &$this, 'field_custom_css' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
 		add_settings_field( Multi_Rating::STAR_RATING_COLOUR_OPTION, 'Star Rating Colour', array( &$this, 'field_star_rating_colour' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
-		
+		add_settings_field( Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION, 'Star Rating Hover Colour', array( &$this, 'field_star_rating_hover_colour' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
 	}
 	function section_style_desc() {
 	}
@@ -426,11 +428,18 @@ class Multi_Rating {
 		<p class="description">Enter custom CSS to change the default style of the rating form and rating results</p>
 		<?php 
 	}	
-	function field_star_rating_colour() {
+	function field_star_rating_colour() {	
 		$star_rating_colour = $this->style_settings[Multi_Rating::STAR_RATING_COLOUR_OPTION];
 		?>
    	 	<input type="text" id="star-rating-colour" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STAR_RATING_COLOUR_OPTION; ?>]; ?>" value="<?php echo $star_rating_colour; ?>" />
     	<div id="star-rating-colorpicker"></div>
+		<?php 
+	}
+	function field_star_rating_hover_colour() {
+		$star_rating_hover_colour = $this->style_settings[Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION];
+		?>
+	 	 	<input type="text" id="star-rating-hover-colour" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION; ?>]; ?>" value="<?php echo $star_rating_hover_colour; ?>" />
+	   	<div id="star-rating-hover-colorpicker"></div>
 		<?php 
 	}
 	function sanitize_style_settings($input) {
@@ -886,8 +895,6 @@ class Multi_Rating {
 			$ip_address = mr_get_ip_address();
 			$entry_date_mysql = current_time('mysql');
 				
-		
-				
 			$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
 				
 			global $wp_roles;
@@ -945,6 +952,19 @@ class Multi_Rating {
 		?>
 		<style type="text/css">
 			<?php echo $this->style_settings[Multi_Rating::CUSTOM_CSS_OPTION]; ?>
+			
+			<?php 
+			$style_settings = (array) get_option( Multi_Rating::STYLE_SETTINGS );
+			$star_rating_colour = $style_settings[Multi_Rating::STAR_RATING_COLOUR_OPTION];
+			$star_rating_hover_colour = $style_settings[Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION];
+			?>
+			
+			.star-hover {
+				color: <?php echo $star_rating_hover_colour; ?> !important;
+			}
+			.fa-star, .fa-star-o {
+				color: <?php echo $star_rating_colour; ?>;
+			}
 		</style>
 		<?php 
 	}

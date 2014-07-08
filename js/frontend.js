@@ -1,5 +1,5 @@
 jQuery(document).ready(function() {	
-	
+
 	jQuery(".rating-form :button").click(function(e) {
 	
 		var ratingItems = [];
@@ -7,6 +7,7 @@ jQuery(document).ready(function() {
 		var parts = btnId.split("-"); 
 		var postId = parts[0];
 		var sequence = parts[1];
+
 		
 		// each rating item has a hidden id field using the ratig form id, post id and sequence
 		jQuery( '.rating-form input[type="hidden"].rating-form-' + postId + '-' + sequence + '-item').each(function( index ) {			
@@ -29,7 +30,6 @@ jQuery(document).ready(function() {
 					};
 			ratingItems[index] = ratingItem;
 		});
-
 		
 		var data = {
 				action : "save_rating",
@@ -46,12 +46,51 @@ jQuery(document).ready(function() {
 	/**
 	 * Selected star rating changes on hover and click
 	 */
-	jQuery(".star-rating-select .fa-star-o, .star-rating-select .fa-star, .star-rating-select .fa-minus-circle").click(function(e) {
-		jQuery(this).removeClass("fa-star-o").addClass("fa-star");
-		jQuery(this).prevAll().removeClass("fa-star-o").addClass("fa-star");
-		jQuery(this).nextAll().removeClass("fa-star").addClass("fa-star-o");
+	var ratingItemStatus = {};
+	
+	jQuery(".star-rating-select .fa-star-o, .star-rating-select .fa-star").click(function(e) {
+		
+		updateRatingItemStatus(this, 'clicked');
+		
+		jQuery(this).not('.fa-minus-circle').removeClass("fa-star-o  star-hover").addClass("fa-star");
+		jQuery(this).prevAll().not('.fa-minus-circle').removeClass("fa-star-o star-hover").addClass("fa-star");
+		jQuery(this).nextAll().not('.fa-minus-circle').removeClass("fa-star star-hover").addClass("fa-star-o");
+		
 		updateStarRatingValue(this);
 	});
+	
+	jQuery(".star-rating-select .fa-minus-circle").click(function(e) {
+		
+		updateRatingItemStatus(this, '');
+		
+		jQuery(this).not('.fa-minus-circle').removeClass("fa-star-o  star-hover").addClass("fa-star");
+		jQuery(this).prevAll().not('.fa-minus-circle').removeClass("fa-star-o star-hover").addClass("fa-star");
+		jQuery(this).nextAll().not('.fa-minus-circle').removeClass("fa-star star-hover").addClass("fa-star-o");
+		
+		updateStarRatingValue(this);
+	});
+	
+	jQuery(".star-rating-select .fa-minus-circle, .star-rating-select .fa-star-o, .star-rating-select .fa-star").hover(function(e) {
+
+		var elementId = getRatingItemElementId(this);
+		var ratingItemIdSequence = getRatingItemIdSequence(elementId);
+		
+		if (ratingItemStatus[ratingItemIdSequence] != 'clicked' && ratingItemStatus[ratingItemIdSequence] != undefined) {
+			
+			updateRatingItemStatus(this, 'hovered');
+			
+			jQuery(this).not('.fa-minus-circle').removeClass("fa-star-o").addClass("fa-star star-hover");
+			jQuery(this).prevAll().not('.fa-minus-circle').removeClass("fa-star-o").addClass("fa-star star-hover");
+			jQuery(this).nextAll().not('.fa-minus-circle').removeClass("fa-star star-hover").addClass("fa-star-o");
+			
+			if (jQuery("#" + elementId).hasClass("no-zero")) {
+	    		jQuery("#" + elementId).next().removeClass("fa-star-o");
+	    		jQuery("#" + elementId).next().addClass("fa-star");
+    		}
+			
+		}
+	});
+	
 	// now cater for touch screen devices
 	var touchData = {
 		started : null, // detect if a touch event is sarted
@@ -61,6 +100,7 @@ jQuery(document).ready(function() {
 		previousYCoord : 0,
 		touch : null
 	};
+	
 	jQuery(".star-rating-select .fa-star-o, .star-rating-select .fa-star, .star-rating-select .fa-minus-circle").on("touchstart", function(e) {
 		touchData.started = new Date().getTime();
 		var touch = e.originalEvent.touches[0];
@@ -68,6 +108,7 @@ jQuery(document).ready(function() {
 		touchData.previousYCoord = touch.pageY;
 		touchData.touch = touch;
 	});
+	
 	jQuery(".star-rating-select .fa-star-o, .star-rating-select .fa-star, .star-rating-select .fa-minus-circle").on(
 			"touchend touchcancel",
 			function(e) {
@@ -85,6 +126,7 @@ jQuery(document).ready(function() {
 						jQuery(this).removeClass("fa-star-o").addClass("fa-star");
 						jQuery(this).prevAll().removeClass("fa-star-o").addClass("fa-star");
 						jQuery(this).nextAll().removeClass("fa-star").addClass("fa-star-o");
+						
 						updateStarRatingValue(this);
 					}
 				}
@@ -93,9 +135,27 @@ jQuery(document).ready(function() {
 			});
 	
 	/**
-	 * Updates the selected star rating value
+	 * Updates the rating item status to either hovered or clicked
 	 */
-	function updateStarRatingValue(element) {
+	function updateRatingItemStatus(element, status) {
+		var elementId = getRatingItemElementId(element);
+		var ratingItemIdSequence = getRatingItemIdSequence(elementId);
+		if (ratingItemIdSequence != null) {
+			ratingItemStatus[ratingItemIdSequence] = status;
+		}
+	}
+	
+	function getRatingItemIdSequence(elementId) {
+		var parts = elementId.split("-"); 
+		
+		var ratingItemId = parts[4]; /// skipt 2: rating-item-
+		var sequence = parts[5];
+		
+		var ratingItemIdSequence = 'rating-item-' + ratingItemId + '-' + sequence;
+		return ratingItemIdSequence;
+	}
+	
+	function getRatingItemElementId(element) {
 		var clazz = jQuery(element).attr("class");
 		
 		if (clazz && clazz.length && clazz.split) {
@@ -113,14 +173,54 @@ jQuery(document).ready(function() {
 		    		var ratingItemId = parts[4]; /// skipt 2: rating-item-
 		    		var sequence = parts[5];
 		    		
-		    		var elementId = '#rating-item-'+ ratingItemId + '-' + sequence;
-
-		        	jQuery(elementId).val(value);
-		        	return;
+		    		var elementId = 'starIndex-' + value + '-rating-item-' + ratingItemId + '-' + sequence;
+		    		//starIndex-1-rating-item-1-1
+		    		return elementId;
 		        }
 			}
-			
 		}
+		
+		return null;
 	}
 	
+	/**
+	 * Updates the selected star rating value
+	 */
+	function updateStarRatingValue(element) {
+		var clazz = jQuery(element).attr("class");
+		
+		if (clazz && clazz.length && clazz.split) {
+			clazz = clazz.trim();
+			clazz = clazz.replace(/\s+/g, ' ');
+			var classes = clazz.split(' ');
+			var index=0;
+			for (index; index<classes.length; index++) {
+				var currentClass = classes[index];
+		        if (currentClass !== '' && currentClass.indexOf('starIndex-') == 0) {
+		        	
+		        	// FIXME this should use a unique element Id - not a class
+		        	
+		        	// starIndex-X-ratingItemId-sequence
+		        	var parts = currentClass.split("-"); 
+		    		var value = parts[1]; // this is the star index
+		    		var ratingItemId = parts[4]; /// skipt 2: rating-item-
+		    		var sequence = parts[5];
+		    		
+		    		var elementId = '#rating-item-'+ ratingItemId + '-' + sequence;
+		    		
+		    		if (jQuery("." + currentClass).hasClass("no-zero") && value == 0) {
+			    		var newSelectedRatingItemClass = ".starIndex-1-rating-item-" + ratingItemId + "-" + sequence;
+			    		jQuery(newSelectedRatingItemClass).removeClass("fa-star-o");
+				    	jQuery(newSelectedRatingItemClass).addClass("fa-star");
+			    		value = 1;
+		    		}
+		    		
+		    		jQuery(elementId).val(value);
+		    		return;
+		        }
+			}
+
+		}
+	}
+
 });

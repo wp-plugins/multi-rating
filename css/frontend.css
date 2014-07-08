@@ -68,7 +68,7 @@ div.rating-form form table .action {
 	display: inline-block !important;
 }
 .rating-item label + .radio-option, .rating-item label + select {
-	margin-right: 5px;
+	margin-top: 5px;
 }
 .rating-item .radio-option {
 	margin-right: 10px;
@@ -90,11 +90,15 @@ label.description {
 .star-rating-select .fa-minus-circle {
 	margin-right: 5px;
 }
-
+.rating-result a + .score-result, .rating-result a + .score-result + .count, 
+.rating-result a + .percentage-result, .rating-result a + .percentage-result + .count,
+.star-result + .count, .rating-result .star-rating + .star-result, .rating-result .star-result + .count, .rating-result .star-rating, .star-rating + .star-result {
+	margin-left: 5px;
+}
 
 
 /* Rating Results */
-h1 .star-rating, h1 .star-result, h1 .count, h1 .no-rating-results-text  {
+h1 .star-rating, h1 .star-result, h1 .no-rating-results-text, h1 .count  {
 	font-size: 65%;
 	text-transform: none;
 	font-weight: normal;
@@ -110,10 +114,10 @@ h1 .no-rating-results-text {
 	display: inline-block;
 	margin-left: 5px;
 }
-.rating-result .star-rating, .rating-result .star-result, .rating-result .count {
+
+.rating-result .star-rating, .rating-result .star-result, .rating-result .count, .rating-result {
 	display: inline-block;
 }
-
 
 
 /* Top Rating Results */
@@ -126,7 +130,12 @@ h1 .no-rating-results-text {
 .top-rating-results .rank, .top-rating-results .rating-result, .top-rating-results .title, .top-rating-results .count {
 	margin-right: 5px;
 }
-
+.top-rating-results .star-result, .top-rating-results .count {
+	vertical-align: top;
+}
+.top-rating-results .rating-result-row + .star-result {
+	margin-left: 5px;
+}
 
 
 /** 
@@ -148,11 +157,9 @@ form.category-id-filter select {
 .category-id input[type=submit] {
 	margin-left: 5px;
 }
-.rating-result .star-rating, .rating-result .star-rating + .star-result, .rating-result .star-result + .count, .rating-item label.description {
+.rating-item label.description {
 	margin-right: 5px;
 }
-
-
 /* Table styles */
 .top-rating-results table, .top-rating-results td, .top-rating-results th, .top-rating-results tr {
 	border: none;
