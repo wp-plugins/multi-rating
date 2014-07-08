@@ -15,7 +15,7 @@ class Multi_Rating_API {
 	public static function get_rating_items($params = array()) {
 		global $wpdb;
 	
-		$select_rating_items_query = 'SELECT ri.rating_item_id, ri.rating_id, ri.description, ri.default_option_value, '
+		$select_rating_items_query = 'SELECT ri.rating_item_id, ri.type, ri.rating_id, ri.description, ri.default_option_value, '
 		. 'ri.max_option_value, ri.weight, ri.active FROM '
 		. $wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME . ' as ri';
 	
@@ -64,13 +64,15 @@ class Multi_Rating_API {
 			$description = $rating_item_row->description;
 			$default_option_value = $rating_item_row->default_option_value;
 			$max_option_value = $rating_item_row->max_option_value;
+			$type = $rating_item_row->type;
 	
 			$rating_items[$rating_item_id] = array(
 					'max_option_value' => $max_option_value,
 					'weight' => $weight,
 					'rating_item_id' => $rating_item_id,
 					'description' => $description,
-					'default_option_value' => $default_option_value
+					'default_option_value' => $default_option_value,
+					'type' => $type
 			);
 		}
 	
@@ -87,7 +89,7 @@ class Multi_Rating_API {
 		global $wpdb;
 
 		// TODO optimize db query for performance
-		$rating_items_query = 'SELECT DISTINCT ri.rating_item_id, ri.rating_id, ri.description, ri.default_option_value, '
+		$rating_items_query = 'SELECT DISTINCT ri.rating_item_id, ri.type, ri.rating_id, ri.description, ri.default_option_value, '
 		. 'ri.max_option_value, ri.weight, ri.active FROM ' . $wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME . ' AS ri, '
 		. $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' AS rie, ' . $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME 
 		. ' AS riev WHERE riev.rating_item_entry_id = rie.rating_item_entry_id AND rie.rating_item_entry_id =  "' . $rating_item_entry_id . '"';
@@ -101,13 +103,15 @@ class Multi_Rating_API {
 			$description = $rating_item_row->description;
 			$default_option_value = $rating_item_row->default_option_value;
 			$max_option_value = $rating_item_row->max_option_value;
+			$type = $rating_item_row->type;
 				
 			$rating_items[$rating_item_id] = array(
 					'max_option_value' => $max_option_value,
 					'weight' => $weight,
 					'rating_item_id' => $rating_item_id,
 					'description' => $description,
-					'default_option_value' => $default_option_value
+					'default_option_value' => $default_option_value,
+					'type' => $type
 			);
 		}
 		
@@ -434,7 +438,7 @@ class Multi_Rating_API {
 	 * @param int $rating_form_id
 	 * @return array top rating results
 	 */
-	public static function get_top_rating_results($limit = 10) {
+	public static function get_top_rating_results($limit = 10, $category_id = null) {
 	
 		$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 		$posts = get_posts(array('numberposts' => -1, 'post_type' => $general_settings[Multi_Rating::POST_TYPES_OPTION]));
@@ -444,6 +448,13 @@ class Multi_Rating_API {
 		// iterate the post types and calculate rating results
 		$rating_results = array();
 		foreach ($posts as $current_post) {
+			
+			if ($category_id != null) {
+				// skip if not in category
+				if (!in_category($category_id, $current_post->ID)) {
+					continue;
+				}
+			}
 				
 			$rating_result = Multi_Rating_API::calculate_rating_result(array('post_id' => $current_post->ID, 'rating_items' => $rating_items));
 				

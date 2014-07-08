@@ -24,7 +24,10 @@ class Rating_Item_Table extends WP_List_Table {
 	RATING_ITEM_ID_LABEL = 'Rating Item Id',
 	DEFAULT_OPTION_VALUE_LABEL = 'Default option value',
 	WEIGHT_LABEL = 'Weight',
+	TYPE_COLUMN = 'type',
 	DELETE_CHECKBOX = 'delete[]';
+	
+	private $type_options = array('select' => 'Select', 'radio' => 'Radio', 'star_rating' => 'Star Rating');
 
 	/**
 	 * Constructor
@@ -60,6 +63,7 @@ class Rating_Item_Table extends WP_List_Table {
 				Rating_Item_Table::RATING_ITEM_ID_COLUMN =>__(Rating_Item_Table::RATING_ITEM_ID_LABEL),
 				Rating_Item_Table::RATING_ID_COLUMN => __(''),
 				Rating_Item_Table::DESCRIPTION_COLUMN =>__(Rating_Item_Table::DESCRIPTION_LABEL),
+				Rating_Item_Table::TYPE_COLUMN => __('Type'),
 				Rating_Item_Table::WEIGHT_COLUMN	=>__(Rating_Item_Table::WEIGHT_LABEL),
 				Rating_Item_Table::DEFAULT_OPTION_VALUE_COLUMN => __(Rating_Item_Table::DEFAULT_OPTION_VALUE_LABEL),
 				Rating_Item_Table::MAX_OPTION_VALUE_COLUMN => __('Max option value')
@@ -98,6 +102,7 @@ class Rating_Item_Table extends WP_List_Table {
 			case Rating_Item_Table::CHECKBOX_COLUMN :
 			case Rating_Item_Table::RATING_ITEM_ID_COLUMN :
 			case Rating_Item_Table::RATING_ID_COLUMN :
+			case Rating_Item_Table::TYPE_COLUMN:
 				return $item[ $column_name ];
 				break;
 			case Rating_Item_Table::WEIGHT_COLUMN:
@@ -111,6 +116,37 @@ class Rating_Item_Table extends WP_List_Table {
 		}
 	}
 	
+	function column_type($item) {
+		$column_name = Rating_Item_Table::TYPE_COLUMN;
+		$row_id = $item[Rating_Item_Table::RATING_ITEM_ID_COLUMN];
+		$row_value = stripslashes($item[$column_name]);
+		$edit_btn_id = 'edit-'.$column_name.'-'.$row_id;
+		$save_btn_id = 'save-'.$column_name.'-'.$row_id;
+		$view_section_id = 'view-section-'. $column_name . '-'. $row_id;
+		$edit_section_id = 'edit-section-'. $column_name . '-'. $row_id;
+	
+		// if column is type, use a select
+		$field_id = 'field-'. $column_name . '-'. $row_id;
+		$text_id = 'text-'. $column_name . '-'. $row_id;
+	
+		$text_value = isset($this->type_options[$row_value]) ? $this->type_options[$row_value] : $row_value;
+	
+		echo '<div id="' .$view_section_id.'"><div id="'.$text_id.'">' . $text_value . '</div><div class="row-actions"><a href="#" id="'.$edit_btn_id.'">Edit</a></div></div>';
+		echo '<div id="'.$edit_section_id.'" style="display: none;">';
+	
+		echo '<select name="' . $field_id . '" id="' . $field_id .'">';
+		foreach ($this->type_options as $type_option_value => $type_option_text) {
+			echo '<option value="' . $type_option_value . '"';
+			if ($type_option_value == $row_value) {
+				echo ' checked="checked"';
+			}
+			echo '>' . $type_option_text . '</option>';
+		}
+		echo '</select>';
+	
+		echo '<div class="row-actions"><a href="#" id="'.$save_btn_id.'">Save</a></div></div>';
+	}
+	
 	/**
 	 * checkbox column
 	 * @param unknown_type $item
@@ -122,17 +158,22 @@ class Rating_Item_Table extends WP_List_Table {
 		);
 	}
 
-	function column_actions($item, $column_name) {
+function column_actions($item, $column_name) {
 		$row_id = $item[Rating_Item_Table::RATING_ITEM_ID_COLUMN];
 		$row_value = stripslashes($item[$column_name]);
 		$edit_btn_id = 'edit-'.$column_name.'-'.$row_id;
 		$save_btn_id = 'save-'.$column_name.'-'.$row_id;
 		$view_section_id = 'view-section-'. $column_name . '-'. $row_id;
 		$edit_section_id = 'edit-section-'. $column_name . '-'. $row_id;
-		$input_id = 'input-'. $column_name . '-'. $row_id;
+		
+		// if column is type, use a select
+		$field_id = 'field-'. $column_name . '-'. $row_id;
 		$text_id = 'text-'. $column_name . '-'. $row_id;
-		echo '<div id="' .$view_section_id.'"><div id="'.$text_id.'">'.$row_value.'</div><div class="row-actions"><a href="#" id="'.$edit_btn_id.'">Edit</a></div></div>';
-		echo '<div id="'.$edit_section_id.'" style="display: none;"><input type="text" id="'.$input_id.'" value="'.$row_value.'" style="width: 100%;" /><div class="row-actions"><a href="#" id="'.$save_btn_id.'">Save</a></div></div>';	
+		
+		echo '<div id="' .$view_section_id.'"><div id="'.$text_id.'">' . $row_value . '</div><div class="row-actions"><a href="#" id="'.$edit_btn_id.'">Edit</a></div></div>';
+		echo '<div id="'.$edit_section_id.'" style="display: none;">';
+		echo '<input type="text" name="' . $field_id . '" id="'. $field_id . '" value="'. $row_value . '" style="width: 100%;" />';
+		echo '<div class="row-actions"><a href="#" id="'.$save_btn_id.'">Save</a></div></div>';	
 	}
 	
 	/**
@@ -173,6 +214,7 @@ class Rating_Item_Table extends WP_List_Table {
 	 */
 	public static function save_rating_item_table_column() {
 		
+		
 		global $wpdb;
 	
 		$ajax_nonce = $_POST['nonce'];
@@ -181,19 +223,68 @@ class Rating_Item_Table extends WP_List_Table {
 				
 			// prevent SQL injection
 			if (! ( $column == Rating_Item_Table::DESCRIPTION_COLUMN || $column == Rating_Item_Table::MAX_OPTION_VALUE_COLUMN
-					|| $column == Rating_Item_Table::DEFAULT_OPTION_VALUE_COLUMN || $column == Rating_Item_Table::WEIGHT_COLUMN ) ) {
+					|| $column == Rating_Item_Table::DEFAULT_OPTION_VALUE_COLUMN || $column == Rating_Item_Table::WEIGHT_COLUMN 
+					|| $column == Rating_Item_Table::TYPE_COLUMN) ) {
 				echo 'An error occured';
 				die();
 			}
+			
+			// validate each column
+			
+			$error_message = '';					
 				
 			$value = isset($_POST['value']) ? addslashes($_POST['value']) : '';
 			$rating_item_id = isset($_POST['ratingItemId']) ? $_POST['ratingItemId'] : '';
-			$result = $wpdb->query('UPDATE '.$wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME.' SET '. $column . ' = "' . $value . '" WHERE ' . Rating_Item_Table::RATING_ITEM_ID_COLUMN .' = ' .$rating_item_id) ;
-			if ($result === FALSE) {
-				echo "An error occured";
+			
+			// get current values for validation
+			$query = "SELECT * FROM ".$wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME . ' WHERE rating_item_id = "' . $rating_item_id . '"';
+			$row = $wpdb->get_row($query, ARRAY_A, 0);
+			$max_option_value = intval($row['max_option_value']);
+			$default_option_value = intval($row['default_option_value']);
+			
+			if ( $column == Rating_Item_Table::DESCRIPTION_COLUMN ) {
+				if (strlen(trim($value)) == 0) {
+					$error_message .= 'Description cannot be empty. ';
+				}
+			} else if ($column == Rating_Item_Table::MAX_OPTION_VALUE_COLUMN  ) {
+				if (is_numeric($value) == false) {
+					$error_message .= 'Max option value cannot be empty and must be a whole number. ';
+				}
+				
+				if ($default_option_value > intval($value)) {
+					$error_message .= 'Default option value cannot be greater than the max option value. ';
+				}
+			} else if ($column == Rating_Item_Table::DEFAULT_OPTION_VALUE_COLUMN  ) {
+				if (is_numeric($value) == false) {
+					$error_message .= 'Default option value cannot be empty and must be a whole number. ';
+				}
+				
+				if (intval($value) > $max_option_value) {
+					$error_message .= 'Default option value cannot be greater than the max option value. ';
+				}
+			} else if ($column == Rating_Item_Table::WEIGHT_COLUMN  ) {
+				if (is_numeric($value) == false) {
+					$error_message .= 'Weight must be numeric.';
+				}
 			}
-			echo $result;
+			
+			if (strlen($error_message) == 0) {
+				$result = $wpdb->query('UPDATE '.$wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME.' SET '. $column . ' = "' . $value . '" WHERE ' . Rating_Item_Table::RATING_ITEM_ID_COLUMN .' = ' .$rating_item_id) ;
+				if ($result === FALSE) {
+					$error_message = "An error occured.";
+				}
+			}
+			
+			$text_value = $value;
+			
+			if ($column == Rating_Item_Table::TYPE_COLUMN) {
+				$type_options = array('select' => 'Select', 'radio' => 'Radio', 'star_rating' => 'Star Rating'); // as this method is static
+				$text_value = isset($type_options[$value]) ? $type_options[$value] : $value;
+			}
+			
+			echo json_encode(array ('value' => $text_value, 'error_message' => $error_message));
 		}
+		
 		die();
 	}
 }
