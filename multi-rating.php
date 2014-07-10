@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple rating plugin which allows visitors to rate a post based on multiple criteria and questions.
-Version: 2.2.3
+Version: 2.2.4
 Author: Daniel Powney
 Author URI: danielpowney.com
 License: GPL2
@@ -31,9 +31,9 @@ class Multi_Rating {
 
 	// constants
 	const
-	VERSION = '2.2.3',
+	VERSION = '2.2.4',
 	ID = 'mr',
-	PRO_HTML = '<p>Check out <a href="http://danielpowney.com/downloads/multi-rating-pro/">Multi Rating Pro</a>. Pro features include WordPress comments system integration, multiple rating forms, displaying reviews, showing individual rating item results and loads more! Help promote this plugin and make it better by giving it a <a href="https://wordpress.org/plugins/multi-rating/">5 star rating</a>.</p>',	
+	PRO_HTML = '<p>Check out <a href="http://danielpowney.com/downloads/multi-rating-pro/">Multi Rating Pro</a>. Some of the Pro features include WordPress comments system integration, multiple rating forms, displaying reviews with comments, showing individual rating item results and loads more! Help promote this plugin by giving it a <a href="https://wordpress.org/plugins/multi-rating/">5 star rating</a>.</p>',	
 	
 	// tables
 	RATING_SUBJECT_TBL_NAME 					= 'mr_rating_subject',
@@ -76,6 +76,7 @@ class Multi_Rating {
 	RATING_ITEMS_PAGE_SLUG						= 'mr_rating_items',
 	RATING_RESULTS_PAGE_SLUG					= 'mr_rating_results',
 	ADD_NEW_RATING_ITEM_PAGE_SLUG				= 'mr_add_new_rating_item',
+	REPORTS_PAGE_SLUG							= 'mr_reports',
 	
 	// tabs
 	RATING_RESULTS_TAB							= 'mr_rating_results_tab',
@@ -171,6 +172,7 @@ class Multi_Rating {
 		
 		if( is_admin() ) {
 			add_action( 'admin_menu', array($this, 'add_admin_menus') );
+			add_action( 'admin_init', array($this, 'do_admin_actions') );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_assets' ) );
 		} else {
 			add_action( 'wp_enqueue_scripts', array( $this, 'assets' ) );
@@ -431,15 +433,13 @@ class Multi_Rating {
 	function field_star_rating_colour() {	
 		$star_rating_colour = $this->style_settings[Multi_Rating::STAR_RATING_COLOUR_OPTION];
 		?>
-   	 	<input type="text" id="star-rating-colour" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STAR_RATING_COLOUR_OPTION; ?>]; ?>" value="<?php echo $star_rating_colour; ?>" />
-    	<div id="star-rating-colorpicker"></div>
+   	 	<input class="color-picker" type="text" id="star-rating-colour" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STAR_RATING_COLOUR_OPTION; ?>]; ?>" value="<?php echo $star_rating_colour; ?>" />
 		<?php 
 	}
 	function field_star_rating_hover_colour() {
 		$star_rating_hover_colour = $this->style_settings[Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION];
 		?>
-	 	 	<input type="text" id="star-rating-hover-colour" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION; ?>]; ?>" value="<?php echo $star_rating_hover_colour; ?>" />
-	   	<div id="star-rating-hover-colorpicker"></div>
+	 	 	<input class="color-picker" type="text" id="star-rating-hover-colour" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION; ?>]; ?>" value="<?php echo $star_rating_hover_colour; ?>" />
 		<?php 
 	}
 	function sanitize_style_settings($input) {
@@ -537,7 +537,286 @@ class Multi_Rating {
 		add_submenu_page(Multi_Rating::RATING_RESULTS_PAGE_SLUG,'Rating Items','Rating Items','manage_options',Multi_Rating::RATING_ITEMS_PAGE_SLUG, array( &$this, 'rating_items_page' ));
 		add_submenu_page(Multi_Rating::RATING_RESULTS_PAGE_SLUG,'Add New Rating Item','Add New Rating Item','manage_options',Multi_Rating::ADD_NEW_RATING_ITEM_PAGE_SLUG, array( &$this, 'add_new_rating_item_page' ));
 		add_submenu_page(Multi_Rating::RATING_RESULTS_PAGE_SLUG,'Settings','Settings','manage_options',Multi_Rating::SETTINGS_PAGE_SLUG, array( &$this, 'settings_page' ));
+		add_submenu_page(Multi_Rating::RATING_RESULTS_PAGE_SLUG,'Reports','Reports','manage_options', Multi_Rating::REPORTS_PAGE_SLUG, array( &$this, 'reports_page' ));
 	}
+	
+	public function reports_page() {
+	?>
+		<div class="wrap">
+			<h2 class="nav-tab-wrapper">
+				<?php
+				$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'reports';
+				$page = Multi_Rating::REPORTS_PAGE_SLUG;
+				$tabs = array (
+						'reports' => 'Reports',
+						'export-import' => 'Export / Import'
+						);
+				foreach ( $tabs as $tab_key => $tab_caption ) {
+					$active = $current_tab == $tab_key ? 'nav-tab-active' : '';
+					echo '<a class="nav-tab ' . $active . '" href="?page=' . $page . '&tab=' . $tab_key . '">' . $tab_caption . '</a>';
+				} 
+				?>
+			</h2>
+			
+			<?php 
+			if ( $current_tab == 'export-import' ) {?>	
+				<div class="metabox-holder">
+					<div class="postbox">
+						<h3><span>Export Rating Results</span></h3>
+						<div class="inside">
+							<p>Export rating results to a CSV file.</p>
+							<form method="post" id="export-rating-results-form">
+								<p>
+									<input type="text" name="username" id="username" class="" autocomplete="off" placeholder="Username">
+
+									<input type="text" class="date-picker" autocomplete="off" name="from-date" placeholder="From - dd/MM/yyyy" id="from-date">
+									<input type="text" class="date-picker" autocomplete="off" name="to-date" placeholder="To - dd/MM/yyyy" id="to-date">
+
+									<select name="post-id" id="post-id">
+										<option value="">All Posts / Pages</option>
+										<?php	
+										global $wpdb;
+										$query = 'SELECT DISTINCT post_id FROM ' .$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME;
+										
+										$rows = $wpdb->get_results($query, ARRAY_A);
+					
+										foreach ($rows as $row) {
+											$post = get_post($row['post_id']);
+											?>
+											<option value="<?php echo $post->ID; ?>">
+												<?php echo get_the_title($post->ID); ?>
+											</option>
+										<?php } ?>
+									</select>
+								</p>
+								
+								<p>
+									<input type="hidden" name="export-rating-results" id="export-rating-results" value="false" />
+									<?php 
+									submit_button( $text = 'Export', $type = 'submit', $name = 'export-btn', $wrap = false, $other_attributes = null );
+									?>
+								</p>
+							</form>
+						</div><!-- .inside -->
+					</div>
+				</div>
+			<?php } else { ?>
+				<h3>Number of entries per day</h3>
+				<?php 
+				global $wpdb;
+				
+				// Time graph
+				$query = 'SELECT DISTINCT DATE(entry_date ) AS day, count(*) as count FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' GROUP BY day ORDER BY entry_date DESC';
+				$rows = $wpdb->get_results($query);
+					
+				$time_data = array();
+				foreach ($rows as $row) {
+					$day = $row->day;
+					$count = $row->count;
+					// TODO if a day has no data, then make it 0 visitors.
+					// Otherwise, it is not plotted on the graph as 0.
+			
+					array_push($time_data, array((strtotime($day) * 1000), intval($count)));
+				}
+				?>
+				<div class="flot-container">
+					<div class="report-wrapper" style="height: 300px;">
+						<div id="entry-count-placeholder" class="report-placeholder"></div>
+					</div>
+				</div>
+				<div class="flot-container">
+					<div class="report-wrapper" style="height: 100px;">
+						<div id="entry-count-overview-placeholder" class="report-placeholder"></div>
+					</div>
+				</div>
+										
+				<script type="text/javascript">
+					// Time graph
+					jQuery(document).ready(function() {
+						// add markers for weekends on grid
+						function weekendAreas(axes) {
+							var markings = [];
+							var d = new Date(axes.xaxis.min);
+							// go to the first Saturday
+							d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
+							d.setUTCSeconds(0);
+							d.setUTCMinutes(0);
+							d.setUTCHours(0);
+							var i = d.getTime();
+							// when we don't set yaxis, the rectangle automatically
+							// extends to infinity upwards and downwards
+							do {
+								markings.push({ xaxis: { from: i, to: i + 2 * 24 * 60 * 60 * 1000 } });
+								i += 7 * 24 * 60 * 60 * 1000;
+							} while (i < axes.xaxis.max);
+							return markings;
+						}
+	
+						var options = {
+							xaxis: {
+								mode: "time",
+								tickLength: 5
+							},
+							selection: {
+								mode: "x"
+							},
+							grid: {
+								markings: weekendAreas,
+								hoverable : true,
+								show: true,
+								aboveData: false,
+								color: '#BBB',
+								backgroundColor: '#f9f9f9',
+								borderColor: '#ccc',
+								borderWidth: 2,
+							},
+							series : {
+								lines: {
+									show: true,
+									lineWidth: 1
+								},
+								points: { show: true }
+							}
+						};
+						
+						var plot = jQuery.plot("#entry-count-placeholder", [<?php echo json_encode($time_data); ?>], options);
+						
+						var overview = jQuery.plot("#entry-count-overview-placeholder", [<?php echo json_encode($time_data); ?>], {
+							series: {
+								lines: {
+									show: true,
+									lineWidth: 1
+								},
+								shadowSize: 0
+							},
+							xaxis: {
+								ticks: [],
+								mode: "time"
+							},
+							yaxis: {
+								ticks: [],
+								min: 0,
+								autoscaleMargin: 0.1
+							},
+							selection: {
+								mode: "x"
+							},
+							grid: {
+								markings: weekendAreas,
+								hoverable : true,
+								show: true,
+								aboveData: false,
+								color: '#BBB',
+								backgroundColor: '#f9f9f9',
+								borderColor: '#ccc',
+								borderWidth: 2,
+								
+							},
+						});
+
+						function flot_tooltip(x, y, contents) {
+							jQuery('<div id="flot-tooltip">' + contents + '</div>').css( {
+								position: 'absolute',
+								display: 'none',
+								top: y + 5,
+								left: x + 5,
+								border: '1px solid #fdd',
+								padding: '2px',
+								'background-color': '#fee',
+								opacity: 0.80
+							}).appendTo("body").fadeIn(200);
+						}
+							
+						jQuery("#entry-count-placeholder").bind("plotselected", function (event, ranges) {
+							// do the zooming
+									
+							plot = jQuery.plot("#entry-count-placeholder", [<?php echo json_encode($time_data); ?>], jQuery.extend(true, {}, options, {
+								xaxis: {
+									min: ranges.xaxis.from,
+									max: ranges.xaxis.to
+								}
+							}));
+									
+							// don't fire event on the overview to prevent eternal loop
+							overview.setSelection(ranges, true);
+						});
+												
+						jQuery("#entry-count-overview-placeholder").bind("plotselected", function (event, ranges) {
+							plot.setSelection(ranges);
+						});
+
+						jQuery("#entry-count-placeholder").bind("plothover", function (event, pos, item) {
+							if (item) {
+						   		jQuery("#flot-tooltip").remove();
+								var x = item.datapoint[0].toFixed(2),
+								y = item.datapoint[1].toFixed(2);
+
+								flot_tooltip( item.pageX - 30, item.pageY - 20, item.datapoint[1] );
+						    } else {
+						    	jQuery("#flot-tooltip").remove();
+						    }
+						});
+					});
+				</script>	
+			<?php } ?>
+		</div>
+		
+		<div class="clear" />
+		<hr />
+		<?php echo Multi_Rating::PRO_HTML; ?><?php
+	}
+	
+	/**
+	 * Executes custom admin actions on init depending on HTTP request
+	 */
+	public function do_admin_actions() {
+	
+		// if downloading the rating results csv export
+		if ( isset( $_POST['export-rating-results'] )
+				&& $_POST['export-rating-results'] === "true" ) {
+				
+			$file_name = 'rating-results-' . date('YmdHis') . '.csv';
+				
+			$username = isset($_POST['username']) ? $_POST['username'] : null;
+			$from_date = isset($_POST['from-date']) ? $_POST['from-date'] : null;
+			$to_date = isset($_POST['to-date']) ? $_POST['to-date'] : null;
+			$post_id = isset($_POST['post-id']) ? $_POST['post-id'] : null;
+				
+			$filters = array();
+			if ( $username != null && strlen($username) > 0 ) {
+				$filters['username'] = $username;
+			}
+			if ( $post_id != null && strlen($post_id) > 0 ) {
+				$filters['post_id'] = $post_id;
+			}
+
+			if ( $from_date != null && strlen($from_date) > 0 ) {
+				list($year, $month, $day) = explode('/', $from_date);// default yyyy/mm/dd format
+				if ( checkdate( $month , $day , $year )) {
+					$filters['from_date'] = $from_date;
+				}
+			}
+			if ( $to_date != null && strlen($to_date) > 0 ) {
+				list($year, $month, $day) = explode('/', $to_date);// default yyyy/mm/dd format
+				if ( checkdate( $month , $day , $year )) {
+					$filters['to_date'] = $to_date;
+				}
+			}
+				
+			if ( Multi_Rating_API::generate_rating_results_csv_file( $file_name, $filters ) ) {
+					
+				header('Content-type: text/csv');
+				header('Content-Disposition: attachment; filename="' . $file_name . '"');
+				readfile($file_name);
+	
+				// delete file
+				unlink($file_name);
+			}
+				
+			die();
+		}
+	}
+	
 	/**
 	 * Shows the settings page
 	 *
@@ -548,7 +827,6 @@ class Multi_Rating {
 		<div class="wrap">
 		
 			<h2>Settings</h2>
-			<?php echo Multi_Rating::PRO_HTML; ?>
 			
 			<?php 
 			if ( isset( $_GET['updated'] ) && isset( $_GET['page'] ) ) {
@@ -628,7 +906,6 @@ class Multi_Rating {
 	public function rating_results_page() {
 		?>
 		<div class="wrap">
-			<?php echo Multi_Rating::PRO_HTML; ?>
 			<h2 class="nav-tab-wrapper">
 				<?php
 				$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : Multi_Rating::RATING_RESULTS_TAB;
@@ -683,7 +960,6 @@ class Multi_Rating {
 		?>
 		<div class="wrap">
 			<h2>Rating Items<a class="add-new-h2" href="admin.php?page=<?php echo Multi_Rating::ADD_NEW_RATING_ITEM_PAGE_SLUG; ?>">Add New</a></h2>
-			<?php echo Multi_Rating::PRO_HTML; ?>
 			<form method="post" id="rating-item-table-form">
 				<?php 
 				$rating_item_table = new Rating_Item_Table();
@@ -760,7 +1036,6 @@ class Multi_Rating {
 		?>
 		<div class="wrap">
 			<h2>Add New Rating Item</h2>
-			<?php echo Multi_Rating::PRO_HTML; ?>
 		
 			<form method="post" id="add-new-rating-item-form">
 				<table class="form-table">
@@ -843,8 +1118,19 @@ class Multi_Rating {
 		wp_enqueue_style( 'mr-frontend-style', plugins_url( 'css' . DIRECTORY_SEPARATOR . 'frontend.css', __FILE__ ) );
 		wp_enqueue_style( 'mr-admin-style', plugins_url( 'css' . DIRECTORY_SEPARATOR . 'admin.css', __FILE__ ) );
 		
-		wp_enqueue_style( 'farbtastic' );
-		wp_enqueue_script( 'farbtastic' );
+		// flot
+		wp_enqueue_script( 'flot', plugins_url( 'js' . DIRECTORY_SEPARATOR . 'flot' . DIRECTORY_SEPARATOR . 'jquery.flot.js', __FILE__ ), array( 'jquery' ) );
+		wp_enqueue_script( 'flot-categories', plugins_url( 'js' . DIRECTORY_SEPARATOR . 'flot' . DIRECTORY_SEPARATOR . 'jquery.flot.categories.js', __FILE__ ), array( 'jquery', 'flot' ) );
+		wp_enqueue_script( 'flot-time', plugins_url( 'js' . DIRECTORY_SEPARATOR . 'flot' . DIRECTORY_SEPARATOR . 'jquery.flot.time.js', __FILE__ ), array( 'jquery', 'flot' ) );
+		wp_enqueue_script( 'flot-selection', plugins_url( 'js' . DIRECTORY_SEPARATOR . 'flot' . DIRECTORY_SEPARATOR . 'jquery.flot.selection.js', __FILE__ ), array( 'jquery', 'flot', 'flot-time' ) );
+		
+		// color picker
+		wp_enqueue_style( 'wp-color-picker' );          
+    	wp_enqueue_script( 'wp-color-picker' );
+		
+    	// date picker
+		wp_enqueue_script('jquery-ui-datepicker');
+		wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
 	}
 
 	/**

@@ -8,6 +8,10 @@ jQuery(document).ready(function() {
 		jQuery("#clear-database").val("true");
 	});
 	
+	jQuery("#export-btn").click(function(event) {
+		jQuery("#export-rating-results").val("true");
+	});
+	
 	var rowActions = jQuery("#rating-item-table-form .row-actions > a");
 	jQuery.each(rowActions, function(index, element) {
 		jQuery(element).click(function(event) { 
@@ -56,13 +60,19 @@ jQuery(document).ready(function() {
 	});
 	
 	jQuery(document).ready(function() {
-	    jQuery('#star-rating-colorpicker').hide();
-	    jQuery('#star-rating-colorpicker').farbtastic("#star-rating-colour");
-	    jQuery("#star-rating-colour").click(function(){jQuery('#star-rating-colorpicker').slideToggle();});
+		
+		jQuery('.color-picker').wpColorPicker({
+		    defaultColor: false,
+		    change: function(event, ui){},
+		    clear: function() {},
+		    hide: true,
+		    palettes: true
+		});
 	    
-	    jQuery('#star-rating-hover-colorpicker').hide();
-	    jQuery('#star-rating-hover-colorpicker').farbtastic("#star-rating-hover-colour");
-	    jQuery("#star-rating-hover-colour").click(function(){jQuery('#star-rating-hover-colorpicker').slideToggle();});
+	    jQuery('.date-picker').datepicker({
+	        dateFormat : 'yy/mm/dd'
+	    });
+	    
 	});
 	
 });

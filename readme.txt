@@ -3,7 +3,7 @@ Contributors: dpowney
 Donate link: http://www.danielpowney.com/donate
 Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippet, testimonial, review
 Requires at least: 3.0.1
-Tested up to: 3.9
+Tested up to: 3.9.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -31,6 +31,8 @@ I developed Multi Rating because I could not find a single multi rating plugin f
 * Automatic placement settings to display the rating form and rating results on every post in different positions
 * Meta box on the edit post page to override the default automatic placement settings
 * Settings to restrict post types, turn on validation, modify text, apply different styles and clear the database etc...
+* Reports on number of entries per day
+* Export rating results to CSV file
 
 Here's a live demo: http://danielpowney.com/multi-rating/
 
@@ -103,13 +105,14 @@ Full documentation available at: http://danielpowney.com/multi-rating/
 
 == Upgrade Notice ==
 
-= 2.2.3 =
-On hover CSS changes to star icons. No functional changes.
-
 == Changelog ==
 
+= 2.2.4 =
+* New report which shows number of entries per day
+* Ability to export rating results to a CSV file
+
 = 2.2.3 (07/07/2014) =
-* added on hover color for star rating select
+* Added on hover color for star rating select
 
 = 2.2.2 (29/05/2014) =
 * Fixed missing category_id attribute to display_top_rating_results shortcode
