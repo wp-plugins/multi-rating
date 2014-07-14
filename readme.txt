@@ -19,7 +19,7 @@ I developed Multi Rating because I could not find a single multi rating plugin f
 = Features =
 
 * 5 star rating, percentage and score results
-* Multuple rating criteria and questions using star ratings, select drop downs or radio buttons to choose answers from
+* Multuple rating criteria and questions using star ratings, select drop downs and radio buttons to choose answers from
 * Fontawesome used for star rating icons
 * Shortcodes to display the rating form, rating results and top rating results
 * Rich snippet added to page markup for 5 star rating results - appears in search results
@@ -71,6 +71,8 @@ The following key features are available in the Pro version:
 * View rating results per post and rating form in WP-admin backend
 * Post, category and specific page URL filters to include (whitelist) or exclude (blacklist) displaying the rating form and rating result set positions
 * Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages) from displaying the rating form and rating result set positions
+* Thumbs up/thumbs down rating item type
+* Includes the ability to display the individual rating item results with the selected option totals similar to a poll
 
 Other features available in the Pro version include:
 
