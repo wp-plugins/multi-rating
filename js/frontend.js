@@ -42,35 +42,37 @@ jQuery(document).ready(function() {
 				alert(response);
 			});
 	});
-	
 	/**
 	 * Selected star rating changes on hover and click
 	 */
 	var ratingItemStatus = {};
 	
-	jQuery(".star-rating-select .fa-star-o, .star-rating-select .fa-star").click(function(e) {
+	// supporting different versions of Font Awesome icons
+	var icon_classes = jQuery.parseJSON(mr_frontend_data.icon_classes);
+	
+	jQuery(".star-rating-select .mr-star-empty, .star-rating-select .mr-star-full").click(function(e) {
 		
 		updateRatingItemStatus(this, 'clicked');
 		
-		jQuery(this).not('.fa-minus-circle').removeClass("fa-star-o  star-hover").addClass("fa-star");
-		jQuery(this).prevAll().not('.fa-minus-circle').removeClass("fa-star-o star-hover").addClass("fa-star");
-		jQuery(this).nextAll().not('.fa-minus-circle').removeClass("fa-star star-hover").addClass("fa-star-o");
+		jQuery(this).not('.mr-minus').removeClass(icon_classes.star_empty + " mr-star-hover").addClass(icon_classes.star_full);
+		jQuery(this).prevAll().not('.mr-minus').removeClass(icon_classes.star_empty + " mr-star-hover").addClass(icon_classes.star_full);
+		jQuery(this).nextAll().not('.mr-minus').removeClass(icon_classes.star_full + " mr-star-hover").addClass(icon_classes.star_empty);
 		
-		updateStarRatingValue(this);
+		updateSelectedHiddenValue(this);
 	});
 	
-	jQuery(".star-rating-select .fa-minus-circle").click(function(e) {
+	jQuery(".star-rating-select .mr-minus").click(function(e) {
 		
 		updateRatingItemStatus(this, '');
 		
-		jQuery(this).not('.fa-minus-circle').removeClass("fa-star-o  star-hover").addClass("fa-star");
-		jQuery(this).prevAll().not('.fa-minus-circle').removeClass("fa-star-o star-hover").addClass("fa-star");
-		jQuery(this).nextAll().not('.fa-minus-circle').removeClass("fa-star star-hover").addClass("fa-star-o");
+		jQuery(this).not('.mr-minus').removeClass(icon_classes.star_empty + " mr-star-hover").addClass(icon_classes.star_full);
+		jQuery(this).prevAll().not('.mr-minus').removeClass(icon_classes.star_empty + " mr-star-hover").addClass(icon_classes.star_full);
+		jQuery(this).nextAll().not('.mr-minus').removeClass(icon_classes.star_full + " mr-star-hover").addClass(icon_classes.star_empty);
 		
-		updateStarRatingValue(this);
+		updateSelectedHiddenValue(this);
 	});
 	
-	jQuery(".star-rating-select .fa-minus-circle, .star-rating-select .fa-star-o, .star-rating-select .fa-star").hover(function(e) {
+	jQuery(".star-rating-select .mr-minus, .star-rating-select .mr-star-empty, .star-rating-select .mr-star-full").hover(function(e) {
 
 		var elementId = getRatingItemElementId(this);
 		var ratingItemIdSequence = getRatingItemIdSequence(elementId);
@@ -79,15 +81,9 @@ jQuery(document).ready(function() {
 			
 			updateRatingItemStatus(this, 'hovered');
 			
-			jQuery(this).not('.fa-minus-circle').removeClass("fa-star-o").addClass("fa-star star-hover");
-			jQuery(this).prevAll().not('.fa-minus-circle').removeClass("fa-star-o").addClass("fa-star star-hover");
-			jQuery(this).nextAll().not('.fa-minus-circle').removeClass("fa-star star-hover").addClass("fa-star-o");
-			
-			if (jQuery("#" + elementId).hasClass("no-zero")) {
-	    		jQuery("#" + elementId).next().removeClass("fa-star-o");
-	    		jQuery("#" + elementId).next().addClass("fa-star");
-    		}
-			
+			jQuery(this).not('.mr-minus').removeClass(icon_classes.star_empty).addClass(icon_classes.star_full + " mr-star-hover");
+			jQuery(this).prevAll().not('.mr-minus').removeClass(icon_classes.star_empty).addClass(icon_classes.star_full + " mr-star-hover");
+			jQuery(this).nextAll().not('.mr-minus').removeClass(icon_classes.star_full + " mr-star-hover").addClass(icon_classes.star_empty);	
 		}
 	});
 	
@@ -101,7 +97,7 @@ jQuery(document).ready(function() {
 		touch : null
 	};
 	
-	jQuery(".star-rating-select .fa-star-o, .star-rating-select .fa-star, .star-rating-select .fa-minus-circle").on("touchstart", function(e) {
+	jQuery(".star-rating-select .mr-star-empty, .star-rating-select .mr-star-full, .star-rating-select .mr-minus").on("touchstart", function(e) {
 		touchData.started = new Date().getTime();
 		var touch = e.originalEvent.touches[0];
 		touchData.previousXCoord = touch.pageX;
@@ -109,7 +105,7 @@ jQuery(document).ready(function() {
 		touchData.touch = touch;
 	});
 	
-	jQuery(".star-rating-select .fa-star-o, .star-rating-select .fa-star, .star-rating-select .fa-minus-circle").on(
+	jQuery(".star-rating-select .mr-star-empty, .star-rating-select .mr-star-full, .star-rating-select .mr-minus").on(
 			"touchend touchcancel",
 			function(e) {
 				var now = new Date().getTime();
@@ -123,11 +119,11 @@ jQuery(document).ready(function() {
 					if ((touchData.previousXCoord === xCoord)
 							&& (touchData.previousYCoord === yCoord)) {
 						
-						jQuery(this).removeClass("fa-star-o").addClass("fa-star");
-						jQuery(this).prevAll().removeClass("fa-star-o").addClass("fa-star");
-						jQuery(this).nextAll().removeClass("fa-star").addClass("fa-star-o");
+						jQuery(this).removeClass(icon_classes.star_empty).addClass(icon_classes.star_full);
+						jQuery(this).prevAll().removeClass(icon_classes.star_empty).addClass(icon_classes.star_full);
+						jQuery(this).nextAll().removeClass(icon_classes.star_full).addClass(icon_classes.star_empty);
 						
-						updateStarRatingValue(this);
+						updateSelectedHiddenValue(this);
 					}
 				}
 				touchData.started = null;
@@ -165,16 +161,16 @@ jQuery(document).ready(function() {
 			var index=0;
 			for (index; index<classes.length; index++) {
 				var currentClass = classes[index];
-		        if (currentClass !== '' && currentClass.indexOf('starIndex-') == 0) {
+		        if (currentClass !== '' && currentClass.indexOf('index-') == 0) {
 		        	
-		        	// starIndex-X-ratingItemId-sequence
+		        	// index-X-ratingItemId-sequence
 		        	var parts = currentClass.split("-"); 
 		    		var value = parts[1]; // this is the star index
 		    		var ratingItemId = parts[4]; /// skipt 2: rating-item-
 		    		var sequence = parts[5];
 		    		
-		    		var elementId = 'starIndex-' + value + '-rating-item-' + ratingItemId + '-' + sequence;
-		    		//starIndex-1-rating-item-1-1
+		    		var elementId = 'index-' + value + '-rating-item-' + ratingItemId + '-' + sequence;
+		    		//index-1-rating-item-1-1
 		    		return elementId;
 		        }
 			}
@@ -186,7 +182,7 @@ jQuery(document).ready(function() {
 	/**
 	 * Updates the selected star rating value
 	 */
-	function updateStarRatingValue(element) {
+	function updateSelectedHiddenValue(element) {
 		var clazz = jQuery(element).attr("class");
 		
 		if (clazz && clazz.length && clazz.split) {
@@ -196,24 +192,17 @@ jQuery(document).ready(function() {
 			var index=0;
 			for (index; index<classes.length; index++) {
 				var currentClass = classes[index];
-		        if (currentClass !== '' && currentClass.indexOf('starIndex-') == 0) {
+		        if (currentClass !== '' && currentClass.indexOf('index-') == 0) {
 		        	
 		        	// FIXME this should use a unique element Id - not a class
 		        	
-		        	// starIndex-X-ratingItemId-sequence
+		        	// index-X-ratingItemId-sequence
 		        	var parts = currentClass.split("-"); 
 		    		var value = parts[1]; // this is the star index
 		    		var ratingItemId = parts[4]; /// skipt 2: rating-item-
 		    		var sequence = parts[5];
 		    		
 		    		var elementId = '#rating-item-'+ ratingItemId + '-' + sequence;
-		    		
-		    		if (jQuery("." + currentClass).hasClass("no-zero") && value == 0) {
-			    		var newSelectedRatingItemClass = ".starIndex-1-rating-item-" + ratingItemId + "-" + sequence;
-			    		jQuery(newSelectedRatingItemClass).removeClass("fa-star-o");
-				    	jQuery(newSelectedRatingItemClass).addClass("fa-star");
-			    		value = 1;
-		    		}
 		    		
 		    		jQuery(elementId).val(value);
 		    		return;
