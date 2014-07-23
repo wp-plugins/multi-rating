@@ -15,28 +15,28 @@ if ( $previous_plugin_version != Multi_Rating::VERSION ) {
 		// Delete old files that are no longer used from previous versions
 		
 		// PHP files
-		if (file_exists( dirname(__FILE__) . DIRECTORY_SEPARATOR . 'multi-rating-table.php'))
-			unlink(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'multi-rating-table.php');
-		if (file_exists( dirname(__FILE__) . DIRECTORY_SEPARATOR . 'templates.php'))
-			unlink(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'templates.php');
+		if ( file_exists( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'multi-rating-table.php' ) )
+			unlink( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'multi-rating-table.php' );
+		if ( file_exists( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'templates.php' ) )
+			unlink( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'templates.php' );
 		
 		// Dirs
 		
 		// JS
-		if (file_exists( dirname(__FILE__) . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'multi-rating-admin.js'))
-			unlink(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'multi-rating-admin.js');
-		if (file_exists( dirname(__FILE__) . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'multi-rating-form.js'))
-			unlink(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'multi-rating-form.js');
+		if ( file_exists( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'multi-rating-admin.js' ) )
+			unlink( dirname( __FILE__) . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'multi-rating-admin.js' );
+		if ( file_exists( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'multi-rating-form.js' ) )
+			unlink( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'multi-rating-form.js' );
 		
 		// Images
 		
 		// CSS
-		if (file_exists( dirname(__FILE__) . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'multi-rating.css'))
-			unlink(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'multi-rating.css');
+		if ( file_exists( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'multi-rating.css' ) )
+			unlink( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'multi-rating.css' );
 		
 		
-	} catch (Exception $e) {
-		die('An error occured updating the plugin file structure! Try manually deleting the plugin files to fix the problem.');
+	} catch ( Exception $e ) {
+		die( __('An error occured updating the plugin file structure! Try manually deleting the plugin files to fix the problem.', 'multi-rating' ) );
 	}
 
 	update_option( Multi_Rating::VERSION_OPTION, Multi_Rating::VERSION );
@@ -46,20 +46,22 @@ if ( $previous_plugin_version != Multi_Rating::VERSION ) {
  * Recursive function to remove a directory and all it's sub-directories and contents
  * @param unknown_type $dir
  */
-function mr_recursive_rmdir_and_unlink($dir) {
-	if (is_dir($dir)) {
-		$objects = scandir($dir);
-		foreach ($objects as $object) {
-			if ($object != "." && $object != "..") {
-				if (filetype($dir . DIRECTORY_SEPARATOR . $object) == "dir")
-					recursive_rmdir_and_unlink($dir. DIRECTORY_SEPARATOR . $object);
-				else unlink($dir . DIRECTORY_SEPARATOR . $object);
+function mr_recursive_rmdir_and_unlink( $dir ) {
+	if ( is_dir( $dir ) ) {
+		
+		$objects = scandir( $dir );
+		
+		foreach ( $objects as $object ) {
+			if ( $object != "." && $object != ".." ) {
+				if ( filetype($dir . DIRECTORY_SEPARATOR . $object ) == "dir" )
+					recursive_rmdir_and_unlink( $dir. DIRECTORY_SEPARATOR . $object );
+				else unlink( $dir . DIRECTORY_SEPARATOR . $object );
 			}
 		}
 		
-		reset($objects);
+		reset( $objects );
 		
-		rmdir($dir);
+		rmdir( $dir );
 	}
 }
  

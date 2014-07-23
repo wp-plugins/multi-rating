@@ -87,7 +87,7 @@ label.description + select, label.description input {
 label.description {
 	display: inline-block !important;
 }
-.star-rating-select .fa-minus-circle {
+.star-rating-select .mr-minus {
 	margin-right: 5px;
 }
 .rating-result a + .score-result, .rating-result a + .score-result + .count, 

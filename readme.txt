@@ -14,25 +14,23 @@ Multi Rating is a simple rating plugin which allows visitors to rate a post base
 
 Multi Rating is a simple rating plugin which allows visitors to rate a post based on multiple criteria and questions. It is responsive, easy to use and integrates seamlessly into any WordPress theme.
 
-I developed Multi Rating because I could not find a single multi rating plugin for WordPress that a) worked, b) was simple and easy to use, and c) had the right features. GD Star Rating was far too complicated and the other rating plugins were either too basic or did not work at all.
-
 = Features =
 
-* 5 star rating, percentage and score results
-* Multuple rating criteria and questions using star ratings, select drop downs and radio buttons to choose answers from
-* Fontawesome used for star rating icons
+* 5 star ratings, percentage and score results
+* Multuple rating criteria and questions using star ratings, select drop-down lists and radio buttons to choose answers from
+* Font Awesome used for star rating icons
 * Shortcodes to display the rating form, rating results and top rating results
-* Rich snippet added to page markup for 5 star rating results - appears in search results
-* View the rating results and selected values from the WP-admin
-* API functions for using Multi Rating in your theme
+* schema.org structured markup is be added to every page that allow search engines to display the aggregated rating results as rich snippets.
+* View the rating results and selected values in the WP-admin
 * Widget to display the top rating results
-* Options to apply to different post types
+* Enable for custom post types and pages
 * Add custom weights to each rating item to adjust the overall rating results
 * Automatic placement settings to display the rating form and rating results on every post in different positions
-* Meta box on the edit post page to override the default automatic placement settings
+* Meta-box on the edit post page to override the default automatic placement settings
 * Settings to restrict post types, turn on validation, modify text, apply different styles and clear the database etc...
 * Reports on number of entries per day
 * Export rating results to CSV file
+* API functions for using Multi Rating in your theme
 
 Here's a live demo: http://danielpowney.com/multi-rating/
 
@@ -47,8 +45,6 @@ Full documentation available at: http://danielpowney.com/multi-rating/
 * [display_top_rating_results]
 * [display_top_rating_results title="Top Rating Results" limit="10"]
 
-The Pro version contains 4 additonal shortcodes [display_user_rating_results], [display_rating_result_reviews], [display_rating_item_results] and [display_comment_rating_form].
-
 = API Functions =
 The API functions are located in the multi-rating-api.php file which contains a static class called Multi_Rating_API. The key API functions are:
 
@@ -56,31 +52,26 @@ The API functions are located in the multi-rating-api.php file which contains a 
 * display_rating_result
 * display_rating_form
 
-The pro version contains 4 additional key API functions: display_user_rating_results, display_rating_result_reviews, display_rating_item_results and display_comment_rating_form
-
 = Multi Rating Pro =
 
 The following key features are available in the Pro version:
 
 * Multiple rating forms with different rating items
-* WordPress comments integration - show rating items in comments form and display results in comments
-* Logged in users can update and delete their existing ratings
-* New shortcodes, API functions and widgets for displaying rating results in a review format, displaying individual rating item results, displaying rating results belonging to a specific user and displaying the WordPress comments form with rating items
+* WordPress comments system integration
+* Logged in users can update or delete their existing ratings
+* New shortcodes, API functions and widgets (e.g. display user reviews and individual rating item results)
 * Rating forms can optionally include a name, e-mail and comment fields
 * Ability to use text descriptions for select and radio options instead of numbers
 * View rating results per post and rating form in WP-admin backend
-* Post, category and specific page URL filters to include (whitelist) or exclude (blacklist) displaying the rating form and rating result set positions
-* Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages) from displaying the rating form and rating result set positions
-* Thumbs up/thumbs down rating item type
-* Includes the ability to display the individual rating item results with the selected option totals similar to a poll
+* Post, category and specific page filters to include (whitelist) or exclude (blacklist) automatic placement of the rating form and rating results
+* Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages)
+* Thumbs up/down rating item type
+* Display rating item results breakdown in a poll format
 
 Other features available in the Pro version include:
 
 * Allow/disallow anonymous user ratings option
-* Apply category filters to the Top Rating Results and User Ratings widgets
-* Change the defaults settings for each post in the Edit Post page including the default rating form, allow anonymous ratings option and display settings for the rating form and rating results positions
 * Option to display the rating result back to the user when they submit a rating form
-* Modify the duration in days for the IP address date validation check for users submitting the rating form
 * More filters on WP-admin rating results tables
 
 To learn more go to http://danielpowney.com/downloads/multi-rating-pro/
@@ -95,6 +86,24 @@ To learn more go to http://danielpowney.com/downloads/multi-rating-pro/
 
 Full documentation available at: http://danielpowney.com/multi-rating/
 
+= Why aren't the star rating icons showing up? =
+
+Font Awesome icons are used for the star ratings. Your theme or another plugin could also include a different version of Font Awesome causing a conflict. Try changing the Font Awesome version in the plugin settings. If your theme or another plugin already includes Font Awesome, you may want to disable the plugin including Font Awesome. Also ensure you are connected to the Internet as the plugin includes the Font Awesome CSS from Bootstrap CDN i.e. http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css.
+
+= HTML appears broken e.g. 4.35/5(3)">Hello World =
+
+the_title() function should not be used in a HTML element attribute. This will cause broken HTML markup. the_title_attribute() function should be used instead. See https://pippinsplugins.com/use-the_title-and-the_title_attribute-correctly/.
+
+Here's an example of incorrect code usage of the_title() function: 
+<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>">Hello World/a>
+
+Using the auto placement settings to display the rating results would result in broken HTML like this: 
+4.35/5(3)">Hello World
+
+Correct usage is to use the_title_attribute() function instead for output of a HTML element attribute: 
+<a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">Hello World</a>
+
+
 == Screenshots ==
 1. Demo of rating results after page title, rating form and top rating results
 2. View rating results in WP-admin
@@ -108,6 +117,11 @@ Full documentation available at: http://danielpowney.com/multi-rating/
 == Upgrade Notice ==
 
 == Changelog ==
+
+= 2.3 =
+* Support for different versions of Font Awesome added
+* Plugin now i18n translation ready
+* Added About page
 
 = 2.2.4 =
 * New report which shows number of entries per day

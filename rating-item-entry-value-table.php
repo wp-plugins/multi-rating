@@ -12,8 +12,6 @@ class Rating_Item_Entry_Value_Table extends WP_List_Table {
 
 	const
 	CHECKBOX_COLUMN = 'cb',
-	SINGULAR_LABEL = "Rating Result Detail",
-	PLURAL_LABEL = 'Rating Result Details',
 	RATING_ITEM_ENTRY_ID_COLUMN = 'rating_item_entry_id',
 	RATING_ITEM_ID_COLUMN = 'rating_item_id',
 	DESCRIPTION_COLUMN = 'description',
@@ -27,8 +25,8 @@ class Rating_Item_Entry_Value_Table extends WP_List_Table {
 	 */
 	function __construct() {
 		parent::__construct( array(
-				'singular'=> Rating_Item_Entry_Value_Table::SINGULAR_LABEL,
-				'plural' => Rating_Item_Entry_Value_Table::PLURAL_LABEL,
+				'singular'=> __( 'Entry Value', 'multi-rating' ),
+				'plural' => __( 'Entry Values', 'multi-rating' ),
 				'ajax'	=> false
 		) );
 	}
@@ -38,15 +36,16 @@ class Rating_Item_Entry_Value_Table extends WP_List_Table {
 	 * @see WP_List_Table::extra_tablenav()
 	 */
 	function extra_tablenav( $which ) {
+		
 		if ( $which == "top" ){
 			$rating_item_entry_id = $this->get_rating_item_entry_id();
 			if ($rating_item_entry_id == null) {
 				$rating_item_entry_id = '';
 			}
 			
-			echo '<label for="rating-item_entry-id">Rating Item Entry Id</label>';
-			echo '<input type="text" class="regular-text" name="rating-item-entry-id" value="' . $rating_item_entry_id . '" />';
-			echo '<input type="submit" class="button" value="Submit" />';
+			echo '<label for="rating-item_entry-id">' . _e('Entry Id', 'multi-rating' ) . '</label>';
+			echo '<input type="text" class="regular-text" placeholder="' . __('Enter Entry Id', 'multi-rating' ) . '" name="rating-item-entry-id" value="' . $rating_item_entry_id . '" />';
+			echo '<input type="submit" class="button" value="' . __( 'Submit', 'multi-rating' ) . '" />';
 		}
 		if ( $which == "bottom" ){
 			echo '';
@@ -58,13 +57,12 @@ class Rating_Item_Entry_Value_Table extends WP_List_Table {
 	 * @see WP_List_Table::get_columns()
 	 */
 	function get_columns() {
-		return $columns= array(
-				Rating_Item_Entry_Value_Table::RATING_ITEM_ENTRY_ID_COLUMN =>__('Rating Item Entry Id'),
-				Rating_Item_Entry_Value_Table::RATING_ITEM_ID_COLUMN => __('Rating Item Id'),
-				Rating_Item_Entry_Value_Table::DESCRIPTION_COLUMN =>__('Description'),
-				Rating_Item_Entry_Value_Table::VALUE_COLUMN	=>__('Value'),
-				Rating_Item_Entry_Value_Table::MAX_OPTION_VALUE_COLUMN => __('Max Option Value')
-				
+		return array(
+				Rating_Item_Entry_Value_Table::RATING_ITEM_ENTRY_ID_COLUMN =>__( 'Rating Item Entry Id', 'multi-rating' ),
+				Rating_Item_Entry_Value_Table::RATING_ITEM_ID_COLUMN => __( 'Rating Item Id', 'multi-rating' ),
+				Rating_Item_Entry_Value_Table::DESCRIPTION_COLUMN =>__( 'Description' , 'multi-rating' ),
+				Rating_Item_Entry_Value_Table::VALUE_COLUMN	=>__( 'Value', 'multi-rating' ),
+				Rating_Item_Entry_Value_Table::MAX_OPTION_VALUE_COLUMN => __( 'Max Option Value', 'multi-rating' )
 		);
 	}
 
@@ -79,10 +77,10 @@ class Rating_Item_Entry_Value_Table extends WP_List_Table {
 		$columns = $this->get_columns();
 		$hidden = array( Rating_Item_Entry_Value_Table::RATING_ITEM_ENTRY_ID_COLUMN, Rating_Item_Entry_Value_Table::RATING_ITEM_ID_COLUMN );
 		$sortable = $this->get_sortable_columns();
-		$this->_column_headers = array($columns, $hidden, $sortable);
+		$this->_column_headers = array( $columns, $hidden, $sortable );
 
 		$rating_item_entry_id = $this->get_rating_item_entry_id();
-		if ($rating_item_entry_id == null) {
+		if ( $rating_item_entry_id == null ) {
 			return;
 		}
 		
@@ -92,13 +90,13 @@ class Rating_Item_Entry_Value_Table extends WP_List_Table {
 		. $wpdb->prefix.Multi_Rating::RATING_ITEM_TBL_NAME . ' AS ri WHERE ri.rating_item_id = riev.rating_item_id '
 		. 'AND riev.rating_item_entry_id = "' . $rating_item_entry_id . '"';
 
-		$this->items = $wpdb->get_results($query, ARRAY_A);
+		$this->items = $wpdb->get_results( $query, ARRAY_A );
 	}
 
 	/**
 	 * Default column
-	 * @param unknown_type $item
-	 * @param unknown_type $column_name
+	 * @param $item
+	 * @param $column_name
 	 * @return unknown|mixed
 	 */
 	function column_default( $item, $column_name ) {
