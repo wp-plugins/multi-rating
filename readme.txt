@@ -34,7 +34,7 @@ Multi Rating is a simple rating plugin which allows visitors to rate a post base
 
 Here's a live demo: http://danielpowney.com/multi-rating/
 
-Full documentation available at: http://danielpowney.com/multi-rating/
+The plugin is i18n translation ready (.pot file in the languages directory). Different versions of Font Awesome are supported as well to help prevent any theme or plugin conflicts.
 
 = Shortcode Examples =
 
