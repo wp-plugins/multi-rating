@@ -155,7 +155,7 @@ jQuery(document).ready(function() {
 		var clazz = jQuery(element).attr("class");
 		
 		if (clazz && clazz.length && clazz.split) {
-			clazz = clazz.trim();
+			clazz = jQuery.trim(clazz);
 			clazz = clazz.replace(/\s+/g, ' ');
 			var classes = clazz.split(' ');
 			var index=0;
@@ -165,7 +165,7 @@ jQuery(document).ready(function() {
 		        	
 		        	// index-X-ratingItemId-sequence
 		        	var parts = currentClass.split("-"); 
-		    		var value = parts[1]; // this is the star index
+		    		var value = parts[1]; // this is the index
 		    		var ratingItemId = parts[4]; /// skipt 2: rating-item-
 		    		var sequence = parts[5];
 		    		
@@ -186,7 +186,7 @@ jQuery(document).ready(function() {
 		var clazz = jQuery(element).attr("class");
 		
 		if (clazz && clazz.length && clazz.split) {
-			clazz = clazz.trim();
+			clazz = jQuery.trim(clazz);
 			clazz = clazz.replace(/\s+/g, ' ');
 			var classes = clazz.split(' ');
 			var index=0;

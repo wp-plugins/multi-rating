@@ -30,6 +30,7 @@ Multi Rating is a simple rating plugin which allows visitors to rate a post base
 * Settings to restrict post types, turn on validation, modify text, apply different styles and clear the database etc...
 * Reports on number of entries per day
 * Export rating results to CSV file
+* Custom taxonomy support
 * API functions for using Multi Rating in your theme
 
 Here's a live demo: http://danielpowney.com/multi-rating/
@@ -86,24 +87,6 @@ To learn more go to http://danielpowney.com/downloads/multi-rating-pro/
 
 Full documentation available at: http://danielpowney.com/multi-rating/
 
-= Why aren't the star rating icons showing up? =
-
-Font Awesome icons are used for the star ratings. Your theme or another plugin could also include a different version of Font Awesome causing a conflict. Try changing the Font Awesome version in the plugin settings. If your theme or another plugin already includes Font Awesome, you may want to disable the plugin including Font Awesome. Also ensure you are connected to the Internet as the plugin includes the Font Awesome CSS from Bootstrap CDN i.e. http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css.
-
-= HTML appears broken e.g. 4.35/5(3)">Hello World =
-
-the_title() function should not be used in a HTML element attribute. This will cause broken HTML markup. the_title_attribute() function should be used instead. See https://pippinsplugins.com/use-the_title-and-the_title_attribute-correctly/.
-
-Here's an example of incorrect code usage of the_title() function: 
-<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>">Hello World/a>
-
-Using the auto placement settings to display the rating results would result in broken HTML like this: 
-4.35/5(3)">Hello World
-
-Correct usage is to use the_title_attribute() function instead for output of a HTML element attribute: 
-<a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">Hello World</a>
-
-
 == Screenshots ==
 1. Demo of rating results after page title, rating form and top rating results
 2. View rating results in WP-admin
@@ -117,6 +100,14 @@ Correct usage is to use the_title_attribute() function instead for output of a H
 == Upgrade Notice ==
 
 == Changelog ==
+
+= 2.3.1 =
+* Fixed bug calculating raitng results if a new rating item is added
+* Modified how rating results are calculated
+* Sorting of rating results by result type
+* Fixed bug missing before_title after_title in display_top_rating_results shortcode
+* Fixed bug in JS where trim is not supported in IE8
+* Added support for custom taxonomies
 
 = 2.3 =
 * Support for different versions of Font Awesome added

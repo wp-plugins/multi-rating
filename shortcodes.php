@@ -131,7 +131,11 @@ function mr_display_top_rating_results( $atts = array() ) {
 			'show_rank' => true,
 			'show_title' => true,
 			'class' => '',
-			'category_id' => 0 // 0 = All,
+			'category_id' => 0, // 0 = All,
+
+			// new
+			'taxonomy' => 'category',
+			'term_id' => 0, // 0 = All
 	), $atts ) );
 	
 	if (is_string( $show_category_filter ) ) {
@@ -139,6 +143,11 @@ function mr_display_top_rating_results( $atts = array() ) {
 	}
 	if ( is_string( $show_count ) ) {
 		$show_count = $show_count == "true" ? true : false;
+	}
+	
+	if ($category_id != 0) {
+		$term_id = $category_id;
+		$taxonomy = 'category';
 	}
 
 	return Multi_Rating_API::display_top_rating_results( array(
@@ -152,7 +161,12 @@ function mr_display_top_rating_results( $atts = array() ) {
 			'show_rank' => $show_rank,
 			'show_title' => $show_title,
 			'class' => $class,
-			'category_id' => $category_id
+			//'category_id' => $category_id,
+			'before_title' => $before_title,
+			'after_title' => $after_title,
+			
+			'taxonomy' => $taxonomy,
+			'term_id' => $term_id, // 0 = All
 	) );
 }
 add_shortcode( 'display_top_rating_results', 'mr_display_top_rating_results' );

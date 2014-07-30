@@ -27,11 +27,17 @@ class Rating_Result_View {
 				'show_rank' => true,
 				'no_rating_results_text' => '',
 				'result_type' => Multi_Rating::STAR_RATING_RESULT_TYPE,
-				'class' => ''
-		)));
+				'class' => '',
+				'taxononmy' => null,
+				'term_id' => 0
+		) ) );
 	
 		if ( $category_id == null ) {
-			$category_id = 0; // so that all categories are returned
+			if ( $taxonomy == 'category' ) {
+				$category_id = $term_id;
+			} else {
+				$category_id = 0; // so that all categories are returned
+			}
 		}
 	
 		$html = '<div class="top-rating-results ' . $class . '">';
