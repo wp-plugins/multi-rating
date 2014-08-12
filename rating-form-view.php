@@ -10,7 +10,15 @@ class Rating_Form_View {
 	
 	private static $sequence = 0;
 	
-	public static function get_rating_form($rating_items, $post_id, $params = array()) {
+	/**
+	 * Generates the rating form html
+	 * 
+	 * @param $rating_items
+	 * @param $post_id
+	 * @param $params
+	 * @return html
+	 */
+	public static function get_rating_form( $rating_items, $post_id, $params = array() ) {
 		
 		extract( wp_parse_args( $params, array(
 				'title' => '',
@@ -32,45 +40,23 @@ class Rating_Form_View {
 		
 		$html .= '<form name="rating-form-' . $post_id . '-' . Rating_Form_View::$sequence . '" action="#">';
 		
-		$html .= '<table>';
+		// add the rating items
+		foreach ( $rating_items as $rating_item ) {
 			
-		foreach ($rating_items as $rating_item) {
 			$rating_item_id = $rating_item['rating_item_id'];
-			$description = stripslashes($rating_item['description']);
-			$default_option_value = $rating_item['default_option_value'];
-			$max_option_value = $rating_item['max_option_value'];
+			$element_id = 'rating-item-' . $rating_item_id . '-' . Rating_Form_View::$sequence ;
 				
-			$select_id = 'rating-form-' . $post_id . '-' . Rating_Form_View::$sequence . '-item-value-' . $rating_item_id;
+			$html .= Rating_Form_View::get_rating_item_html( $rating_item, $element_id );
 				
-			$html .= '<tr>';
-			$html .= '<td><label for="' . $select_id . '">' . $description . '</label></td>';
-			$html .= '<td class="value"><select id="' . $select_id . '">';
-			
-			// option values
-			for ($index=0; $index<=$max_option_value; $index++) {
-				$html .= '<option value="' . $index . '"';
-				
-			    if ($default_option_value == $index) {
-					$html .= ' selected="selected"';
-				}
-					
-				$text = $index;
-					
-				$html .= '">' . $text . '</option>';
-			}
-			$html .= '</select>';
-			
+			// hidden field to identify the rating item
+			// this is used in the JavaScript to construct the AJAX call when submitting the rating form
 			$html .= '<input type="hidden" value="' . $rating_item_id . '" class="rating-form-' . $post_id . '-' . Rating_Form_View::$sequence . '-item" id="hidden-rating-item-id-' . $rating_item_id .'" />';
-			$html .= '</td></tr>';
 		}
-		
-		$html .= '<tr><td class="action" colspan="2">';
+
 
 		$html .= '<input type="button" class="btn btn-default save-rating" id="' . $post_id . '-' . Rating_Form_View::$sequence . '" value="' . $submit_button_text . '"></input>';
 		$html .= '<input type="hidden" value="' . $rating_item_entry_id . '" id="rating-item-entry-id-' . $post_id . '-' . Rating_Form_View::$sequence . '" />';
-		$html .= '</td></tr>';
-		
-		$html .= '</table>';
+
 		$html .= '</form>';
 		
 		$html .= '</div>';
@@ -78,6 +64,96 @@ class Rating_Form_View {
 		return $html;
 	}
 	
+	/**
+	 * Returns HTML for the rating items in the rating form
+	 *
+	 * @param unknown_type $rating_item
+	 * @param unknown_type $element_id
+	 */
+	public static function get_rating_item_html( $rating_item, $element_id ) {
+		
+		$rating_item_id = $rating_item['rating_item_id'];
+		$description = stripslashes($rating_item['description']);
+		$default_option_value = $rating_item['default_option_value'];
+		$max_option_value = $rating_item['max_option_value'];
+		$rating_item_type = $rating_item['type'];
+	
+		$html = '<p class="rating-item"><label class="description" for="' . $element_id . '">' . $description . '</label>';
+	
+		if ( $rating_item_type == "star_rating" ) {
+			
+			$style_settings = (array) get_option( Multi_Rating::STYLE_SETTINGS );
+			$star_rating_colour = $style_settings[Multi_Rating::STAR_RATING_COLOUR_OPTION];
+			$font_awesome_version = $style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION];
+			$icon_classes = mr_get_icon_classes( $font_awesome_version );
+				
+			$html .= '<span class="star-rating star-rating-select">';
+	
+			// add star icons
+			$index = 0;
+			for ( $index; $index <= $max_option_value; $index++ ) {
+				
+				if ( $index == 0 ) {
+					$html .= '<i class="' .  $icon_classes['minus'] . ' index-' . $index . '-' . $element_id . '"></i>';
+					continue;
+				}
+				
+				$class = $icon_classes['star_full'];
+				// if default is less than current icon, it must be empty
+				if ( $default_option_value < $index ) {
+					$class = $icon_classes['star_empty'];
+				}
+				
+				$html .= '<i class="' . $class . ' index-' . $index . '-' . $element_id . '"></i>';
+			}
+			
+			$html .= '</span>';
+	
+			// hidden field for storing selected star rating value
+			$html .= '<input type="hidden" name="' . $element_id . '" id="' . $element_id . '" value="' . $default_option_value . '">';
+				
+		} else {
+			
+			if ( $rating_item_type == 'select' ) {
+				$html .= '<select name="' . $element_id . '" id="' . $element_id . '">';
+			}
+	
+			// option values
+			for ($index=0; $index <= $max_option_value; $index++) {
+	
+				$is_selected = false;
+				if ( $default_option_value == $index ) {
+					$is_selected = true;
+				}
+	
+				$text = $index;
+				if ( $rating_item_type == 'select' ) {
+					$html .= '<option value="' . $index . '"';
+					
+					if ( $is_selected ) {
+						$html .= ' selected="selected"';
+					}
+					
+					$html .= '>' . $text . '</option>';
+				} else {
+					$html .= '<span class="radio-option">';
+					$html .= '<input type="radio" name="' . $element_id . '" id="' . $element_id . '-' . $index . '" value="' . $index . '"';
+					
+					if ( $is_selected ) {
+						$html .= ' checked="checked"';
+					}
+					
+					$html .= '>' . $text . '</input></span>';
+				}
+			}
+	
+			if ($rating_item_type == 'select') {
+				$html .= '</select>';
+			}
+		}
+	
+		$html .= '</p>';
+		return $html;
+	}
 }
-
 ?>

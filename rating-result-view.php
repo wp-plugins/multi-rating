@@ -14,7 +14,7 @@ class Rating_Result_View {
 	 * @param unknown_type $top_rating_result_rows
 	 * @param unknown_type $params
 	 */
-	public static function get_top_rating_results_html($top_rating_result_rows, $params = array()) {
+	public static function get_top_rating_results_html( $top_rating_result_rows, $params = array() ) {
 	
 		extract(wp_parse_args($params, array(
 				'show_title' => true,
@@ -27,36 +27,43 @@ class Rating_Result_View {
 				'show_rank' => true,
 				'no_rating_results_text' => '',
 				'result_type' => Multi_Rating::STAR_RATING_RESULT_TYPE,
-				'class' => ''
-		)));
+				'class' => '',
+				'taxononmy' => null,
+				'term_id' => 0
+		) ) );
 	
-		if ($category_id == null) {
-			$category_id = 0; // so that all categories are returned
+		if ( $category_id == null ) {
+			if ( $taxonomy == 'category' ) {
+				$category_id = $term_id;
+			} else {
+				$category_id = 0; // so that all categories are returned
+			}
 		}
 	
 		$html = '<div class="top-rating-results ' . $class . '">';
 	
-		if ( !empty( $title )) {
+		if ( ! empty( $title ) ) {
 			$html .=  $before_title . $title . $after_title;
 		}
 	
-		if ($show_category_filter == true) {
+		if ( $show_category_filter == true ) {
 			$html .= '<form action="" class="category-id-filter" method="POST">';
-			$html .= '<label for="category-id">Category</label>';
-			$html .= wp_dropdown_categories(array('echo' => false, 'class' => 'category-id', 'name' => 'category-id', 'id' => 'category-id', 'selected' => $category_id, 'show_option_all' => 'All'));
+			$html .= '<label for="category-id">' . __('Category', 'multi-rating' ) . '</label>';
+			$html .= wp_dropdown_categories( array( 'echo' => false, 'class' => 'category-id', 'name' => 'category-id', 'id' => 'category-id', 'selected' => $category_id, 'show_option_all' => 'All' ) );
 			$html .= '<input type="submit" value="Filter" />';
 			$html .= '</form>';
 		}
 	
-		if (count($top_rating_result_rows) == 0) {
+		if ( count( $top_rating_result_rows ) == 0 ) {
 			$html .= '<p>' . $no_rating_results_text . '</p>';
 		} else {
 			$html .= '<table>';
 			$index = 1;
-			foreach ($top_rating_result_rows as $rating_result) {
+			
+			foreach ( $top_rating_result_rows as $rating_result ) {
 				$html .= '<tr>';
 	
-				if ($show_rank) {
+				if ( $show_rank ) {
 					$html .= '<td>';
 					$html .= '<span class="rank">' . $index . '</span>';
 					$html .= '</td>';
@@ -64,21 +71,20 @@ class Rating_Result_View {
 	
 				$html .= '<td>';
 	
-				$html .= Rating_Result_View::get_rating_result_type_html($rating_result,
-						array(
-								'show_date' => false,
-								'show_title' => false,
-								'show_count' => true,
-								'result_type' => $result_type
-						));
+				$html .= Rating_Result_View::get_rating_result_type_html( $rating_result, array(
+						'show_date' => false,
+						'show_title' => false,
+						'show_count' => true,
+						'result_type' => $result_type
+				) );
 				$html .= '</td>';
 	
-				if ($show_title == true) {
+				if ( $show_title == true ) {
 					$html .= '<td>';
 					$html .= '<span class="title">';
 					$post_id = $rating_result['post_id'];
-					$post = get_post($post_id);
-					$html .= '<a href="' . get_permalink($post_id) . '">' . $post->post_title . '</a>';
+					$post = get_post( $post_id );
+					$html .= '<a href="' . get_permalink( $post_id ) . '">' . $post->post_title . '</a>';
 					$html .= '</span>';
 					$html .= '</td>';
 				}
@@ -103,13 +109,13 @@ class Rating_Result_View {
 	 * @param unknown_type $rating_result
 	 * @param unknown_type $params
 	 */
-	public static function get_rating_result_html($rating_result, $params = array()) {
+	public static function get_rating_result_html( $rating_result, $params = array() ) {
 			
 		extract( wp_parse_args( $params, array(
 				'no_rating_results_text' => null,
 				'show_title' => false,
 				'show_date' => false,
-				'show_rich_snippets' => false ,
+				'show_rich_snippets' => false,
 				'show_count' => true,
 				'date' => null,
 				'before_date' => '(',
@@ -118,7 +124,7 @@ class Rating_Result_View {
 				'class' => ''
 		)));
 	
-		$html = Rating_Result_View::get_rating_result_type_html($rating_result, $params);
+		$html = Rating_Result_View::get_rating_result_type_html( $rating_result, $params );
 	
 		return $html;
 	}
@@ -129,7 +135,7 @@ class Rating_Result_View {
 	 * @param unknown_type $rating_result
 	 * @param unknown_type $params
 	 */
-	public static function get_rating_result_type_html($rating_result, $params = array()) {
+	public static function get_rating_result_type_html( $rating_result, $params = array() ) {
 		 
 		extract( wp_parse_args( $params, array(
 				'show_title' => false,
@@ -143,70 +149,90 @@ class Rating_Result_View {
 				'no_rating_results_text' => '',
 				'ignore_count' => false,
 				'class' => ''
-		)));
+		) ) );
 		 
-		$html = '<div class="rating-result ' . $class . '"';
+		$html = '<span class="rating-result ' . $class . '"';
 		 
-		$count = isset($rating_result['count']) ? $rating_result['count'] : 0;
+		$count = isset( $rating_result['count'] ) ? $rating_result['count'] : 0;
 		 
-		if ($count == null || $count == 0) {
-			$html .= '><p>' . $no_rating_results_text . '</p>';
+		if ( ( $count == null || $count == 0 ) && $ignore_count == false ) {
+			$html .= '><span class="no-rating-results-text">' . $no_rating_results_text . '</span>';
 		} else {
 	
-			if ($show_rich_snippets && $result_type == Multi_Rating::STAR_RATING_RESULT_TYPE) {
+			if ( $show_rich_snippets && $result_type == Multi_Rating::STAR_RATING_RESULT_TYPE ) {
 				$html .= ' itemscope itemtype="http://schema.org/Article"';
 			}
 			$html .= '>';
 	
-			if ($show_title == true) {
+			if ( $show_title == true ) {
 				$post_id = $rating_result['post_id'];
-				$post = get_post($post_id);
-				$html .= '&nbsp;<a href="' . get_permalink($post_id) . '">' . $post->post_title . '</a>&nbsp;';
+				$post = get_post( $post_id );
+				$html .= '<a href="' . get_permalink( $post_id ) . '">' . $post->post_title . '</a>';
 			}
 				
-			if ($result_type == Multi_Rating::SCORE_RESULT_TYPE) {
+			if ( $result_type == Multi_Rating::SCORE_RESULT_TYPE ) {
 				$html .= '<span class="score-result">' . $rating_result['adjusted_score_result'] . '/' . $rating_result['total_max_option_value'] . '</span>';
-			} else if ($result_type == Multi_Rating::PERCENTAGE_RESULT_TYPE) {
+			} else if ( $result_type == Multi_Rating::PERCENTAGE_RESULT_TYPE ) {
 				$html .= '<span class="percentage-result">' . $rating_result['adjusted_percentage_result'] . '%</span>';
 			} else { // star rating
-				$rating_result_percentage = $rating_result['adjusted_percentage_result'];
-					
+	
 				$style_settings = (array) get_option( Multi_Rating::STYLE_SETTINGS );
-				$stars_image_height = $style_settings[ Multi_Rating::STARS_IMG_HEIGHT_OPTION ];
-				$stars_img_url = plugins_url('img' . DIRECTORY_SEPARATOR . 'stars_sprite_' . $stars_image_height . 'px.png', __FILE__);
-				
-				$aspect_ratio = 5.2; // aspect ratio of stars image constant
-				$stars_image_width = $stars_image_height * $aspect_ratio;
+				$star_rating_colour = $style_settings[Multi_Rating::STAR_RATING_COLOUR_OPTION];
+				$font_awesome_version = $style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION];
+				$icon_classes = mr_get_icon_classes( $font_awesome_version );
 	
-				$html .= '<div class="rating-result-row" style="font-size: ' . $stars_image_height . 'px !important;">';
-				$html .= '
-				<span class="rating-result-stars" style="text-align: left; display: inline-block; width: ' . $stars_image_width . 'px; max-height: ' . $stars_image_height . 'px; height: ' .  $stars_image_height . 'px; background: url(' . $stars_img_url . ') 0 0;">
-				<span style="display: inline-block; width: ' . $rating_result_percentage . '%; height: ' .  $stars_image_height . 'px; background: url(' . $stars_img_url . ') 0 -' .  $stars_image_height . 'px;"></span>
-				</span>
-				';
-				$html .= '</div>';
+				$html .= '<span class="star-rating">';
+				$index = 0;
 				
-				if (is_singular() && $show_rich_snippets == true) {
-					$html .= '<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating" class="rating-result-summary" style="display: none;">';
-					$html .= '<span itemprop="ratingValue">' . $rating_result['adjusted_star_result'] . '</span>/<span itemprop="bestRating">5</span>';
-					$html .= '<span itemprop="ratingCount" style="display:none;">' . $count . '</span>';
-					$html .= '</div>';
+				for ($index; $index<5; $index++) {
+						
+					$class = $icon_classes['star_full'];
+	
+					if ( $rating_result['adjusted_star_result'] < $index + 1 ) {
+							
+						$diff = $rating_result['adjusted_star_result'] - $index;
+	
+						if ( $diff > 0 ) {
+							if ( $diff >= 0.3 && $diff <= 0.7 ) {
+								$class = $icon_classes['star_half'];
+							} else if ( $diff < 0.3 ) {
+								$class = $icon_classes['star_empty'];
+							} else {
+								$class = $icon_classes['star_full'];
+							}
+							
+						} else {
+							$class = $icon_classes['star_empty'];
+						}
+	
+					} else {
+						$class = $icon_classes['star_full'];
+					}
+	
+					$html .= '<i class="' . $class . '" style="color: ' . $star_rating_colour . '"></i>';
 				}
+				$html .= '</span>';
 	
-				$html .= '<span class="star-result">&nbsp;' . $rating_result['adjusted_star_result'] . '/5</span>';
-	
+				$html .= '<span class="star-result">' . $rating_result['adjusted_star_result'] . '/5</span>';
 			}
 				
-			if ($show_count && $count != null) {
-				$html .= '&nbsp;(' . $count . ')';
+			if ( $show_count && $count != null ) {
+				$html .= '<span class="count">(' . $count . ')</span>';
 			}
 				
-			if ($show_date == true && $date != null) {
-				$html .= ' ' . $before_date . mysql2date(get_option('date_format'), $date) . $after_date;
+			if ( $show_date == true && $date != null ) {
+				$html .= '<span class="date">' . $before_date . mysql2date( get_option( 'date_format' ), $date ) . $after_date . '</span>';
+			}
+				
+			if ( is_singular() && $show_rich_snippets == true ) {
+				$html .= '<span itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating" class="rating-result-summary" style="display: none;">';
+				$html .= '<span itemprop="ratingValue">' . $rating_result['adjusted_star_result'] . '</span>/<span itemprop="bestRating">5</span>';
+				$html .= '<span itemprop="ratingCount" style="display:none;">' . $count . '</span>';
+				$html .= '</span>';
 			}
 		}
 	
-		$html .= '</div>';
+		$html .= '</span>';
 		 
 		return $html;
 	}

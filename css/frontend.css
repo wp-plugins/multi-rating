@@ -7,6 +7,9 @@ div.rating-form form {
 	margin-bottom: 30px;
 	margin-top: 15px;
 }
+div.rating-form input[type="button"] {
+	display: inline-block;
+}
 div.rating-form form table {
 	width: 100%;
 	text-align: left;
@@ -18,11 +21,11 @@ div.rating-form form table td {
 	vertical-align: top;
 }
 div.rating-form form table label {
-	padding-right: 10px;
 	font-weight: normal;
 	vertical-align: text-top;
 }
 div.rating-form form table .value {
+	padding-bottom: 10px;
 	text-align: right;
 }
 div.rating-form form table .value select {
@@ -32,21 +35,71 @@ div.rating-form form table textarea, div.rating-form form table input {
 	min-weight: 100%;
 	width: 100%;
 }
+div.rating-form form table input[type=radio] {
+	width: auto;
+	margin-right: 2px;
+	margin-left: 10px;
+}
 div.rating-form form table input[type=button] {
 	width: auto;
+}
+div.rating-form form .save-rating {
+	
+}
+div.rating-form form .delete-rating {
+	margin-right: 10px;
 }
 div.rating-form form table label.textarea-label, div.rating-form form table label.input-label {
 	display: block;
 	padding-bottom: 0px;
 }
+div.rating-form div.radio-option {
+	display: inline-block;
+}
 div.rating-form form table .action {
 	text-align: right;
+}
+.rating-form textarea {
+	width: 100%;
+	max-width: 100%;
+}
+
+.rating-item .radio-option label {
+	display: inline-block !important;
+}
+.rating-item label + .radio-option, .rating-item label + select {
+	margin-top: 5px;
+}
+.rating-item .radio-option {
+	margin-right: 10px;
+	display: inline-block;
+}
+.rating-item .radio-option input {
+	margin-right: 2px;
+	display: inline-block;
+}
+label.description + select, label.description input {
+	margin-left: 5px;
+}
+.rating-item label.description + .radio-option {
+	margin-right: 10px;
+}
+label.description {
+	display: inline-block !important;
+}
+.star-rating-select .mr-minus {
+	margin-right: 5px;
+}
+.rating-result a + .score-result, .rating-result a + .score-result + .count, 
+.rating-result a + .percentage-result, .rating-result a + .percentage-result + .count,
+.star-result + .count, .rating-result .star-rating + .star-result, .rating-result .star-result + .count, .rating-result .star-rating, .star-rating + .star-result {
+	margin-left: 5px;
 }
 
 
 /* Rating Results */
-h1 > div.rating-result {
-	font-size: 60%;
+h1 .star-rating, h1 .star-result, h1 .no-rating-results-text, h1 .count  {
+	font-size: 65%;
 	text-transform: none;
 	font-weight: normal;
 	display: inline-block;
@@ -54,33 +107,17 @@ h1 > div.rating-result {
 	text-align: left;
 	vertical-align: top;
 }
-.rating-result .rating-result-row {
-	display: inline-block;
-	vertical-align: middle;
-	font-weight: normal;
-	letter-spacing: normal;
-	text-align: left;
-}
-.rating-result .rating-result-row * {
-	line-height: normal !important;
-}
-.rating-result .rating-result-row + span.star-result {
-	display: inline-block;
-}
-.rating-item-result-summary span.description + span.result {
-	margin-left: 5px;
+h1 .no-rating-results-text {
+	display: inline;
 }
 .rating-result-summary {
 	display: inline-block;
 	margin-left: 5px;
 }
 
-.rating-result-stars {
-	padding: 0px; 
-	margin: 0px; 
-	font-size: 0px !important;
+.rating-result .star-rating, .rating-result .star-result, .rating-result .count, .rating-result {
+	display: inline-block;
 }
-
 
 
 /* Top Rating Results */
@@ -93,14 +130,18 @@ h1 > div.rating-result {
 .top-rating-results .rank, .top-rating-results .rating-result, .top-rating-results .title, .top-rating-results .count {
 	margin-right: 5px;
 }
-
-
+.top-rating-results .star-result, .top-rating-results .count {
+	vertical-align: top;
+}
+.top-rating-results .rating-result-row + .star-result {
+	margin-left: 5px;
+}
 
 
 /** 
  * Common
  */
-.top-rating-results {
+.user-rating-results, .top-rating-results, .rating-item-results, .rating-result-reviews  {
 	margin-top: 10px;
 	padding-bottom: 10px;
 }
@@ -115,4 +156,17 @@ form.category-id-filter select {
 }
 .category-id input[type=submit] {
 	margin-left: 5px;
+}
+.rating-item label.description {
+	margin-right: 5px;
+}
+/* Table styles */
+.top-rating-results table, .top-rating-results td, .top-rating-results th, .top-rating-results tr {
+	border: none;
+	border-width: 0px;
+	border-spacing: 0px;
+	width: auto;
+	padding-left: 0px;
+	padding-right: 0px;
+	max-width: 100%;
 }
