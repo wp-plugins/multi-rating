@@ -88,6 +88,43 @@ function mr_tools_screen() {
 				</div>
 			</div>
 		</div>
+		
+				<div class="metabox-holder">
+			<div class="postbox">
+				<h3><span><?php _e( 'Clear Cache', 'multi-rating' ); ?></span></h3>
+				<div class="inside">
+					<p><?php _e( 'Clear the cached rating results stored in the WordPress post meta table.', 'multi-rating' ); ?></p>
+					
+					<form method="post" id="clear-cache-form">
+						<p>
+							<select name="post-id" id="post-id">
+								<option value=""><?php _e( 'All posts / pages', 'multi-rating' ); ?></option>
+								<?php	
+								global $wpdb;
+								$query = 'SELECT DISTINCT post_id FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME;
+								
+								$rows = $wpdb->get_results( $query, ARRAY_A );
+			
+								foreach ( $rows as $row ) {
+									$post = get_post( $row['post_id'] );
+									?>
+									<option value="<?php echo $post->ID; ?>">
+										<?php echo get_the_title( $post->ID ); ?>
+									</option>
+								<?php } ?>
+							</select>
+						</p>
+						
+						<p>
+							<input type="hidden" name="clear-cache" id="clear-cache" value="false" />
+							<?php 
+							submit_button( __( 'Clear Cache', 'multi-rating' ), 'secondary', 'clear-cache-btn', false, null );
+							?>
+						</p>
+					</form>
+				</div><!-- .inside -->
+			</div>
+		</div>
 	</div>
 	<?php
 }
@@ -175,11 +212,42 @@ function mr_clear_database() {
 	}
 }
 
+
+/**
+ * Clears rating results cache stored in the WordPress post meta table
+ */
+function mr_clear_cache() {
+
+	$post_id = isset( $_POST['post-id'] ) ? $_POST['post-id'] : null;
+
+	global $wpdb;
+
+	$query = 'SELECT post_id FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME;
+
+	if ( $post_id != '' ) {
+		$query .= ' WHERE post_id = "' . $post_id . '"';
+	}
+
+	$query .= ' GROUP BY post_id';
+
+	$results = $wpdb->get_results( $query );
+
+	foreach ( $results as $result ) {
+		delete_post_meta( $result->post_id, Multi_Rating::RATING_RESULTS_POST_META_KEY );
+	}
+	echo '<div class="updated"><p>' . __( 'Cache cleared successfully.', 'multi-rating' ) . '</p></div>';
+}
+
+
 if ( isset( $_POST['export-rating-results'] ) && $_POST['export-rating-results'] == 'true' ) {
 	add_action( 'admin_init', 'mr_export_rating_results' );
 }
 
 if ( isset( $_POST['clear-database'] ) && $_POST['clear-database'] === "true" ) {
 	add_action( 'admin_init', 'mr_clear_database' );
+}
+
+if ( isset( $_POST['clear-cache'] ) && $_POST['clear-cache'] === "true" ) {
+	add_action( 'admin_init', 'mr_clear_cache' );
 }
 ?>

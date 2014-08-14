@@ -274,13 +274,30 @@ class MR_Rating_Results_Table extends WP_List_Table {
 				
 			foreach( $checked as $post_id ) {
 				
-				$query = 'DELETE FROM '. $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . '  WHERE ' .  MR_Rating_Results_Table::POST_ID_COLUMN . ' = "' . $post_id . '"';
-				$results = $wpdb->query($query);
+				/*
+				 * delete rating item entry values as well
+				 */ 
+				$entries = Multi_Rating_API::get_rating_item_entries( array( 
+						'post_id' => $post_id
+				) );
 				
-				// TODO delete rating item entry values as well
+				foreach ( $entries as $entry ) {
+					$rating_item_entry_id = $entry['rating_item_entry_id'];
+					
+					$entry_values_query = 'DELETE FROM '. $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME . '  WHERE ' .  MR_Rating_Entry_Value_Table::RATING_ITEM_ENTRY_ID_COLUMN . ' = "' . $rating_item_entry_id . '"';
+					$results = $wpdb->query($entry_values_query);
+					
+					$entries_query = 'DELETE FROM '. $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . '  WHERE ' .  MR_Rating_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN . ' = "' . $rating_item_entry_id . '"';	
+					$results = $wpdb->query($entries_query);
+				}
+				
+				/* 
+				 * delete rating results cache in WordPress postmeta table
+				 */
+				delete_post_meta( $post_id, Multi_Rating::RATING_RESULTS_POST_META_KEY );
 			}
 				
-			echo '<div class="updated"><p>' . sprintf( __( 'Rating results deleted successfully for Post Id %s.', 'multi-rating' ), $post_id ) . '</p></div>';
+			echo '<div class="updated"><p>' . __( 'Rating results deleted successfully.', 'multi-rating' ) . '</p></div>';
 		}
 	}
 }

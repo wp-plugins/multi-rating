@@ -310,13 +310,21 @@ class MR_Rating_Entry_Table extends WP_List_Table {
 			$checked = ( is_array( $_REQUEST[ 'delete' ] ) ) ? $_REQUEST[ 'delete' ] : array( $_REQUEST[ 'delete' ] );
 			
 			foreach( $checked as $id ) {
-				// TODO set acvtive column to 0 instead of deleting row
-				$query = 'DELETE FROM ' . $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' WHERE ' .  MR_Rating_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN . ' = ' . $id;
+				$query = 'SELECT post_id FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' WHERE ' .  MR_Rating_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN . ' = ' . $id;
+				$row = $wpdb->get_row($query);
+				
+				// rating results cache will be refreshed next time it's needed
+				delete_post_meta($row->post_id, Multi_Rating::RATING_RESULTS_POST_META_KEY );
+				
+				$query = 'DELETE FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' WHERE ' .  MR_Rating_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN . ' = ' . $id;
 				$results = $wpdb->query($query);
+				
+				$query = 'DELETE FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME . ' WHERE ' .  MR_Rating_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN . ' = ' . $id;
+				$results = $wpdb->query( $query );	
 				
 			}
 			
-			echo '<div class="updated"><p>' . _e('Entries deleted successfully', 'multi-rating') . '</p></div>';
+			echo '<div class="updated"><p>' . __('Entries deleted successfully', 'multi-rating') . '</p></div>';
 		}
 	}
 	

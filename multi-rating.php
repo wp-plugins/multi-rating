@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: A simple rating plugin which allows visitors to rate a post based on multiple criteria and questions.
-Version: 3.0
+Version: 3.0.1
 Author: Daniel Powney
 Author URI: http://danielpowney.com
 License: GPL2
@@ -37,7 +37,7 @@ class Multi_Rating {
 	 * Constants
 	 */
 	const
-	VERSION = '3.0',
+	VERSION = '3.0.1',
 	ID = 'multi-rating',
 
 	// tables
@@ -71,6 +71,7 @@ class Multi_Rating {
 	FONT_AWESOME_VERSION_OPTION					= 'mr_font_awesome_version',
 	VERSION_OPTION								= 'mr_version_option',
 	DO_ACTIVATION_REDIRECT_OPTION				= 'mr_do_activiation_redirect',
+	RATING_RESULTS_CACHE_OPTION					= 'mr_rating_results_cache',
 	
 	//values
 	SCORE_RESULT_TYPE							= 'score',
@@ -96,7 +97,9 @@ class Multi_Rating {
 	
 	// post meta box
 	RATING_FORM_POSITION_POST_META				= 'rating_form_position',
-	RATING_RESULTS_POSITION_POST_META			= 'rating_results_position';
+	RATING_RESULTS_POSITION_POST_META			= 'rating_results_position',
+	
+	RATING_RESULTS_POST_META_KEY				= 'mr_rating_results';
 	
 	/**
 	 *

@@ -109,6 +109,40 @@ class Multi_Rating_API {
 	}
 	
 	/**
+	 * Gets the rating result for a post id. If the rating results cache is enabled,  it retrieve the 
+	 * rating results from the WordPress postmeta table
+	 * 
+	 * @param unknown_type $post_id
+	 */
+	public static function get_rating_result( $post_id ) {
+		$rating_result = null;
+		
+		$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
+		$rating_results_cache = $general_settings[Multi_Rating::RATING_RESULTS_CACHE_OPTION];
+			
+		if ($rating_results_cache == true) {
+			// retrieve from cache if exists, otherwise calculate and save to cache
+			$rating_result = get_post_meta( $post_id, Multi_Rating::RATING_RESULTS_POST_META_KEY, true );
+		}
+			
+		if ( $rating_result == null ) {
+			$rating_items = Multi_Rating_API::get_rating_items( array() );
+		
+			$rating_result = Multi_Rating_API::calculate_rating_result( array(
+					'post_id' => $post_id,
+					'rating_items' => $rating_items
+			) );
+		
+			if ($rating_results_cache == true) {
+				// update rating results cache
+				update_post_meta( $post_id, Multi_Rating::RATING_RESULTS_POST_META_KEY, $rating_result );
+			}
+		}
+		
+		return $rating_result;
+	}
+	
+	/**
 	 * Calculates the rating result of a rating form for a post with filters for username
 	 *
 	 * @param array $params post_id, rating_items
@@ -500,16 +534,16 @@ class Multi_Rating_API {
 			) ) ) );
 		}
 		$posts = get_posts( $post_query_args );
-		
-		$rating_items = Multi_Rating_API::get_rating_items( array() );
 	
 		// iterate the post types and calculate rating results
 		$rating_results = array();
 		foreach ( $posts as $current_post ) {
 			
+			$post_id = $current_post->ID;
+			
 			if( ! is_array( $term_id ) ) {
 				//skip if not in that term
-				$terms_objects = wp_get_object_terms( $current_post->ID, $taxonomy );
+				$terms_objects = wp_get_object_terms( $post_id, $taxonomy );
 			
 				if ( !empty( $terms_objects ) ) {
 					foreach ( $terms_objects as $current_taxonomy ) {
@@ -519,11 +553,8 @@ class Multi_Rating_API {
 					}
 				}
 			}
-				
-			$rating_result = Multi_Rating_API::calculate_rating_result( array(
-					'post_id' => $current_post->ID,
-					'rating_items' => $rating_items
-			) );
+			
+			$rating_result = Multi_Rating_API::get_rating_result( $post_id );
 				
 			if ( intval( $rating_result['count'] ) > 0 ) {
 				array_push( $rating_results, $rating_result );
@@ -642,12 +673,7 @@ class Multi_Rating_API {
 			return; // No post Id available to display rating form
 		}
 	
-		$rating_items = Multi_Rating_API::get_rating_items( array() );
-	
-		$rating_result = Multi_Rating_API::calculate_rating_result( array(
-				'post_id' => $post_id,
-				'rating_items' => $rating_items
-		) );
+		$rating_result = Multi_Rating_API::get_rating_result( $post_id );
 		
 		$params = array(
 				'no_rating_results_text' => $no_rating_results_text,

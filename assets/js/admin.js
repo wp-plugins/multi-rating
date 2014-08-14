@@ -12,6 +12,10 @@ jQuery(document).ready(function() {
 		jQuery("#export-rating-results").val("true");
 	});
 	
+	jQuery("#clear-cache-btn").click(function(event) {
+		jQuery("#clear-cache").val("true");
+	});
+	
 	var rowActions = jQuery("#rating-item-table-form .row-actions > a");
 	jQuery.each(rowActions, function(index, element) {
 		jQuery(element).click(function(event) { 

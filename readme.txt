@@ -31,7 +31,7 @@ Multi Rating is a simple rating plugin which allows visitors to rate a post base
 * Reports on number of entries per day
 * Export rating results to CSV file
 * Custom taxonomy support
-* API functions for using Multi Rating in your theme
+* API functions & action hooks for using Multi Rating in your theme
 
 Here's a live demo: http://danielpowney.com/multi-rating/
 
@@ -45,13 +45,6 @@ The plugin is i18n translation ready (.pot file in the languages directory). Dif
 * [display_rating_result post_id="100" no_rating_results_text="No rating result yet" show_rich_snippets="false" show_count="true" show_title="false"]
 * [display_top_rating_results]
 * [display_top_rating_results title="Top Rating Results" limit="10"]
-
-= API Functions =
-The API functions are located in the class-api.php file which contains a static class called Multi_Rating_API. The key API functions are:
-
-* display_top_rating_results
-* display_rating_result
-* display_rating_form
 
 = Multi Rating Pro =
 
@@ -91,11 +84,10 @@ Full documentation available here http://danielpowney.com/multi-rating/
 7. Rating result details including values
 8. Settings page
 
-== Upgrade Notice ==
-
-Major plugin refactor. Directory structure has been updated. Files have been moved and renamed.
-
 == Changelog ==
+
+= 3.0.1 =
+* Performance impovements. Added rating results cache.
 
 = 3.0 =
 * Major plugin refactor.

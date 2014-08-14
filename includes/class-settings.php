@@ -79,6 +79,7 @@ class MR_Settings {
 		$this->general_settings = array_merge( array(
 				Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION 		=> true,
 				Multi_Rating::POST_TYPES_OPTION 						=> 'post',
+				Multi_Rating::RATING_RESULTS_CACHE_OPTION				=> true
 		), $this->general_settings );
 	
 	
@@ -99,7 +100,7 @@ class MR_Settings {
 	
 		add_settings_field( Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION, __( 'IP address & date validation check', 'multi-rating' ), array( &$this, 'field_ip_address_date_validation' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 		add_settings_field( Multi_Rating::POST_TYPES_OPTION, __( 'Post types', 'multi-rating' ), array( &$this, 'field_post_types' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
-	
+		add_settings_field( Multi_Rating::RATING_RESULTS_CACHE_OPTION, __( 'Enable rating results cache', 'multi-rating' ), array( &$this, 'field_rating_results_cache' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 	}
 	/**
 	 * General section desciption
@@ -140,6 +141,15 @@ class MR_Settings {
 		<?php 
 	}
 	/**
+	 * Rating results cache
+	 */
+	function field_rating_results_cache() {
+	?>
+		<input type="checkbox" name="<?php echo Multi_Rating::GENERAL_SETTINGS;?>[<?php echo Multi_Rating::RATING_RESULTS_CACHE_OPTION; ?>]" value="true" <?php checked(true, $this->general_settings[Multi_Rating::RATING_RESULTS_CACHE_OPTION], true); ?> />
+		<p class="description"><?php printf( __( 'Enable the rating results to be cached in the WordPress post meta table. The cache is refreshed whenever the rating form is submitted. You can also use the <a href="admin.php?page=%s">Tools</a> to clear the rating results cache.', 'multi-rating' ), Multi_Rating::TOOLS_PAGE_SLUG ); ?></p>
+		<?php 
+	}
+	/**
 	 * Sanitize the general settings
 	 * 
 	 * @param $input
@@ -147,10 +157,19 @@ class MR_Settings {
 	 */
 	function sanitize_general_settings( $input ) {
 		
+		// ip address datetime validation
 		if ( isset( $input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] ) && $input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] == 'true' ) {
 			$input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] = true;
 		} else {
 			$input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] = false;
+		}
+		
+		// rating reulsts cache
+		if ( isset( $input[Multi_Rating::RATING_RESULTS_CACHE_OPTION] )
+				&& $input[Multi_Rating::RATING_RESULTS_CACHE_OPTION] == 'true' ) {
+			$input[Multi_Rating::RATING_RESULTS_CACHE_OPTION] = true;
+		} else {
+			$input[Multi_Rating::RATING_RESULTS_CACHE_OPTION] = false;
 		}
 	
 		return $input;

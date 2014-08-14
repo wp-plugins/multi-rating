@@ -177,6 +177,7 @@ class MR_Rating_Form {
 					'post_id' => $post_id
 			);				
 	
+			$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 			$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
 	
 			// get username
@@ -217,10 +218,18 @@ class MR_Rating_Form {
 			}
 			
 			$rating_items = Multi_Rating_API::get_rating_items( array( 'post_id' => $post_id ) );
+			
 			$rating_result  = Multi_Rating_API::calculate_rating_result( array(
 					'post_id' => $post_id,
 					'rating_items' => $rating_items
 			) );
+
+			$rating_results_cache = $general_settings[Multi_Rating::RATING_RESULTS_CACHE_OPTION];
+			if ($rating_results_cache == true) {
+				// update rating results cache
+				update_post_meta( $post_id, Multi_Rating::RATING_RESULTS_POST_META_KEY, $rating_result );
+			}
+			
 			$data['html'] = stripslashes( MR_Rating_Result::get_rating_result_type_html( $rating_result, array(
 					'class' => 'rating-result-' . $post_id . ' mr-filter'
 			) ) );
