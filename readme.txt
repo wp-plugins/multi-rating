@@ -1,14 +1,14 @@
 === Multi Rating ===
 Contributors: dpowney
 Donate link: http://www.danielpowney.com/donate
-Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippet, testimonial, review, hReview, multi rating, feedback
+Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippet, testimonial, review, hReview, multi rating, feedback, rich snippets, user rating
 Requires at least: 3.0.1
 Tested up to: 3.9.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Multi Rating is a simple rating plugin which allows visitors to rate a post based on multiple criteria and questions.
+The best rating system plugin for WordPress. It’s simple, easy to use, looks great (supports retina display and responsive) and integrates seamlessly into any WordPress theme.
 
 == Description ==
 
