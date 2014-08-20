@@ -1,7 +1,7 @@
 === Multi Rating ===
 Contributors: dpowney
 Donate link: http://www.danielpowney.com/donate
-Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippet, testimonial, review, hReview, multi rating, feedback, rich snippets, user rating
+Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippet, testimonial, review, hReview, multi rating, feedback, user rating
 Requires at least: 3.0.1
 Tested up to: 3.9.1
 Stable tag: trunk
