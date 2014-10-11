@@ -67,9 +67,15 @@ div.rating-form form table .action {
 .rating-item .radio-option label {
 	display: inline-block !important;
 }
+
+p.mrp {
+	margin: 0 0 10px !important;
+	display: block;
+}
+/*
 .rating-item label + .radio-option, .rating-item label + select {
 	margin-top: 5px;
-}
+}*/
 .rating-item .radio-option {
 	margin-right: 10px;
 	display: inline-block;
@@ -92,7 +98,9 @@ label.description {
 }
 .rating-result a + .score-result, .rating-result a + .score-result + .count, 
 .rating-result a + .percentage-result, .rating-result a + .percentage-result + .count,
-.star-result + .count, .rating-result .star-rating + .star-result, .rating-result .star-result + .count, .rating-result .star-rating, .star-rating + .star-result {
+.star-result + .count, .rating-result .star-rating + .star-result, .rating-result .star-result + .count, 
+.rating-result .percentage-result + .count, .rating-result .score-result + .count, 
+.rating-result .star-rating, .star-rating + .star-result {
 	margin-left: 5px;
 }
 
@@ -119,6 +127,22 @@ h1 .no-rating-results-text {
 	display: inline-block;
 }
 
+.after_title {
+	margin-left: 5px;
+}
+.before_title {
+	margin-right: 5px;
+}
+.before_title, .after_title {
+	font-size: 65%;
+	text-transform: none;
+	font-weight: normal;
+	display: inline-block;
+	margin-left: 5px;
+	text-align: left;
+	vertical-align: top;
+}
+
 
 /* Top Rating Results */
 .top-rating-results table tbody tr td {
@@ -141,7 +165,7 @@ h1 .no-rating-results-text {
 /** 
  * Common
  */
-.user-rating-results, .top-rating-results, .rating-item-results, .rating-result-reviews  {
+.user-rating-results, .top-rating-results, .rating-item-results  {
 	margin-top: 10px;
 	padding-bottom: 10px;
 }

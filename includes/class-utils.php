@@ -84,18 +84,17 @@ class MR_Utils {
 	}
 	
 	/**
-	 * perform IP address date/time validation check
+	 * Perform IP address date/time validation check
 	 *
-	 * @param $post_id
-	 * @param $rating_form_id
-	 * @param $username
+	 * @param array validation_results
+	 * @param int $post_id
 	 */
-	public static function validate_ip_address_datetime_check( $post_id, $username) {
+	public static function validate_ip_address_datetime_check( $validation_results, $post_id ) {
 	
 		$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 		$ip_address_datetime_validation_check = $general_settings[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION];
 	
-		if ($ip_address_datetime_validation_check == true) {
+		if ( $ip_address_datetime_validation_check == true ) {
 			global $wpdb;
 	
 			// check IP address has not submitted a rating for the post ID within 24 hours
@@ -112,14 +111,29 @@ class MR_Utils {
 			if ( count( $rows ) > 0 ) {
 				$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
 	
-				return array(
-						'status' => 'error',
-						'messages' => ( $custom_text_settings[ Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION ]
-						) );
+				array_push( $validation_results, array(
+						'severity' => 'error',
+						'name' => 'ip_address_datetime_error',
+						'message' => $custom_text_settings[ Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION ]
+				) );
 			}
 		}
 	
-		return array( 'status' => 'success' );
+		return $validation_results;
+	}
+	
+	/**
+	 * Helper function to iterate validation results for errors
+	 *
+	 * @param $validation_results
+	 */
+	public static function has_validation_error( $validation_results ) {
+		foreach ( $validation_results as $validation_result ) {
+			if ( $validation_result['severity'] == 'error' ) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**

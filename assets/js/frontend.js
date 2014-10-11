@@ -60,12 +60,18 @@ jQuery(document).ready(function() {
 		}
 		
 		// update messages
-		if (jsonResponse.messages.length > 0) {
+		if (jsonResponse.validation_results.length > 0 || jsonResponse.message ) {
 			var messages = '';
 			var $index = 0;
 			
-			for ($index; $index< jsonResponse.messages.length; $index++) {
-				messages += '<p class="message">' + jsonResponse.messages[$index] + '</p>';
+			for ($index; $index< jsonResponse.validation_results.length; $index++) {
+				messages += '<p class="message ' + jsonResponse.validation_results[$index].severity + '">' 
+						+ jsonResponse.validation_results[$index].message + '</p>';
+			}
+			
+			if (jsonResponse.message) {
+				messages += '<p class="message ' + jsonResponse.status + '">' 
+						+ jsonResponse.message + '</p>';
 			}
 			
 			if (ratingForm && ratingForm.parent().find('.message')) {
@@ -78,7 +84,7 @@ jQuery(document).ready(function() {
 		}
 		
 		// remove rating form if success
-		if ( jsonResponse.status == 'success' && ratingForm) {
+		if ( jsonResponse.status == 'success' && jsonResponse.data.hide_rating_form == true && ratingForm) {
 			ratingForm.remove();
 		}
 	}

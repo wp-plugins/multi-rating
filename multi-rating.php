@@ -2,8 +2,8 @@
 /*
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
-Description: A simple rating plugin which allows visitors to rate a post based on multiple criteria and questions.
-Version: 3.0.1
+Description: The best rating system plugin for WordPress. Multi Rating allows visitors to rate a post based on multiple criteria and questions.
+Version: 3.1
 Author: Daniel Powney
 Author URI: http://danielpowney.com
 License: GPL2
@@ -37,7 +37,7 @@ class Multi_Rating {
 	 * Constants
 	 */
 	const
-	VERSION = '3.0.1',
+	VERSION = '3.1',
 	ID = 'multi-rating',
 
 	// tables
@@ -72,6 +72,7 @@ class Multi_Rating {
 	VERSION_OPTION								= 'mr_version_option',
 	DO_ACTIVATION_REDIRECT_OPTION				= 'mr_do_activiation_redirect',
 	RATING_RESULTS_CACHE_OPTION					= 'mr_rating_results_cache',
+	HIDE_RATING_FORM_AFTER_SUBMIT_OPTION		= 'mr_hide_rating_form',
 	
 	//values
 	SCORE_RESULT_TYPE							= 'score',
@@ -81,19 +82,20 @@ class Multi_Rating {
 	SELECT_ELEMENT								= 'select',
 	
 	// pages
-	SETTINGS_PAGE_SLUG							= 'mr_settings_page',
-	ABOUT_PAGE_SLUG								= 'mr_about_page',
+	SETTINGS_PAGE_SLUG							= 'mr_settings',
+	ABOUT_PAGE_SLUG								= 'mr_about',
 	RATING_ITEMS_PAGE_SLUG						= 'mr_rating_items',
 	RATING_RESULTS_PAGE_SLUG					= 'mr_rating_results',
 	ADD_NEW_RATING_ITEM_PAGE_SLUG				= 'mr_add_new_rating_item',
 	REPORTS_PAGE_SLUG							= 'mr_reports',
 	TOOLS_PAGE_SLUG								= 'mr_tools',
+	EDIT_RATING_PAGE_SLUG						= 'mr_edit_rating',
 	
 	// tabs
-	RATING_RESULTS_TAB							= 'mr_rating_results_tab',
-	ENTRIES_TAB									= 'mr_entries_tab',
-	ENTRY_VALUES_TAB							= 'mr_entry_values_tab',
-	ENTRIES_PER_DAY_REPORT_TAB					= 'mr_entries_per_day_report_tab',
+	RATING_RESULTS_TAB							= 'mr_rating_results',
+	ENTRIES_TAB									= 'mr_entries',
+	ENTRY_VALUES_TAB							= 'mr_entry_values',
+	ENTRIES_PER_DAY_REPORT_TAB					= 'mr_entries_per_day_report',
 	
 	// post meta box
 	RATING_FORM_POSITION_POST_META				= 'rating_form_position',
@@ -161,7 +163,6 @@ class Multi_Rating {
 			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'class-rating-item-table.php';
 			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'class-rating-entry-table.php';
 			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'class-rating-results-table.php';
-			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'class-rating-entry-value-table.php';
 			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'class-post-metabox.php';
 			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'about.php';
 			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'rating-items.php';
@@ -169,6 +170,7 @@ class Multi_Rating {
 			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'reports.php';
 			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'settings.php';
 			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'tools.php';
+			require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'edit-rating.php';
 		}
 	}
 	
@@ -208,7 +210,7 @@ class Multi_Rating {
 				post_id bigint(20) NOT NULL,
 				entry_date datetime NOT NULL,
 				ip_address varchar(100),
-				username varchar(50),
+				user_id bigint(20) DEFAULT 0,
 				PRIMARY KEY  (rating_item_entry_id)
 		) ENGINE=InnoDB AUTO_INCREMENT=1;';
 		dbDelta( $sql_create_rating_item_entry_tbl );
@@ -274,7 +276,7 @@ class Multi_Rating {
 		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Reports', 'multi-rating' ), __( 'Reports', 'multi-rating' ), 'manage_options', Multi_Rating::REPORTS_PAGE_SLUG, 'mr_reports_screen' );
 		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Tools', 'multi-rating' ), __( 'Tools', 'multi-rating' ), 'manage_options', Multi_Rating::TOOLS_PAGE_SLUG, 'mr_tools_screen' );
 		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'About', 'multi-rating' ), __( 'About', 'multi-rating' ), 'manage_options', Multi_Rating::ABOUT_PAGE_SLUG, 'mr_about_screen' );
-	
+		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Edit Rating', 'multi-rating' ), '', 'manage_options', Multi_Rating::EDIT_RATING_PAGE_SLUG, 'mr_edit_rating_screen' );	
 	}
 
 	/**

@@ -150,8 +150,11 @@ function mr_about_screen() {
 						<p><?php _e( 'The plugin has been internationalized and is translation ready (.pot file in the languages directory). There\'s a WPML configuration file located in the languages directory for translating the custom text stored in the WP options table. You can also modify the default text and messages.', 'multi-rating' ); ?></p>
 			
 						<h4><?php _e( 'Rich Snippets', 'multi-rating' ); ?></h4>
-						<p><?php _e( '<a href="http://schema.org">schema.org</a> structured markup is be added to every page that allow search engines to display the aggregated rating results as rich snippets.', 'multi-rating' ); ?></p>						
-						</div>
+						<p><?php _e( '<a href="http://schema.org">schema.org</a> structured markup is be added to every page that allow search engines to display the aggregated rating results as rich snippets.', 'multi-rating' ); ?></p>										
+
+						<h4><?php _e( 'Action Hooks & Filters', 'multi-rating' ); ?></h4>
+						<p><?php _e( 'Developers can customize the default templates through action hooks and filters are availale for adding custom validation on rating form submit.', 'multi-rating' ); ?></p>										
+					</div>
 					<div class="last-feature">
 						<h4><?php _e( 'Export Rating Results', 'multi-rating' ); ?></h4>
 						<p><?php _e( 'You can export the rating results to a CSV file.', 'multi-rating' ); ?></p>
@@ -183,14 +186,15 @@ function mr_about_screen() {
 		<ol style="list-style-type:disc; margin-left: 2.5em;">
 		    <li><?php _e( 'Multiple rating forms with different rating items', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'WordPress comments system integration', 'multi-rating' ); ?></li>
+		    <li><?php _e( 'Add custom fields to collect additional information', 'multi-rating' ); ?><span style="color: Red; font-size: 80%; margin-left: 5px;">(<?php _e('New', 'multi-rating' ); ?>)</span></li>
 		    <li><?php _e( 'Logged in users can update or delete their existing ratings', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'New shortcodes, API functions and widgets (e.g. display user reviews and individual rating item results)', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'Rating forms can optionally include a name, e-mail and comment fields', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'Ability to use text descriptions for select and radio options instead of numbers', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'Post, category and specific page filters to include (whitelist) or exclude (blacklist) automatic placement of the rating form and rating results' ); ?></li>
 		    <li><?php _e( 'Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages)', 'multi-rating' ); ?></li>
-		    <li><?php _e( 'Thumbs up/down rating item type', 'multi-rating' ); ?></li>
-		    <li><?php _e( 'Display rating item results breakdown in a poll format', 'multi-rating' ); ?></li>
+		    <li><?php _e( 'Like/dislike or thumbs up/down rating item type', 'multi-rating' ); ?></li>
+		    <li><?php _e( 'Display detailed rating item results breakdown in a poll format', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'Allow/disallow anonymous user ratings option', 'multi-rating' ); ?></li>
 		</ol>
 		<?php

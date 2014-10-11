@@ -16,7 +16,7 @@ class MR_Rating_Result {
 	 */
 	public static function do_top_rating_results_html( $top_rating_result_rows, $params = array() ) {
 	
-		extract(wp_parse_args($params, array(
+		extract( wp_parse_args($params, array(
 				'show_title' => true,
 				'show_count' => false,
 				'show_category_filter' => true,
@@ -55,7 +55,7 @@ class MR_Rating_Result {
 		}
 	
 		if ( count( $top_rating_result_rows ) == 0 ) {
-			$html .= '<p>' . $no_rating_results_text . '</p>';
+			$html .= '<p class="mrp">' . $no_rating_results_text . '</p>';
 		} else {
 			$html .= '<table>';
 			$index = 1;
@@ -174,46 +174,8 @@ class MR_Rating_Result {
 				$html .= '<span class="score-result">' . $rating_result['adjusted_score_result'] . '/' . $rating_result['total_max_option_value'] . '</span>';
 			} else if ( $result_type == Multi_Rating::PERCENTAGE_RESULT_TYPE ) {
 				$html .= '<span class="percentage-result">' . $rating_result['adjusted_percentage_result'] . '%</span>';
-			} else { // star rating
-	
-				$style_settings = (array) get_option( Multi_Rating::STYLE_SETTINGS );
-				$star_rating_colour = $style_settings[Multi_Rating::STAR_RATING_COLOUR_OPTION];
-				$font_awesome_version = $style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION];
-				$icon_classes = MR_Utils::get_icon_classes( $font_awesome_version );
-	
-				$html .= '<span class="star-rating">';
-				$index = 0;
-				
-				for ($index; $index<5; $index++) {
-						
-					$class = $icon_classes['star_full'];
-	
-					if ( $rating_result['adjusted_star_result'] < $index + 1 ) {
-							
-						$diff = $rating_result['adjusted_star_result'] - $index;
-	
-						if ( $diff > 0 ) {
-							if ( $diff >= 0.3 && $diff <= 0.7 ) {
-								$class = $icon_classes['star_half'];
-							} else if ( $diff < 0.3 ) {
-								$class = $icon_classes['star_empty'];
-							} else {
-								$class = $icon_classes['star_full'];
-							}
-							
-						} else {
-							$class = $icon_classes['star_empty'];
-						}
-	
-					} else {
-						$class = $icon_classes['star_full'];
-					}
-	
-					$html .= '<i class="' . $class . '" style="color: ' . $star_rating_colour . '"></i>';
-				}
-				$html .= '</span>';
-	
-				$html .= '<span class="star-result">' . $rating_result['adjusted_star_result'] . '/5</span>';
+			} else { // star rating				
+				$html .= MR_Rating_Result::get_star_rating_html( 5, $rating_result['adjusted_star_result'] );
 			}
 				
 			if ( $show_count && $count != null ) {
@@ -233,6 +195,54 @@ class MR_Rating_Result {
 		}
 	
 		$html .= '</span>';
+		 
+		return $html;
+	}
+	
+	/**
+	 * Returns star rating HTML
+	 *
+	 * @param $max_stars
+	 * @param $star_result
+	 */
+	public static function get_star_rating_html( $max_stars = 5, $star_result = 0) {
+	
+		$style_settings = (array) get_option( Multi_Rating::STYLE_SETTINGS );
+		$star_rating_colour = $style_settings[Multi_Rating::STAR_RATING_COLOUR_OPTION];
+		$font_awesome_version = $style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION];
+		$icon_classes = MR_Utils::get_icon_classes( $font_awesome_version );
+		 
+		$html = '<span class="star-rating" style="color: ' . $star_rating_colour . ' !important;">';
+		$index = 0;
+		 
+		for ( $index; $index < $max_stars; $index++ ) {
+			 
+			$class = $icon_classes['star_full'];
+			 
+			if ( $star_result < $index+1 ) {
+	
+				$diff = $star_result - $index;
+				if ( $diff > 0 ) {
+					if ( $diff >= 0.3 && $diff <= 0.7 ) {
+						$class = $icon_classes['star_half'];
+					} else if ( $diff < 0.3 ) {
+						$class = $icon_classes['star_empty'];
+					} else {
+						$class = $icon_classes['star_full'];
+					}
+				} else {
+					$class = $icon_classes['star_empty'];
+				}
+	
+			} else {
+				$class = $icon_classes['star_full'];
+			}
+			 
+			$html .= '<i class="' . $class . '"></i>';
+		}
+		 
+		$html .= '</span>';
+		$html .= '<span class="star-result">' . $star_result . '/' . $max_stars . '</span>';
 		 
 		return $html;
 	}

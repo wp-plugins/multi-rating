@@ -60,8 +60,8 @@ class MR_Settings {
 	
 	
 		$this->position_settings = array_merge( array(
-				Multi_Rating::RATING_RESULTS_POSITION_OPTION 	=> '',
-				Multi_Rating::RATING_FORM_POSITION_OPTION 		=> ''
+				Multi_Rating::RATING_RESULTS_POSITION_OPTION 	=> 'after_title',
+				Multi_Rating::RATING_FORM_POSITION_OPTION 		=> 'after_content'
 		), $this->position_settings );
 	
 	
@@ -79,7 +79,8 @@ class MR_Settings {
 		$this->general_settings = array_merge( array(
 				Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION 		=> true,
 				Multi_Rating::POST_TYPES_OPTION 						=> 'post',
-				Multi_Rating::RATING_RESULTS_CACHE_OPTION				=> true
+				Multi_Rating::RATING_RESULTS_CACHE_OPTION				=> true,
+				Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION 		=> true,
 		), $this->general_settings );
 	
 	
@@ -98,15 +99,17 @@ class MR_Settings {
 	
 		add_settings_section( 'section_general', __( 'General Settings', 'multi-rating' ), array( &$this, 'section_general_desc' ), Multi_Rating::GENERAL_SETTINGS );
 	
-		add_settings_field( Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION, __( 'IP address & date validation check', 'multi-rating' ), array( &$this, 'field_ip_address_date_validation' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
+		add_settings_field( Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION, __( 'Rating form IP address & date validation', 'multi-rating' ), array( &$this, 'field_ip_address_date_validation' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 		add_settings_field( Multi_Rating::POST_TYPES_OPTION, __( 'Post types', 'multi-rating' ), array( &$this, 'field_post_types' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 		add_settings_field( Multi_Rating::RATING_RESULTS_CACHE_OPTION, __( 'Enable rating results cache', 'multi-rating' ), array( &$this, 'field_rating_results_cache' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
+		add_settings_field( Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION, __( 'Hide rating form after submit', 'multi-rating' ), array( &$this, 'field_hide_rating_form_after_submit' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 	}
+	
 	/**
 	 * General section desciption
 	 */
 	function section_general_desc() {
-		echo '';
+
 	}
 	/**
 	 * IP address & date validation setting
@@ -150,6 +153,15 @@ class MR_Settings {
 		<?php 
 	}
 	/**
+	 * Hide rating form after submit
+	 */
+	function field_hide_rating_form_after_submit() {
+		?>
+		<input type="checkbox" name="<?php echo Multi_Rating::GENERAL_SETTINGS;?>[<?php echo Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION; ?>]" value="true" <?php checked( true, $this->general_settings[Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION], true ); ?> />
+		<?php 
+	}
+	
+	/**
 	 * Sanitize the general settings
 	 * 
 	 * @param $input
@@ -171,6 +183,14 @@ class MR_Settings {
 		} else {
 			$input[Multi_Rating::RATING_RESULTS_CACHE_OPTION] = false;
 		}
+		
+		// hide rating form after submit
+		if ( isset( $input[Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION] )
+				&& $input[Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION] == 'true' ) {
+			$input[Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION] = true;
+		} else {
+			$input[Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION] = false;
+		}
 	
 		return $input;
 	}
@@ -191,7 +211,9 @@ class MR_Settings {
 	 * Position section description
 	 */
 	function section_position_desc() {
-		echo '<p>' . _e( 'These settings allow you to automatically place the rating form and rating results on every post or page in default positions. You can override these settings for a particular page or post using the Multi Rating meta box in the edit post page.', 'multi-rating' ) . '</p>';
+		?>
+		<p><?php _e( 'These settings allow you to automatically place the rating form and rating results on every post or page in default positions.', 'multi-rating' ); ?></p>
+		<?php
 	}
 	
 	/**

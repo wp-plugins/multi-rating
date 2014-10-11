@@ -142,8 +142,14 @@ function mr_export_rating_results() {
 	$post_id = isset( $_POST['post-id'] ) ? $_POST['post-id'] : null;
 		
 	$filters = array();
+	
+	$filters['user_id'] = null;
 	if ( $username != null && strlen( $username ) > 0 ) {
-		$filters['username'] = $username;
+		// get user id
+		$user = get_user_by( 'login', $username );
+		if ( $user && $user->ID ) {
+			$filters['user_id'] = $user->ID;
+		}
 	}
 	
 	if ( $post_id != null && strlen( $post_id ) > 0 ) {
@@ -186,29 +192,45 @@ function mr_clear_database() {
 	$to_date = isset( $_POST['to-date2'] ) ? $_POST['to-date2'] : null;
 	$post_id = isset( $_POST['post-id'] ) ? $_POST['post-id'] : null;
 	
+	$user_id = null;
+	if ( $username ) {
+		$user = get_user_by( 'login', $username );
+		if ( $user && $user->ID ) {
+			$user_id = $user->ID;
+		}
+	}
+	
 	$entries = Multi_Rating_API::get_rating_item_entries( array(
-			'username' => $username,
+			'user_id' => $user_id,
 			'from_date' => $from_date,
 			'to_date' => $to_date,
 			'post_id' => $post_id,
 	) );
 	
-	$entry_id_array = array();
-	foreach ($entries as $entry) {
-		array_push($entry_id_array, $entry['rating_item_entry_id']);
-	}
+	if ( count( $entries) > 0 ) {
 	
-	global $wpdb;
-	
-	$entry_id_list = implode( ',', $entry_id_array );
-
-	try {
-		$rows = $wpdb->get_results( 'DELETE FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' WHERE rating_item_entry_id IN ( ' . $entry_id_list . ')' );
-		$rows = $wpdb->get_results( 'DELETE FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME . ' WHERE rating_item_entry_id IN ( ' . $entry_id_list . ')' );
+		$entry_id_array = array();
+		foreach ($entries as $entry) {
+			array_push($entry_id_array, $entry['rating_item_entry_id']);
+			
+			// rating results cache will be refreshed next time it's needed
+			delete_post_meta( $entry['post_id'], Multi_Rating::RATING_RESULTS_POST_META_KEY );
+		}
 		
-		echo '<div class="updated"><p>' . __( 'Database cleared successfully.', 'multi-rating' ) . '</p></div>';
-	} catch ( Exception $e ) {
-		echo '<div class="error"><p>' . sprintf( __('An error has occured. %s', 'multi-rating' ), $e->getMessage() ) . '</p></div>';
+		global $wpdb;
+		
+		$entry_id_list = implode( ',', $entry_id_array );
+	
+		try {
+			$rows = $wpdb->get_results( 'DELETE FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' WHERE rating_item_entry_id IN ( ' . $entry_id_list . ')' );
+			$rows = $wpdb->get_results( 'DELETE FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME . ' WHERE rating_item_entry_id IN ( ' . $entry_id_list . ')' );
+			
+			echo '<div class="updated"><p>' . __( 'Database cleared successfully.', 'multi-rating' ) . '</p></div>';
+		} catch ( Exception $e ) {
+			echo '<div class="error"><p>' . sprintf( __('An error has occured. %s', 'multi-rating' ), $e->getMessage() ) . '</p></div>';
+		}
+	} else {
+		echo '<div class="error"><p>' . __('No entries found', 'multi-rating' ) . '</p></div>';
 	}
 }
 

@@ -77,7 +77,7 @@ class MR_Rating_Form {
 		$max_option_value = $rating_item['max_option_value'];
 		$rating_item_type = $rating_item['type'];
 	
-		$html = '<p class="rating-item"><label class="description" for="' . $element_id . '">' . $description . '</label>';
+		$html = '<p class="rating-item mrp"><label class="description" for="' . $element_id . '">' . $description . '</label>';
 	
 		if ( $rating_item_type == "star_rating" ) {
 			
@@ -180,17 +180,23 @@ class MR_Rating_Form {
 			$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 			$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
 	
-			// get username
+			// get user id
 			global $wp_roles;
-			$current_user = wp_get_current_user();
-			$username = $current_user->user_login;
+			$user = wp_get_current_user();
+			$user_id = $user->ID;
 	
-			$validation_result = MR_Utils::validate_ip_address_datetime_check($post_id, $username);
-			if ( $validation_result['status'] == 'error' ) {
+			// stores any validation results, custom validation results can be added through filters
+			$validation_results = array();
+			
+			$validation_results = MR_Utils::validate_ip_address_datetime_check( $validation_results, $post_id );
+			
+			$validation_results = apply_filters( 'mrp_after_rating_form_validation_save', $validation_results, $data );
+			
+			if ( MR_Utils::has_validation_error( $validation_results ) ) {
 				echo json_encode( array (
 						'status' => 'error',
 						'data' => $data,
-						'messages' => array( $validation_result['messages'] )
+						'validation_results' => $validation_results
 				) );
 				die();
 			}
@@ -200,8 +206,8 @@ class MR_Rating_Form {
 					'post_id' => $post_id,
 					'entry_date' => $entry_date_mysql,
 					'ip_address' => $ip_address,
-					'username' => $username,
-			), array('%d', '%s', '%s', '%s') );
+					'user_id' => $user_id,
+			), array('%d', '%s', '%s', '%d') );
 	
 			$rating_item_entry_id = $wpdb->insert_id;
 	
@@ -237,19 +243,19 @@ class MR_Rating_Form {
 			// if the custom text does not contain %, then there's no need to substitute the message
 			$message = $custom_text_settings[ Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION];
 			if (strpos($message, '%') !== false) {
-				$message = MR_Utils::substitute_message(
-						$message,
-						$current_user,
-						Multi_Rating_API::calculate_rating_item_entry_result($rating_item_entry_id, $rating_items)
-				);
+				$message = MR_Utils::substitute_message( $message, $user, 
+						Multi_Rating_API::calculate_rating_item_entry_result($rating_item_entry_id, $rating_items ) );
 			}
 	
 			$data['rating_result'] = $rating_result;
-	
+				
+			$data['hide_rating_form'] = $general_settings[Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION];
+			
 			echo json_encode( array(
 					'status' => 'success',
 					'data' => $data,
-					'messages' => array( $message )
+					'message' => $message,
+					'validation_results' => $validation_results
 			) );
 		}
 			

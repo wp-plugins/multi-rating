@@ -90,8 +90,7 @@ class MR_Rating_Results_Table extends WP_List_Table {
 		
 		return $columns= array(
 				MR_Rating_Results_Table::CHECKBOX_COLUMN => '<input type="checkbox" />',
-				MR_Rating_Results_Table::POST_ID_COLUMN => __( 'Post Id', 'multi-rating' ),
-				MR_Rating_Results_Table::TITLE_COLUMN => __( 'Title', 'multi-rating' ),
+				MR_Rating_Results_Table::POST_ID_COLUMN => __( 'Post', 'multi-rating' ),
 				MR_Rating_Results_Table::RATING_RESULT_COLUMN => __( 'Rating Result', 'multi-rating' ),
 				MR_Rating_Results_Table::ENTRIES_COUNT_COLUMN => __( 'Entries', 'multi-rating' ),
 				MR_Rating_Results_Table::ACTION_COLUMN => __( 'Action', 'multi-rating' ),
@@ -177,12 +176,7 @@ class MR_Rating_Results_Table extends WP_List_Table {
 			}
 			
 			case MR_Rating_Results_Table::POST_ID_COLUMN : {
-				echo $post_id;
-				break;
-			}
-			
-			case MR_Rating_Results_Table::TITLE_COLUMN : {
-				echo '<a href="' . get_permalink( $post_id ) . '">' . get_the_title( $post_id ) . '</a>';
+				echo '<a href="' . get_permalink( $post_id ) . '">' . get_the_title( $post_id ) . '</a> (Id=' . $post_id . ')';
 				break;
 			}
 			
@@ -210,22 +204,22 @@ class MR_Rating_Results_Table extends WP_List_Table {
 			
 			case MR_Rating_Results_Table::RATING_RESULT_COLUMN : {
 				
-				$rating_items = Multi_Rating_API::get_rating_items( array( 'post_id' => $post_id ) );
-				$rating_result = Multi_Rating_API::calculate_rating_result( array( 'post_id' => $post_id, 'rating_items' => $rating_items ) );
+				$rating_items = Multi_Rating_API::get_rating_items( array( 
+						'post_id' => $post_id
+				) );
+				$rating_result = Multi_Rating_API::calculate_rating_result( array(
+						'post_id' => $post_id,
+						'rating_items' => $rating_items
+				) );
 				
 				$entries = $rating_result['count'];
-				$html = '';
 				if ($entries != 0) {
-					
-					echo __( 'Star Rating: ', 'multi-rating' ) . $rating_result['adjusted_star_result'] . '/5<br />'
-					. __( 'Score: ', 'multi-rating' ) . $rating_result['adjusted_score_result'] . '/' . $rating_result['total_max_option_value'] . '<br />'
-					. __( 'Percentage: ', 'multi-rating' ) . $rating_result['adjusted_percentage_result'] . '%';
-					
+					echo __('Star: ', 'multi-rating' ) . round( $rating_result['adjusted_star_result'], 2 ) . '/5<br />'
+							. __('Score: ', 'multi-rating' ) . round( $rating_result['adjusted_score_result'], 2) . '/' . $rating_result['total_max_option_value'] . '<br />' 
+							. __('Percentage: ', 'multi-rating' ) . round( $rating_result['adjusted_percentage_result'], 2) . '%';				
 				} else {
 					echo 'None';	
 				}
-				
-				echo $html;
 				break;
 			}
 			
@@ -284,7 +278,7 @@ class MR_Rating_Results_Table extends WP_List_Table {
 				foreach ( $entries as $entry ) {
 					$rating_item_entry_id = $entry['rating_item_entry_id'];
 					
-					$entry_values_query = 'DELETE FROM '. $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME . '  WHERE ' .  MR_Rating_Entry_Value_Table::RATING_ITEM_ENTRY_ID_COLUMN . ' = "' . $rating_item_entry_id . '"';
+					$entry_values_query = 'DELETE FROM '. $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME . '  WHERE ' .  MR_Rating_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN . ' = "' . $rating_item_entry_id . '"';
 					$results = $wpdb->query($entry_values_query);
 					
 					$entries_query = 'DELETE FROM '. $wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . '  WHERE ' .  MR_Rating_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN . ' = "' . $rating_item_entry_id . '"';	

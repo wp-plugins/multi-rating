@@ -12,8 +12,7 @@ function mr_rating_results_screen() {
 			$page = Multi_Rating::RATING_RESULTS_PAGE_SLUG;
 			$tabs = array (
 					Multi_Rating::RATING_RESULTS_TAB 		=> __( 'Rating Results', 'multi-rating' ),
-					Multi_Rating::ENTRIES_TAB 		=> __( 'Entries', 'multi-rating' ),
-					Multi_Rating::ENTRY_VALUES_TAB 	=> __( 'Entry Values', 'multi-rating' )
+					Multi_Rating::ENTRIES_TAB 		=> __( 'Entries', 'multi-rating' )
 			);
 			
 			foreach ( $tabs as $tab_key => $tab_caption ) {
@@ -44,16 +43,6 @@ function mr_rating_results_screen() {
 				?>
 			</form>
 			<?php 
-		} else if ( $current_tab == Multi_Rating::ENTRY_VALUES_TAB ) {
-			?>
-			<form method="post" id="rating-entry-value-table-form">
-				<?php 
-				$rating_entry_value_table = new MR_Rating_Entry_Value_Table();
-				$rating_entry_value_table->prepare_items();
-				$rating_entry_value_table->display();
-				?>
-			</form>
-			<?php
 		}
 		?>
 		

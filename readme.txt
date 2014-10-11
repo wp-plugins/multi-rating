@@ -3,16 +3,16 @@ Contributors: dpowney
 Donate link: http://www.danielpowney.com/donate
 Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippet, testimonial, review, hReview, multi rating, feedback, user rating
 Requires at least: 3.0.1
-Tested up to: 3.9.1
+Tested up to: 4.0
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-The best rating system plugin for WordPress. It’s simple, easy to use, looks great (supports retina display and responsive) and integrates seamlessly into any WordPress theme.
+The best rating system plugin for WordPress. Multi Rating allows visitors to rate a post based on multiple criteria and questions.
 
 == Description ==
 
-Multi Rating is a simple rating plugin which allows visitors to rate a post based on multiple criteria and questions. It is responsive, easy to use and integrates seamlessly into any WordPress theme.
+The best rating system plugin for WordPress. Multi Rating allows visitors to rate a post based on multiple criteria and questions.
 
 = Features =
 
@@ -32,6 +32,7 @@ Multi Rating is a simple rating plugin which allows visitors to rate a post base
 * Export rating results to CSV file
 * Custom taxonomy support
 * API functions & action hooks for using Multi Rating in your theme
+* Edit ratings in WP-admin
 
 Here's a live demo: http://danielpowney.com/multi-rating/
 
@@ -52,14 +53,15 @@ The following key features are available in the Pro version:
 
 * Multiple rating forms with different rating items
 * WordPress comments system integration
+* Add custom fields to collect additional information
 * Logged in users can update or delete their existing ratings
 * New shortcodes, API functions and widgets (e.g. display user reviews and individual rating item results)
 * Rating forms can optionally include a name, e-mail and comment fields
 * Ability to use text descriptions for select and radio options instead of numbers
 * Post, category and specific page filters to include (whitelist) or exclude (blacklist) automatic placement of the rating form and rating results
 * Options to exclude the home page and archive pages (i.e. Category, Tag, Author or a Date based pages)
-* Thumbs up/down rating item type
-* Display rating item results breakdown in a poll format
+* Like/dislike or thumbs up/down rating item type
+* Display detailed rating item results breakdown in a poll format
 * Allow/disallow anonymous user ratings option
 
 Check it out here http://danielpowney.com/downloads/multi-rating-pro/
@@ -85,6 +87,17 @@ Full documentation available here http://danielpowney.com/multi-rating/
 8. Settings page
 
 == Changelog ==
+
+= 3.1 =
+* Added edit rating feature in WP-admin
+* Replaced storing username with user id
+* Refactored star rating html generation
+* Added WP filter for custom rating form validation
+* Some CSS changes
+* Improved usability of WP-admin tables
+
+= 3.0.2 =
+* Fixed weight issue calculting rating results
 
 = 3.0.1 =
 * Performance impovements. Added rating results cache.

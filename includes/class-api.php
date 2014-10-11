@@ -143,7 +143,7 @@ class Multi_Rating_API {
 	}
 	
 	/**
-	 * Calculates the rating result of a rating form for a post with filters for username
+	 * Calculates the rating result of a rating form for a post with filters for user_id
 	 *
 	 * @param array $params post_id, rating_items
 	 * @return rating result
@@ -156,19 +156,30 @@ class Multi_Rating_API {
 	
 		$rating_items = $params['rating_items'];
 		$post_id = $params['post_id'];
+
 	
+
+
+
+
+
 		$rating_item_entries = Multi_Rating_API::get_rating_item_entries( array(
+
+
+
+
 				'post_id' => $post_id 
 		) );
 			
-		$total_weight = Multi_Rating_API::get_total_weight( $rating_items );
-	
 		$score_result_total = 0;
 		$adjusted_score_result_total = 0;
 		$star_result_total = 0;
 		$adjusted_star_result_total = 0;
 		$percentage_result_total = 0;
 		$adjusted_percentage_result_total = 0;
+		$total_max_option_value = 0;
+		
+		$count_entries = count($rating_item_entries);
 		
 		// get max option value
 		$total_max_option_value = 0;
@@ -199,7 +210,7 @@ class Multi_Rating_API {
 			$score_result_total += ($rating_result['score_result'] * $adjustment);
 			$adjusted_score_result_total += ($rating_result['adjusted_score_result'] * $adjustment);
 			
-			$star_result_total += $rating_result['star_result'] * $adjustment;
+			$star_result_total += $rating_result['star_result'];
 			$adjusted_star_result_total += $rating_result['adjusted_star_result'];
 				
 			$percentage_result_total += $rating_result['percentage_result'];
@@ -238,7 +249,7 @@ class Multi_Rating_API {
 				'percentage_result' => $percentage_result,
 				'adjusted_percentage_result' => $adjusted_percentage_result,
 				'count' => $count_entries,
-				'post_id' => $post_id,
+				'post_id' => $post_id
 		);
 	}
 	
@@ -286,14 +297,14 @@ class Multi_Rating_API {
 	/**
 	 * Gets rating item entries.
 	 *
-	 * @param array $params post_id, username, limit, from_date and to_date
+	 * @param array $params post_id, user_id, limit, from_date and to_date
 	 * @return rating item entries
 	 */
 	public static function get_rating_item_entries( $params = array() ) {
 		
 		extract( wp_parse_args( $params, array(
 				'post_id' => null,
-				'username' => null,
+				'user_id' => null,
 				'limit' => null,
 				'from_date' => null,
 				'to_date' => null
@@ -301,11 +312,11 @@ class Multi_Rating_API {
 	
 		global $wpdb;
 	
-		$query = 'SELECT rie.rating_item_entry_id, rie.username, rie.post_id, rie.entry_date FROM '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' as rie';
+		$query = 'SELECT rie.rating_item_entry_id, rie.user_id, rie.post_id, rie.entry_date FROM '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' as rie';
 	
 		$added_to_query = false;
 		// is a WHERE clause required?
-		if ( $post_id || $username ||$from_date || $to_date ) {
+		if ( $post_id || $user_id ||$from_date || $to_date ) {
 			$query .= ' WHERE';
 		}
 	
@@ -318,12 +329,12 @@ class Multi_Rating_API {
 			$added_to_query = true;
 		}
 		
-		if ( $username ) {
+		if ( $user_id ) {
 			if ( $added_to_query ) {
 				$query .= ' AND';
 			}
 			
-			$query .= ' rie.username = "' . $username . '"';
+			$query .= ' rie.user_id = "' . $user_id . '"';
 			$added_to_query = true;
 		}
 		
@@ -352,7 +363,7 @@ class Multi_Rating_API {
 			
 			$rating_item_entry = array(
 					'rating_item_entry_id' => $rating_item_entry_row->rating_item_entry_id,
-					'username' => $rating_item_entry_row->username,
+					'user_id' => $rating_item_entry_row->user_id,
 					'post_id' => $rating_item_entry_row->post_id,
 					'entry_date' => $rating_item_entry_row->entry_date
 			);
@@ -399,42 +410,41 @@ class Multi_Rating_API {
 		// use the rating items to determine total max option value
 		// we do not use the entry values in case some rating items can be added/deleted
 		$count_rating_items = 0;
+		$total_adjusted_max_option_value = 0;
 		foreach ( $rating_items as $rating_item ) {
+
 			//if ($rating_item['exclude_result'] == false) {
-			$total_max_option_value += $rating_item['max_option_value'];
-			$count_rating_items++;
+				$total_max_option_value += $rating_item['max_option_value'];
+				$total_adjusted_max_option_value += ( $rating_item['max_option_value'] * $rating_item['weight'] );
+				$count_rating_items++;
 			//}
 		}
 	
 		foreach ( $rating_item_entry_value_rows as $rating_item_entry_value_row ) {
-				
+			
 			$rating_item_id = $rating_item_entry_value_row->rating_item_id;
-	
+		
 			// check rating item is available, if it's been deleted it wont be included in rating result
 			if ( isset( $rating_items[$rating_item_id] ) && isset( $rating_items[$rating_item_id]['max_option_value'] ) ) {
-	
+
 				//if ($rating_items[$rating_item_id]['exclude_result'] == true) {
 				//	continue;
 				//}
-	
+		
 				// add value and max option values
 				$value = $rating_item_entry_value_row->value;
 				$max_option_value = $rating_items[$rating_item_id]['max_option_value'];
-	
+		
 				if ( $value > $max_option_value ) {
 					$value = $max_option_value;
 				}
-	
+				
 				// make adjustments to the rating for weights
 				$weight = $rating_items[$rating_item_id]['weight'];
-				$adjustment = ( $weight / $total_weight ) * $count_rating_items;
-	
+
 				// score result
-				$score_result += intval( $value) ;
-				$adjusted_score_result += $value * $adjustment;
-	
-				$total_rating_item_result += round( doubleval( $value ) / doubleval( $max_option_value ), 2 );
-				$total_adjusted_rating_item_result += round( doubleval( $value * $adjustment ) / doubleval( $max_option_value ), 2 );
+				$score_result += intval( $value ) ;
+				$adjusted_score_result += ($value * $weight);
 			} else {
 				continue; // skip
 			}
@@ -442,15 +452,16 @@ class Multi_Rating_API {
 	
 		if ( count( $rating_item_entry_value_rows ) > 0 ) {
 			// calculate 5 star result
-			$star_result = round( doubleval( $total_rating_item_result ) / doubleval( $count_rating_items ), 2 ) * 5;
-			$adjusted_star_result = round( doubleval($total_rating_item_result ) / doubleval( $count_rating_items ), 2 ) * 5;
-	
+			$star_result = ( doubleval( $score_result ) / doubleval( $total_max_option_value ) ) * 5;
+			$adjusted_star_result = ( doubleval( $adjusted_score_result ) / doubleval( $total_adjusted_max_option_value ) ) * 5;
+		
 			// calculate percentage result
-			$percentage_result = round( doubleval( $total_rating_item_result ) / doubleval( $count_rating_items ), 2 ) * 100;
-			$adjusted_percentage_result = round( doubleval( $total_rating_item_result) / doubleval( $count_rating_items ), 2 ) * 100;
-				
-			$rating_result = round( doubleval( $total_rating_item_result ) / doubleval( $count_rating_items ), 2 );
-			$adjusted_rating_result = round( doubleval( $total_adjusted_rating_item_result ) / doubleval( $count_rating_items ), 2 );
+			$percentage_result = ( doubleval( $score_result ) / doubleval( $total_max_option_value ) ) * 100;
+			$adjusted_percentage_result = ( doubleval( $adjusted_score_result ) / doubleval( $total_adjusted_max_option_value ) ) * 100;
+		
+			// calculate adjusted score result relative to max value
+			$adjusted_score_result = ( doubleval( $adjusted_score_result ) / doubleval( $total_adjusted_max_option_value ) ) * $total_max_option_value;
+
 		}
 	
 		return array(
@@ -801,16 +812,16 @@ class Multi_Rating_API {
 	 * Generates rating results in CSV format.
 	 *
 	 * @param $file_name the file_name to save
-	 * @param $filters used to filter the report e.g. from_date, to_date, username etc...
+	 * @param $filters used to filter the report e.g. from_date, to_date, user_id etc...
 	 * @returns true if report successfully generated and written to file
 	 */
 	public static function generate_rating_results_csv_file( $file_name, $filters ) {
 	
 		$rating_item_entries = Multi_Rating_API::get_rating_item_entries( $filters );
 			
-		$header_row = __('Entry ID', 'multi-rating') . ', '
+		$header_row = __('Entry Id', 'multi-rating') . ', '
 				. __('Entry Date', 'multi-rating') . ', '
-				. __('Post ID', 'multi-rating') . ', '
+				. __('Post Id', 'multi-rating') . ', '
 				. __('Post Title', 'multi-rating') . ', '
 				. __('Score Rating Result', 'multi-rating') . ', '
 				. __('Adjusted Score Rating Result', 'multi-rating') . ', '
@@ -819,7 +830,7 @@ class Multi_Rating_API {
 				. __('Adjusted Percentage Rating Result', 'multi-rating') . ', '
 				. __('Star Rating Result', 'multi-rating') . ', '
 				. __('Adjusted Star Rating Result', 'multi-rating') . ', '
-				. __('Username', 'multi-rating' );
+				. __('User Id', 'multi-rating' );
 		
 		$export_data_rows = array( $header_row );
 	
@@ -843,7 +854,7 @@ class Multi_Rating_API {
 				. $rating_result['adjusted_score_result'] . ', ' . $rating_result['total_max_option_value'] . ', '
 				. $rating_result['percentage_result'] . ', ' . $rating_result['adjusted_percentage_result'] . ', '
 				. $rating_result['star_result'] . ', ' . $rating_result['adjusted_star_result'] . ', '
-				. $rating_item_entry['username'];
+				. $rating_item_entry['user_id'];
 	
 				array_push( $export_data_rows, $current_row );
 			}
