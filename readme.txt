@@ -36,7 +36,7 @@ The best rating system plugin for WordPress. Multi Rating allows visitors to rat
 
 Here's a live demo: http://danielpowney.com/multi-rating/
 
-The plugin is i18n translation ready (.pot file in the languages directory). Different versions of Font Awesome are supported as well to help prevent any theme or plugin conflicts.
+The plugin is i18n translation ready (.pot file in the languages directory). Different versions of Font Awesome are supported as well to help prevent any theme or plugin conflicts. For WPML plugin support, there is a wpml-config.xml file in the languages directory of the plugin.
 
 = Shortcode Examples =
 
@@ -87,6 +87,14 @@ Full documentation available here http://danielpowney.com/multi-rating/
 8. Settings page
 
 == Changelog ==
+
+= 3.1.1 =
+* Fixed rounding of star result to 2 decimals
+* Fixed is_admin() checks to also check AJAX requests to support plugins such as FacetWP
+* added filter button custom text and category label text
+* Added ability to sort rating results in WP-admin by post title asc, post title desc, top rating results and most entries
+* Added to delete all associated rating results and entry data when a post is deleted
+* Added fix to only show published posts in the Top Rating Results and to recalculate the rating results when a post changes status
 
 = 3.1 =
 * Added edit rating feature in WP-admin

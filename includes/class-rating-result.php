@@ -29,7 +29,9 @@ class MR_Rating_Result {
 				'result_type' => Multi_Rating::STAR_RATING_RESULT_TYPE,
 				'class' => '',
 				'taxononmy' => null,
-				'term_id' => 0
+				'term_id' => 0,
+				'filter_button_text' => '',
+				'category_label_text' => ''
 		) ) );
 	
 		if ( $category_id == null ) {
@@ -48,9 +50,9 @@ class MR_Rating_Result {
 	
 		if ( $show_category_filter == true ) {
 			$html .= '<form action="" class="category-id-filter" method="POST">';
-			$html .= '<label for="category-id">' . __('Category', 'multi-rating' ) . '</label>';
+			$html .= '<label for="category-id">' . $category_label_text . '</label>';
 			$html .= wp_dropdown_categories( array( 'echo' => false, 'class' => 'category-id', 'name' => 'category-id', 'id' => 'category-id', 'selected' => $category_id, 'show_option_all' => 'All' ) );
-			$html .= '<input type="submit" value="Filter" />';
+			$html .= '<input type="submit" value="' . $filter_button_text . '" />';
 			$html .= '</form>';
 		}
 	
@@ -212,7 +214,7 @@ class MR_Rating_Result {
 		$font_awesome_version = $style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION];
 		$icon_classes = MR_Utils::get_icon_classes( $font_awesome_version );
 		 
-		$html = '<span class="star-rating" style="color: ' . $star_rating_colour . ' !important;">';
+		$html = '<span class="mr-star-rating" style="color: ' . $star_rating_colour . ' !important;">';
 		$index = 0;
 		 
 		for ( $index; $index < $max_stars; $index++ ) {
@@ -242,7 +244,7 @@ class MR_Rating_Result {
 		}
 		 
 		$html .= '</span>';
-		$html .= '<span class="star-result">' . $star_result . '/' . $max_stars . '</span>';
+		$html .= '<span class="star-result">' . round(doubleval( $star_result ), 2)  . '/' . $max_stars . '</span>';
 		 
 		return $html;
 	}

@@ -46,6 +46,11 @@ class MR_Rating_Results_Table extends WP_List_Table {
 				$post_id = $_REQUEST['post-id'];
 			}
 			
+			$sort_by = '';
+			if ( isset( $_REQUEST['sort-by'] ) ) {
+				$sort_by = $_REQUEST['sort-by'];
+			}
+			
 			global $wpdb;
 			?>
 			
@@ -69,6 +74,15 @@ class MR_Rating_Results_Table extends WP_List_Table {
 							<?php echo get_the_title( $post->ID ); ?>
 						</option>
 					<?php } ?>
+				</select>
+				
+				<label for="sort-by"><?php _e('Sort', 'multi-rating' ); ?></label>
+				<select id="sort-by" name="sort-by">
+				<option value=""></option>
+					<option value="post_title_asc" <?php if ( $sort_by == 'post_title_asc' ) { echo 'selected="selected"'; } ?>><?php _e( 'Post Title Ascending', 'multi-rating' ); ?></option>
+					<option value="post_title_desc" <?php if ( $sort_by == 'post_title_desc' ) { echo 'selected="selected"'; } ?>><?php _e( 'Post Title Descending', 'multi-rating' ); ?></option>
+					<option value="top_rating_results" <?php if ( $sort_by == 'top_rating_results' ) { echo 'selected="selected"'; } ?>><?php _e( 'Top Rating Results', 'multi-rating' ); ?></option>
+					<option value="most_entries" <?php if ( $sort_by == 'most_entries' ) { echo 'selected="selected"'; } ?>><?php _e( 'Most Entries', 'multi-rating' ); ?></option>
 				</select>
 				
 				<input type="submit" class="button" value="<?php _e( 'Filter', 'multi-rating' ); ?>"/>
@@ -115,12 +129,21 @@ class MR_Rating_Results_Table extends WP_List_Table {
 		$this->_column_headers = array($columns, $hidden, $sortable);
 		
 		$post_id = isset( $_REQUEST['post-id'] ) ? $_REQUEST['post-id'] : null;
+		$sort_by = isset( $_REQUEST['sort-by'] ) ? $_REQUEST['sort-by'] : null;
 		
 		// get table data
-		$query = 'SELECT * FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' as rie';
+		$query = 'SELECT rie.post_id AS post_id';
+		if ( $sort_by == 'post_title_asc' || $sort_by == 'post_title_desc' ) {
+			$query .= ', p.post_title AS post_title';
+		}
+		
+		$query .= ' FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' as rie';
+		if ( $sort_by == 'post_title_asc' || $sort_by == 'post_title_desc' ) {
+			$query .= ', ' . $wpdb->posts . ' as p';
+		}
 		
 		$added_to_query = false;
-		if ( $post_id ) {
+		if ( $post_id || $sort_by == 'post_title_asc' || $sort_by == 'post_title_desc' ) {
 			$query .= ' WHERE';
 		}
 		
@@ -133,7 +156,22 @@ class MR_Rating_Results_Table extends WP_List_Table {
 			$added_to_query = true;
 		}
 		
+		if ( $sort_by == 'post_title_asc' || $sort_by == 'post_title_desc' ) {
+			if ($added_to_query) {
+				$query .= ' AND';
+			}
+				
+			$query .= ' rie.post_id = p.ID';
+			$added_to_query = true;
+		}
+		
 		$query .= ' GROUP BY rie.post_id';
+		
+		if ( $sort_by == 'post_title_asc' ) {
+			$query .= ' ORDER BY post_title ASC';
+		} else if ( $sort_by == 'post_title_desc' ) {
+			$query .= ' ORDER BY post_title DESC';
+		}
 		
 		// pagination
 		$item_count = $wpdb->query( $query ); //return the total number of affected rows
@@ -155,7 +193,83 @@ class MR_Rating_Results_Table extends WP_List_Table {
 				'per_page' => $items_per_page
 		) );
 		
-		$this->items = $wpdb->get_results( $query, ARRAY_A );
+		$results =  $wpdb->get_results( $query, ARRAY_A );
+		
+		if ( $sort_by == 'top_rating_results' ) {
+			
+			$this->items = array();
+
+			foreach ( $results as $row ) {
+				$post_id = $row['post_id'];
+				
+				$rating_items = Multi_Rating_API::get_rating_items( array(
+						'post_id' => $post_id
+				) );
+				$rating_result = Multi_Rating_API::calculate_rating_result( array(
+						'post_id' => $post_id,
+						'rating_items' => $rating_items
+				) );
+				
+				$row['rating_result'] = $rating_result;
+				
+				array_push($this->items, $row);
+			}
+			
+			uasort( $this->items, array( 'MR_Rating_Results_Table' , 'sort_top_rating_results' ) );
+		} else if ( $sort_by == 'most_entries' ) {
+			
+			$this->items = array();
+			
+			foreach ( $results as $row ) {
+				$post_id = $row['post_id'];
+				
+				global $wpdb;
+				$query = $query = 'SELECT COUNT(*) FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME 
+						. ' WHERE post_id = "' . $post_id . '"';
+				$count = $wpdb->get_col( $query, 0 );
+				
+				$row['entries_count'] = $count[0];
+				
+				array_push( $this->items, $row);
+			}
+			
+			uasort( $this->items, array( 'MR_Rating_Results_Table' , 'sort_most_entries' ) );
+		} else {
+			$this->items = $results;
+		}
+	}
+	
+	/**
+	 * Helper to sort by top rating results
+	 *
+	 * @param unknown_type $a
+	 * @param unknown_type $b
+	 */
+	private static function sort_top_rating_results( $a, $b ) {
+	
+		$rating_result_a = $a['rating_result'];
+		$rating_result_b = $b['rating_result'];
+		
+		if ( $rating_result_a['adjusted_percentage_result'] == $rating_result_b['adjusted_percentage_result'] ) {
+			return 0;
+		}
+	
+		return ( $rating_result_a['adjusted_percentage_result'] > $rating_result_b['adjusted_percentage_result'] ) ? -1 : 1;
+	}
+	
+	/**
+	 * Helper to sort by most entries
+	 *
+	 * @param unknown_type $a
+	 * @param unknown_type $b
+	 */
+	private static function sort_most_entries( $a, $b ) {
+		
+		if ( $a['entries_count'] == $b['entries_count'] ) {
+			return 0;
+		}
+	
+		return ( $a['entries_count'] > $b['entries_count'] ) ? -1 : 1;
 	}
 
 	/**
@@ -214,11 +328,11 @@ class MR_Rating_Results_Table extends WP_List_Table {
 				
 				$entries = $rating_result['count'];
 				if ($entries != 0) {
-					echo __('Star: ', 'multi-rating' ) . round( $rating_result['adjusted_star_result'], 2 ) . '/5<br />'
-							. __('Score: ', 'multi-rating' ) . round( $rating_result['adjusted_score_result'], 2) . '/' . $rating_result['total_max_option_value'] . '<br />' 
-							. __('Percentage: ', 'multi-rating' ) . round( $rating_result['adjusted_percentage_result'], 2) . '%';				
+					echo __('Star: ', 'multi-rating' ) . '<span style="color: #0074a2;">' . round( $rating_result['adjusted_star_result'], 2 ) . '/5</span><br />'
+							. __('Score: ', 'multi-rating' ) . '<span style="color: #0074a2;">' . round( $rating_result['adjusted_score_result'], 2) . '/' . $rating_result['total_max_option_value'] . '</span><br />' 
+							. __('Percentage: ', 'multi-rating' ) . '<span style="color: #0074a2;">' . round( $rating_result['adjusted_percentage_result'], 2) . '%</span>';				
 				} else {
-					echo 'None';	
+					_e( 'None', 'multi-rating' );	
 				}
 				break;
 			}

@@ -98,7 +98,7 @@ jQuery(document).ready(function() {
 	// supporting different versions of Font Awesome icons
 	var icon_classes = jQuery.parseJSON(mr_frontend_data.icon_classes);
 	
-	jQuery(".star-rating-select .mr-star-empty, .star-rating-select .mr-star-full").click(function(e) {
+	jQuery(".mr-star-rating-select .mr-star-empty, .mr-star-rating-select .mr-star-full").click(function(e) {
 		
 		updateRatingItemStatus(this, 'clicked');
 		
@@ -109,7 +109,7 @@ jQuery(document).ready(function() {
 		updateSelectedHiddenValue(this);
 	});
 	
-	jQuery(".star-rating-select .mr-minus").click(function(e) {
+	jQuery(".mr-star-rating-select .mr-minus").click(function(e) {
 		
 		updateRatingItemStatus(this, '');
 		
@@ -120,7 +120,7 @@ jQuery(document).ready(function() {
 		updateSelectedHiddenValue(this);
 	});
 	
-	jQuery(".star-rating-select .mr-minus, .star-rating-select .mr-star-empty, .star-rating-select .mr-star-full").hover(function(e) {
+	jQuery(".mr-star-rating-select .mr-minus, .mr-star-rating-select .mr-star-empty, .mr-star-rating-select .mr-star-full").hover(function(e) {
 
 		var elementId = getRatingItemElementId(this);
 		var ratingItemIdSequence = getRatingItemIdSequence(elementId);
@@ -145,7 +145,7 @@ jQuery(document).ready(function() {
 		touch : null
 	};
 	
-	jQuery(".star-rating-select .mr-star-empty, .star-rating-select .mr-star-full, .star-rating-select .mr-minus").on("touchstart", function(e) {
+	jQuery(".mr-star-rating-select .mr-star-empty, .mr-star-rating-select .mr-star-full, .mr-star-rating-select .mr-minus").on("touchstart", function(e) {
 		touchData.started = new Date().getTime();
 		var touch = e.originalEvent.touches[0];
 		touchData.previousXCoord = touch.pageX;
@@ -153,7 +153,7 @@ jQuery(document).ready(function() {
 		touchData.touch = touch;
 	});
 	
-	jQuery(".star-rating-select .mr-star-empty, .star-rating-select .mr-star-full, .star-rating-select .mr-minus").on(
+	jQuery(".mr-star-rating-select .mr-star-empty, .mr-star-rating-select .mr-star-full, .mr-star-rating-select .mr-minus").on(
 			"touchend touchcancel",
 			function(e) {
 				var now = new Date().getTime();

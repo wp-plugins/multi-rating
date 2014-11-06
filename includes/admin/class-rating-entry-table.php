@@ -266,9 +266,9 @@ class MR_Rating_Entry_Table extends WP_List_Table {
 			case MR_Rating_Entry_Table::RATING_RESULT_COLUMN :
 				$rating_result = Multi_Rating_API::calculate_rating_item_entry_result( $item[ MR_Rating_Entry_Table::RATING_ITEM_ENTRY_ID_COLUMN ], null );
 				
-				echo __('Star: ', 'multi-rating' )  . round( $rating_result['adjusted_star_result'], 2 ) . '/5<br />' 
-					 . __('Score: ', 'multi-rating' )	. round( $rating_result['adjusted_score_result'], 2) . '/' . $rating_result['total_max_option_value'] . '<br />'
-					 . __('Percentage: ', 'multi-rating' ) . round( $rating_result['adjusted_percentage_result'], 2) . '%';
+				echo __('Star: ', 'multi-rating' ) . '<span style="color: #0074a2;">' . round( $rating_result['adjusted_star_result'], 2 ) . '/5</span><br />'
+						. __('Score: ', 'multi-rating' ) . '<span style="color: #0074a2;">' . round( $rating_result['adjusted_score_result'], 2) . '/' . $rating_result['total_max_option_value'] . '</span><br />' 
+						. __('Percentage: ', 'multi-rating' ) . '<span style="color: #0074a2;">' . round( $rating_result['adjusted_percentage_result'], 2) . '%</span>';				
 				break;
 			
 			case MR_Rating_Entry_Table::ACTION_COLUMN :

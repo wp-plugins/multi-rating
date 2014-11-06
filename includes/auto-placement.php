@@ -10,7 +10,7 @@ function mr_filter_the_content( $content ) {
 
 	$general_settings = ( array ) get_option( Multi_Rating::GENERAL_SETTINGS );
 
-	if ( ! in_the_loop() || is_admin() )
+	if ( ! in_the_loop() || ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) )
 		return $content;
 
 	// get the post id
@@ -88,7 +88,7 @@ function mr_filter_the_title( $title ) {
 
 	$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 
-	if ( ! in_the_loop() || is_admin() )
+	if ( ! in_the_loop() || ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) )
 		return $title;
 
 	// get the post id

@@ -86,7 +86,7 @@ class MR_Rating_Form {
 			$font_awesome_version = $style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION];
 			$icon_classes = MR_Utils::get_icon_classes( $font_awesome_version );
 				
-			$html .= '<span class="star-rating star-rating-select">';
+			$html .= '<span class="mr-star-rating mr-star-rating-select">';
 	
 			// add star icons
 			$index = 0;

@@ -17,7 +17,7 @@ class MR_Settings {
 	 */
 	function __construct() {
 	
-		if ( is_admin() ) {
+		if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 			add_action('admin_init', array( &$this, 'register_settings' ) );			
 		}
 	
@@ -70,6 +70,8 @@ class MR_Settings {
 				Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION 			=> __( 'Please rate this', 'multi-rating' ),
 				Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION 		=> __( 'Top Rating Results', 'multi-rating' ),
 				Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION		=> __( 'Submit Rating', 'multi-rating' ),
+				Multi_Rating::FILTER_BUTTON_TEXT_OPTION					=> __( 'Filter', 'multi-rating' ),
+				Multi_Rating::CATEGORY_LABEL_TEXT_OPTION				=> __( 'Category', 'multi-rating' ),
 				Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION => __( 'Your rating was %adjusted_star_result%/5.', 'multi-rating'),
 				Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION 		=> __( 'You cannot submit a rating form for the same post multiple times.', 'multi-rating' ),
 				Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION 			=> __( 'No rating results yet', 'multi-rating' )
@@ -316,7 +318,7 @@ class MR_Settings {
 	function field_star_rating_colour() {	
 		$star_rating_colour = $this->style_settings[Multi_Rating::STAR_RATING_COLOUR_OPTION];
 		?>
-   	 	<input class="color-picker" type="text" id="star-rating-colour" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STAR_RATING_COLOUR_OPTION; ?>]; ?>" value="<?php echo $star_rating_colour; ?>" />
+   	 	<input class="color-picker" type="text" id="mr-star-rating-colour" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STAR_RATING_COLOUR_OPTION; ?>]; ?>" value="<?php echo $star_rating_colour; ?>" />
 		<?php 
 	}
 	
@@ -326,7 +328,7 @@ class MR_Settings {
 	function field_star_rating_hover_colour() {
 		$star_rating_hover_colour = $this->style_settings[Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION];
 		?>
-	 	 	<input class="color-picker" type="text" id="star-rating-hover-colour" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION; ?>]; ?>" value="<?php echo $star_rating_hover_colour; ?>" />
+	 	 	<input class="color-picker" type="text" id="mr-star-rating-hover-colour" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION; ?>]; ?>" value="<?php echo $star_rating_hover_colour; ?>" />
 		<?php 
 	}
 	
@@ -361,6 +363,8 @@ class MR_Settings {
 		add_settings_field( Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION, __( 'Rating form title', 'multi-rating' ), array( &$this, 'field_rating_form_title_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION, __( 'Top Rating Results title', 'multi-rating' ), array( &$this, 'field_top_rating_results_title_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION, __( 'Rating form submit button text', 'multi-rating' ), array( &$this, 'field_rating_form_submit_button_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::FILTER_BUTTON_TEXT_OPTION, __( 'Filter button text', 'multi-rating' ), array( &$this, 'field_filter_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::CATEGORY_LABEL_TEXT_OPTION, __( 'Category label text', 'multi-rating' ), array( &$this, 'field_category_label_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION, __( 'Rating form submit success message', 'multi-rating' ), array( &$this, 'field_rating_form_submit_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION, __( 'Date validation failure message', 'multi-rating' ), array( &$this, 'field_date_validation_fail_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION, __( 'No rating results text' , 'multi-rating' ), array( &$this, 'field_no_rating_results_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
@@ -382,7 +386,25 @@ class MR_Settings {
 		?>
 		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION]; ?>" />
 		<?php
-	}	
+	}
+
+	/**
+	 * Filter button text setting
+	 */
+	public function field_filter_button_text() {
+		?>
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::FILTER_BUTTON_TEXT_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::FILTER_BUTTON_TEXT_OPTION]; ?>" />
+		<?php
+	}
+		
+	/**
+	 * Category label text setting
+	 */
+	public function field_category_label_text() {
+		?>
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::CATEGORY_LABEL_TEXT_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::CATEGORY_LABEL_TEXT_OPTION]; ?>" />
+		<?php
+	}
 	
 	/**
 	 * Rating form submit message setting

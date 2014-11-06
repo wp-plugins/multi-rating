@@ -157,17 +157,7 @@ class Multi_Rating_API {
 		$rating_items = $params['rating_items'];
 		$post_id = $params['post_id'];
 
-	
-
-
-
-
-
 		$rating_item_entries = Multi_Rating_API::get_rating_item_entries( array(
-
-
-
-
 				'post_id' => $post_id 
 		) );
 			
@@ -297,7 +287,7 @@ class Multi_Rating_API {
 	/**
 	 * Gets rating item entries.
 	 *
-	 * @param array $params post_id, user_id, limit, from_date and to_date
+	 * @param array $params post_id, limit, from_date and to_date
 	 * @return rating item entries
 	 */
 	public static function get_rating_item_entries( $params = array() ) {
@@ -307,16 +297,38 @@ class Multi_Rating_API {
 				'user_id' => null,
 				'limit' => null,
 				'from_date' => null,
-				'to_date' => null
+				'to_date' => null,
+				'taxonomy' => null,
+				'term_id' => 0,
+				
+				// new
+				'published_posts_only' => true
 		) ) );	
 	
 		global $wpdb;
 	
-		$query = 'SELECT rie.rating_item_entry_id, rie.user_id, rie.post_id, rie.entry_date FROM '.$wpdb->prefix.Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' as rie';
-	
+		$query = 'SELECT rie.rating_item_entry_id, rie.user_id, rie.post_id, rie.entry_date';
+		
+		if ( $published_posts_only ) {
+			$query .= ', p.post_status ';
+		}
+
+		$query .= ' FROM '.$wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' as rie';
+
+		if ( $taxonomy != null || $published_posts_only ) {
+			$query .= ', ' . $wpdb->prefix . 'posts as p';
+		}
+		
+		if ( $taxonomy != null ) {
+			$query .= ' LEFT JOIN ' . $wpdb->prefix . 'term_relationships rel ON rel.object_id = p.ID';
+			$query .= ' LEFT JOIN ' . $wpdb->prefix . 'term_taxonomy tax ON tax.term_taxonomy_id = rel.term_taxonomy_id';
+			$query .= ' LEFT JOIN ' . $wpdb->prefix . 'terms t ON t.term_id = tax.term_id';
+		}
+		
 		$added_to_query = false;
 		// is a WHERE clause required?
-		if ( $post_id || $user_id ||$from_date || $to_date ) {
+		if ( $post_id || $user_id ||$from_date || $to_date || $taxonomy || $published_posts_only ) {
+
 			$query .= ' WHERE';
 		}
 	
@@ -338,6 +350,20 @@ class Multi_Rating_API {
 			$added_to_query = true;
 		}
 		
+		if ( $taxonomy ) {
+			if ($added_to_query) {
+				$query .= ' AND';
+			}
+			
+			$query .= ' p.ID = rie.post_id AND tax.taxonomy = "' . $taxonomy . '"';
+
+			if ( $term_id ) {
+			 	$query .= ' AND t.term_id IN (' . $term_id . ')';
+			}
+			 
+			$added_to_query = true;
+		}
+
 		if ( $from_date ) {
 			if ( $added_to_query ) {
 				$query .= ' AND';
@@ -355,17 +381,32 @@ class Multi_Rating_API {
 			$query .= ' rie.entry_date <= "' . $to_date . '"';
 			$added_to_query = true;
 		}
+		
+		// only return published posts
+		if ( $published_posts_only ) {
+			if ($added_to_query) {
+				$query .= ' AND';
+			}
+				
+			$query .= ' p.ID = rie.post_id AND p.post_status = "publish"';
+			$added_to_query = true;
+		}
+		
+		if ( $limit && is_numeric( $limit ) ) {
+			if ( intval( $limit ) > 0 ) {
+				$query .= ' LIMIT 0, ' . intval( $limit );
+			}
+		}
 	
-		$rating_item_entry_rows = $wpdb->get_results( $query );
+		$rows = $wpdb->get_results( $query );
 		
 		$rating_item_entries = array();
-		foreach ( $rating_item_entry_rows as $rating_item_entry_row ) {
-			
+		foreach ( $rows as $row ) {
 			$rating_item_entry = array(
-					'rating_item_entry_id' => $rating_item_entry_row->rating_item_entry_id,
-					'user_id' => $rating_item_entry_row->user_id,
-					'post_id' => $rating_item_entry_row->post_id,
-					'entry_date' => $rating_item_entry_row->entry_date
+					'rating_item_entry_id' => $row->rating_item_entry_id,
+					'user_id' => $row->user_id,
+					'post_id' => $row->post_id,
+					'entry_date' => $row->entry_date
 			);
 			
 			array_push( $rating_item_entries, $rating_item_entry );
@@ -737,6 +778,10 @@ class Multi_Rating_API {
 				'class' => '',
 				'taxonomy' => null,
 				'term_id' => 0, // 0 = All
+				
+				// new
+				'filter_button_text' => $custom_text_settings[Multi_Rating::FILTER_BUTTON_TEXT_OPTION ],
+				'category_label_text' => $custom_text_settings[Multi_Rating::CATEGORY_LABEL_TEXT_OPTION ]
 		) ) );
 	
 		if ( is_string( $show_count ) ) {
@@ -793,7 +838,9 @@ class Multi_Rating_API {
 				'result_type' => $result_type,
 				'class' => $class,
 				'term_id' => $term_id,
-				'taxonomy' => $taxonomy
+				'taxonomy' => $taxonomy,
+				'filter_button_text' => $filter_button_text,
+				'category_label_text' => $category_label_text
 		);
 		
 		ob_start();

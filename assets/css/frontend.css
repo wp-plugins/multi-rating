@@ -93,20 +93,20 @@ label.description + select, label.description input {
 label.description {
 	display: inline-block !important;
 }
-.star-rating-select .mr-minus {
+.mr-star-rating-select .mr-minus {
 	margin-right: 5px;
 }
 .rating-result a + .score-result, .rating-result a + .score-result + .count, 
 .rating-result a + .percentage-result, .rating-result a + .percentage-result + .count,
-.star-result + .count, .rating-result .star-rating + .star-result, .rating-result .star-result + .count, 
+.star-result + .count, .rating-result .mr-star-rating + .star-result, .rating-result .star-result + .count, 
 .rating-result .percentage-result + .count, .rating-result .score-result + .count, 
-.rating-result .star-rating, .star-rating + .star-result {
+.rating-result .mr-star-rating, .mr-star-rating + .star-result {
 	margin-left: 5px;
 }
 
 
 /* Rating Results */
-h1 .star-rating, h1 .star-result, h1 .no-rating-results-text, h1 .count  {
+h1 .mr-star-rating, h1 .star-result, h1 .no-rating-results-text, h1 .count  {
 	font-size: 65%;
 	text-transform: none;
 	font-weight: normal;
@@ -123,7 +123,7 @@ h1 .no-rating-results-text {
 	margin-left: 5px;
 }
 
-.rating-result .star-rating, .rating-result .star-result, .rating-result .count, .rating-result {
+.rating-result .mr-star-rating, .rating-result .star-result, .rating-result .count, .rating-result {
 	display: inline-block;
 }
 

@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: The best rating system plugin for WordPress. Multi Rating allows visitors to rate a post based on multiple criteria and questions.
-Version: 3.1
+Version: 3.1.1
 Author: Daniel Powney
 Author URI: http://danielpowney.com
 License: GPL2
@@ -37,7 +37,7 @@ class Multi_Rating {
 	 * Constants
 	 */
 	const
-	VERSION = '3.1',
+	VERSION = '3.1.1',
 	ID = 'multi-rating',
 
 	// tables
@@ -64,6 +64,8 @@ class Multi_Rating {
 	IP_ADDRESS_DATE_VALIDATION_OPTION			= 'mr_ip_address_date_validation',
 	POST_TYPES_OPTION							= 'mr_post_types',
 	SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION		= 'mr_rating_form_button_text',
+	FILTER_BUTTON_TEXT_OPTION					= 'mr_filter_button_text',
+	CATEGORY_LABEL_TEXT_OPTION					= 'mr_category_label_text',
 	RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION 	= 'mr_rating_form_submit_success_message',
 	DATE_VALIDATION_FAIL_MESSAGE_OPTION			= 'mr_date_validation_fail_message',
 	NO_RATING_RESULTS_TEXT_OPTION				= 'mr_no_rating_results_text',
@@ -116,7 +118,7 @@ class Multi_Rating {
 	
 			add_action( 'admin_enqueue_scripts', array( self::$instance, 'assets' ) );
 				
-			if ( is_admin() ) {
+			if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 	
 				add_action( 'admin_menu', array(self::$instance, 'add_admin_menus') );
 				add_action( 'admin_enqueue_scripts', array( self::$instance, 'admin_assets' ) );
@@ -132,14 +134,72 @@ class Multi_Rating {
 			self::$instance->includes();
 			self::$instance->settings = new MR_Settings();
 	
-			if ( is_admin() ) {
+			if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 				self::$instance->post_metabox = new MR_Post_Metabox();
+				
+				add_action( 'delete_user', array( self::$instance, 'delete_user' ), 11, 2 );
+				add_action( 'deleted_post', array( self::$instance, 'deleted_post' ) );
 			}
 				
 			self::$instance->add_ajax_callbacks();
 		}
 	
 		return Multi_Rating::$instance;
+	}
+	
+	/**
+	 * Delete all associated ratings by user id
+	 *
+	 * @param $user_id
+	 * @param $reassign user id
+	 */
+	public function delete_user( $user_id, $reassign ) {
+	
+		global $wpdb;
+	
+		if ( $reassign == null ) { 
+			// do nothing now has an invalid user id associated to it - oh well... decided not to delete the 
+			// rating as the user id is not displayed or used
+		} else { // reassign ratings to a user
+			$wpdb->update( $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME, array( 'user_id' => $reassign ), array( 'user_id' => $user_id ), array( '%d' ), array( '%d' ) );
+		}
+	}
+	
+	/**
+	 * Delete all associated ratings by post id
+	 *
+	 * @param $post_id
+	 */
+	public function deleted_post( $post_id ) {
+	
+		global $wpdb;
+	
+		$entry_query = 'SELECT rating_item_entry_id AS rating_entry_id '
+				. 'FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME
+				. ' WHERE post_id = "' . $post_id . '"';
+		$entries = $wpdb->get_results( $entry_query );
+	
+		$this->delete_entries( $entries );
+	}
+	
+	/**
+	 * Deletes entries from database including rating item values
+	 * 
+	 * @param $entries
+	 */
+	public function delete_entries( $entries ) {
+		
+		global $wpdb;
+		
+		foreach ( $entries as $entry_row ) {
+			$rating_entry_id = $entry_row->rating_entry_id;
+		
+			$delete_entry_query = 'DELETE FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' WHERE rating_item_entry_id = "' . $rating_entry_id . '"';
+			$results = $wpdb->query( $delete_entry_query );
+		
+			$delete_entry_values_query = 'DELETE FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_VALUE_TBL_NAME . ' WHERE rating_item_entry_id = "' . $rating_entry_id . '"';
+			$results = $wpdb->query( $delete_entry_values_query );
+		}
 	}
 
 	/**
@@ -396,7 +456,7 @@ class Multi_Rating {
  */
 function mr_activate_plugin() {
 	
-	if ( is_admin() ) {
+	if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 		add_option(MULTI_RATING::DO_ACTIVATION_REDIRECT_OPTION, true);
 		Multi_Rating::activate_plugin();
 	}
@@ -410,7 +470,7 @@ register_activation_hook( __FILE__, 'mr_activate_plugin' );
  */
 function mr_uninstall_plugin() {
 	
-	if ( is_admin() ) {
+	if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 		Multi_Rating::uninstall_plugin();
 	}
 }
@@ -418,8 +478,7 @@ register_uninstall_hook( __FILE__, 'mr_uninstall_plugin' );
 
 
 // check for updates
-if ( is_admin() ) {
-	
+if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 	require dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'update-check.php';
 	mr_update_check();
 }

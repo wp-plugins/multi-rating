@@ -5,8 +5,10 @@
  */
 function mr_display_rating_form( $atts = array() ) {
 	
-	if ( is_admin() )
+	$can_display_shortcode = ! ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) );
+	if ( ! apply_filters( 'mrp_can_display_shortcode', $can_display_shortcode, 'mrp_display_rating_form' ) ) {
 		return;
+	}
 	
 	// get post id
 	global $post;
@@ -50,8 +52,10 @@ add_shortcode( 'display_rating_form', 'mr_display_rating_form' );
  */
 function mr_display_rating_result( $atts = array() ) {
 
-	if (is_admin())
+	$can_display_shortcode = ! ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) );
+	if ( ! apply_filters( 'mrp_can_display_shortcode', $can_display_shortcode, 'mrp_display_rating_result' ) ) {
 		return;
+	}
 	
 	// get post id
 	global $post;
@@ -113,8 +117,10 @@ add_shortcode( 'display_rating_result', 'mr_display_rating_result' );
  */
 function mr_display_top_rating_results( $atts = array() ) {
 
-	if (is_admin())
+	$can_display_shortcode = ! ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) );
+	if ( ! apply_filters( 'mrp_can_display_shortcode', $can_display_shortcode, 'mrp_display_top_rating_results' ) ) {
 		return;
+	}
 	
 	$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 	$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
@@ -133,7 +139,11 @@ function mr_display_top_rating_results( $atts = array() ) {
 			'class' => '',
 			'category_id' => 0, // 0 = All,
 			'taxonomy' => 'category',
-			'term_id' => 0, // 0 = All
+			'term_id' => 0, // 0 = All,
+			
+			// new
+			'filter_button_text' => $custom_text_settings[Multi_Rating::FILTER_BUTTON_TEXT_OPTION ],
+			'category_label_text' => $custom_text_settings[Multi_Rating::CATEGORY_LABEL_TEXT_OPTION ]
 	), $atts ) );
 	
 	if (is_string( $show_category_filter ) ) {
@@ -162,7 +172,9 @@ function mr_display_top_rating_results( $atts = array() ) {
 			'before_title' => $before_title,
 			'after_title' => $after_title,
 			'taxonomy' => $taxonomy,
-			'term_id' => $term_id, // 0 = All
+			'term_id' => $term_id, // 0 = All,
+			'filter_button_text' => $filter_button_text,
+			'category_label_text' => $category_label_text
 	) );
 }
 add_shortcode( 'display_top_rating_results', 'mr_display_top_rating_results' );

@@ -69,7 +69,7 @@ function mr_about_screen() {
 	<div class="wrap about-wrap">
 			<h1><?php printf( __( 'Multi Rating v%s', 'multi-rating' ), Multi_Rating::VERSION ); ?></h1>
 		
-		<div class="about-text"><?php _e( 'The simplest rating plugin which allows visitors to rate a post based on multiple criteria and questions.', 'multi-rating' ); ?></div>
+		<div class="about-text"><?php _e( 'The best rating system plugin for WordPress.', 'multi-rating' ); ?></div>
 			<h2 class="nav-tab-wrapper">
 			<?php
 			$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'getting_started';
