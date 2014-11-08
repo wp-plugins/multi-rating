@@ -76,7 +76,7 @@ class MR_Rating_Result {
 				$html .= MR_Rating_Result::get_rating_result_type_html( $rating_result, array(
 						'show_date' => false,
 						'show_title' => false,
-						'show_count' => true,
+						'show_count' => $show_count,
 						'result_type' => $result_type
 				) );
 				$html .= '</td>';

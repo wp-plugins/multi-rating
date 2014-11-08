@@ -80,13 +80,18 @@ Full documentation available here http://danielpowney.com/multi-rating/
 1. Demo of rating results after page title, rating form and top rating results
 2. View rating results in WP-admin
 3. Edit post page in WP-admin showing Multi Rating meta box and shortcode sample in visual editor
-4. Rating items table
+4. Rating items
 5. Add a new rating item
 6. Top Rating Results widget
-7. Rating result details including values
+7. Entries tab
 8. Settings page
+9. Reports page
 
 == Changelog ==
+
+= 3.1.2 =
+* Fixed show_count parameter not set correctly when displaying the top rating results
+* Fixed filter button text callback defect
 
 = 3.1.1 =
 * Fixed rounding of star result to 2 decimals
