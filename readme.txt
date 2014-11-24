@@ -54,6 +54,7 @@ The following key features are available in the Pro version:
 * Multiple rating forms with different rating items
 * WordPress comments system integration
 * Add custom fields to collect additional information
+* Ratings moderation (approve or unapprove rating entries)
 * Logged in users can update or delete their existing ratings
 * New shortcodes, API functions and widgets (e.g. display user reviews and individual rating item results)
 * Rating forms can optionally include a name, e-mail and comment fields
