@@ -187,7 +187,8 @@ function mr_about_screen() {
 		    <li><?php _e( 'Multiple rating forms with different rating items', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'WordPress comments system integration', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'Add custom fields to collect additional information', 'multi-rating' ); ?><span style="color: Red; font-size: 80%; margin-left: 5px;">(<?php _e('New', 'multi-rating' ); ?>)</span></li>
-		    <li><?php _e( 'Logged in users can update or delete their existing ratings', 'multi-rating' ); ?></li>
+		    <li><?php _e( 'Ratings moderation (approve or unapprove rating entries)', 'multi-rating' ); ?></li>
+			<li><?php _e( 'Logged in users can update or delete their existing ratings', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'New shortcodes, API functions and widgets (e.g. display user reviews and individual rating item results)', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'Rating forms can optionally include a name, e-mail and comment fields', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'Ability to use text descriptions for select and radio options instead of numbers', 'multi-rating' ); ?></li>
