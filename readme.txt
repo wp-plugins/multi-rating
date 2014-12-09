@@ -90,6 +90,9 @@ Full documentation available here http://danielpowney.com/multi-rating/
 
 == Changelog ==
 
+= 3.1.4 =
+* Fixed auto placement issue - undefined content in mrp_can_apply_filter
+
 = 3.1.3 =
 * Added settings to upload your own star rating images to use instead of Font Awesome star icons
 * Added after_auto_placement action hook
