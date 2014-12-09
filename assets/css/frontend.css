@@ -68,7 +68,7 @@ div.rating-form form table .action {
 	display: inline-block !important;
 }
 
-p.mrp {
+p.mr {
 	margin: 0 0 10px !important;
 	display: block;
 }
@@ -96,28 +96,12 @@ label.description {
 .mr-star-rating-select .mr-minus {
 	margin-right: 5px;
 }
-.rating-result a + .score-result, .rating-result a + .score-result + .count, 
-.rating-result a + .percentage-result, .rating-result a + .percentage-result + .count,
-.star-result + .count, .rating-result .mr-star-rating + .star-result, .rating-result .star-result + .count, 
-.rating-result .percentage-result + .count, .rating-result .score-result + .count, 
-.rating-result .mr-star-rating, .mr-star-rating + .star-result {
-	margin-left: 5px;
-}
 
+.rating-result > .count, .rating-result a + *, .mr-star-rating + .star-result {
+	margin-left: 3px;
+}
 
 /* Rating Results */
-h1 .mr-star-rating, h1 .star-result, h1 .no-rating-results-text, h1 .count  {
-	font-size: 65%;
-	text-transform: none;
-	font-weight: normal;
-	display: inline-block;
-	margin-left: 5px;
-	text-align: left;
-	vertical-align: top;
-}
-h1 .no-rating-results-text {
-	display: inline;
-}
 .rating-result-summary {
 	display: inline-block;
 	margin-left: 5px;
@@ -143,47 +127,57 @@ h1 .no-rating-results-text {
 	vertical-align: top;
 }
 
+p.mr label, .top-rating-results tr td label { 
+	margin-bottom: 0px;
+}
+.top-rating-results tr td {
+	padding: 0 0 10px !important;
+}
+.top-rating-results table {
+	margin-top: 10px !important;
+}
+
+
 
 /* Top Rating Results */
+.top-rating-results table {
+	width: auto !important;
+}
 .top-rating-results table tbody tr td {
-	vertical-align: top;
+	vertical-align: center;
 }
 .top-rating-results table tbody tr + tr td {
 	margin-top: 2px;
 }
-.top-rating-results .rank, .top-rating-results .rating-result, .top-rating-results .title, .top-rating-results .count {
-	margin-right: 5px;
+.top-rating-results .rank, .top-rating-results .rating-result {
+	margin-right: 10px;
+	line-height: 1.4em;
+}
+.top-rating-results .title {
+	margin-right: 3px;
+}
+.top-rating-results .mr-featured-img { 
+	text-align: center;
+	padding-right: 10px !important;
 }
 .top-rating-results .star-result, .top-rating-results .count {
-	vertical-align: top;
+	vertical-align: center;
 }
 .top-rating-results .rating-result-row + .star-result {
 	margin-left: 5px;
 }
 
 
+
 /** 
  * Common
  */
-.user-rating-results, .top-rating-results, .rating-item-results  {
-	margin-top: 10px;
-	padding-bottom: 10px;
-}
-form.category-id-filter {
-	display: block;
-}
-form.category-id-filter label {
-	font-weight: normal;
-}
-form.category-id-filter select {
-	margin-left: 5px;
-}
-.category-id input[type=submit] {
-	margin-left: 5px;
-}
 .rating-item label.description {
 	margin-right: 5px;
 }
+
+
+
 /* Table styles */
 .top-rating-results table, .top-rating-results td, .top-rating-results th, .top-rating-results tr {
 	border: none;

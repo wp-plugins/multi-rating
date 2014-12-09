@@ -36,7 +36,7 @@ class MR_Rating_Form {
 		$html = '<div class="rating-form ' . $class . '">';
 		
 		if ( !empty( $title ) ) {
-			$html .=  $before_title . $title . $after_title;
+			$html .=  "$before_title" . $title . "$after_title";
 		}
 		
 		$html .= '<form name="rating-form-' . $post_id . '-' . MR_Rating_Form::$sequence . '" action="#">';
@@ -77,11 +77,13 @@ class MR_Rating_Form {
 		$max_option_value = $rating_item['max_option_value'];
 		$rating_item_type = $rating_item['type'];
 	
-		$html = '<p class="rating-item mrp"><label class="description" for="' . $element_id . '">' . $description . '</label>';
+		$html = '<p class="rating-item mr"><label class="description" for="' . $element_id . '">' . $description . '</label>';
 	
 		if ( $rating_item_type == "star_rating" ) {
 			
 			$style_settings = (array) get_option( Multi_Rating::STYLE_SETTINGS );
+			$use_custom_star_images = $style_settings[Multi_Rating::USE_CUSTOM_STAR_IMAGES];
+			
 			$star_rating_colour = $style_settings[Multi_Rating::STAR_RATING_COLOUR_OPTION];
 			$font_awesome_version = $style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION];
 			$icon_classes = MR_Utils::get_icon_classes( $font_awesome_version );
@@ -97,13 +99,26 @@ class MR_Rating_Form {
 					continue;
 				}
 				
-				$class = $icon_classes['star_full'];
-				// if default is less than current icon, it must be empty
-				if ( $default_option_value < $index ) {
-					$class = $icon_classes['star_empty'];
+				// use either custom star images or Font Awesome icons
+				if ( $use_custom_star_images == true ) {
+					$class = 'mr-star-full mr-custom-full-star';
+					// if default is less than current index, it must be empty
+					if ( $default_option_value < $index ) {
+						$class = 'mr-star-empty mr-custom-empty-star';
+					}
+					
+					$html .= '<span class="' . $class . ' index-' . $index . '-' . $element_id . '" style="text-align: left; display: inline-block;"></span>';
+				
+				} else {
+					$class = $icon_classes['star_full'];
+					// if default is less than current index, it must be empty
+					if ( $default_option_value < $index ) {
+						$class = $icon_classes['star_empty'];
+					}
+					
+					$html .= '<i class="' . $class . ' index-' . $index . '-' . $element_id . '"></i>';
 				}
 				
-				$html .= '<i class="' . $class . ' index-' . $index . '-' . $element_id . '"></i>';
 			}
 			
 			$html .= '</span>';
@@ -190,7 +205,7 @@ class MR_Rating_Form {
 			
 			$validation_results = MR_Utils::validate_ip_address_datetime_check( $validation_results, $post_id );
 			
-			$validation_results = apply_filters( 'mrp_after_rating_form_validation_save', $validation_results, $data );
+			$validation_results = apply_filters( 'mr_after_rating_form_validation_save', $validation_results, $data );
 			
 			if ( MR_Utils::has_validation_error( $validation_results ) ) {
 				echo json_encode( array (

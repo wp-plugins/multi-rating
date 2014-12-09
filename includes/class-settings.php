@@ -55,7 +55,14 @@ class MR_Settings {
 				Multi_Rating::STAR_RATING_COLOUR_OPTION 		=> '#ffd700',
 				Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION 	=> '#ffba00',
 				Multi_Rating::INCLUDE_FONT_AWESOME_OPTION 		=> true,
-				Multi_Rating::FONT_AWESOME_VERSION_OPTION 		=> '4.0.3'
+				Multi_Rating::FONT_AWESOME_VERSION_OPTION 		=> '4.0.3',
+				Multi_Rating::USE_CUSTOM_STAR_IMAGES			=> false,
+				Multi_Rating::CUSTOM_FULL_STAR_IMAGE			=> '',
+				Multi_Rating::CUSTOM_HALF_STAR_IMAGE			=> '',
+				Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE			=> '',
+				Multi_Rating::CUSTOM_HOVER_STAR_IMAGE			=> '',
+				Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH			=> 32,
+				Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT			=> 32,
 		), $this->style_settings );
 	
 	
@@ -111,8 +118,8 @@ class MR_Settings {
 	 * General section desciption
 	 */
 	function section_general_desc() {
-
 	}
+	
 	/**
 	 * IP address & date validation setting
 	 */
@@ -272,6 +279,7 @@ class MR_Settings {
 		add_settings_field( Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION, __( 'Star rating on hover color', 'multi-rating' ), array( &$this, 'field_star_rating_hover_colour' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
 		add_settings_field( Multi_Rating::INCLUDE_FONT_AWESOME_OPTION, __( 'Include loading Font Awesome', 'multi-rating' ), array( &$this, 'field_include_font_awesome' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
 		add_settings_field( Multi_Rating::FONT_AWESOME_VERSION_OPTION, __( 'Font Awesome version', 'multi-rating' ), array( &$this, 'field_font_awesome_version' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
+		add_settings_field( Multi_Rating::USE_CUSTOM_STAR_IMAGES, __( 'Use custom star images', 'multi-rating' ), array( &$this, 'field_use_custom_star_images' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
 	}
 	
 	/**
@@ -291,11 +299,86 @@ class MR_Settings {
 	}
 	
 	/**
+	 * Use custom star images
+	 */
+	function field_use_custom_star_images() {
+		?>
+		<input type="checkbox" id="use-custom-star-images" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::USE_CUSTOM_STAR_IMAGES; ?>]" value="true" <?php checked(true, $this->style_settings[Multi_Rating::USE_CUSTOM_STAR_IMAGES], true); ?> />
+		<p class="description"><?php _e( 'You can upload your own star images to use instead of the using the default Font Awesome star icons.', 'multi-rating' ); ?></p>
+
+		<div id="custom-star-images-details" <?php 
+		if ( $this->style_settings[Multi_Rating::USE_CUSTOM_STAR_IMAGES] == false ) {
+		 echo ' class="hidden"';
+		}
+		?>>		
+			<table>
+				<tbody>
+					<tr>
+						<td style="padding-left: 0px !important;"><label for="custom-full-star-img"><?php _e( 'Full star', 'multi-rating'); ?></label></td>
+						<td><input type="url" id="custom-full-star-img" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_FULL_STAR_IMAGE; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE]; ?>" readonly class="regular-text" /></td>
+						<td><input type="submit" name="custom-full-star-img-upload-btn" id="custom-full-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
+						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE]; ?>" id="custom-full-star-img-preview" 
+								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>
+						
+					</tr>
+					<tr>
+						<td style="padding-left: 0px !important;"><label for="custom-half-star-img"><?php _e( 'Half star', 'multi-rating'); ?></label></td>
+						<td><input type="url" id="custom-half-star-img" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_HALF_STAR_IMAGE; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE]; ?>" readonly class="regular-text" /></td>
+						<td><input type="submit" name="custom-half-star-img-upload-btn" id="custom-half-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
+						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE]; ?>" id="custom-half-star-img-preview" 
+								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>
+						
+					</tr>
+					<tr>
+						<td style="padding-left: 0px !important;"><label for="custom-empty-star-img"><?php _e( 'Empty star', 'multi-rating'); ?></label></td>
+						<td><input type="url" id="custom-empty-star-img" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE]; ?>" readonly class="regular-text" /></td>
+						<td><input type="submit" name="custom-empty-star-img-upload-btn" id="custom-empty-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
+						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE]; ?>" id="custom-empty-star-img-preview" 
+								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>
+						
+					</tr>
+					<tr>
+						<td style="padding-left: 0px !important;"><label for="custom-hover-star-img"><?php _e( 'Hover star', 'multi-rating'); ?></label></td>
+						<td><input type="url" id="custom-hover-star-img" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_HOVER_STAR_IMAGE; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_HOVER_STAR_IMAGE]; ?>" readonly class="regular-text" /></td>
+						<td><input type="submit" name="custom-hover-star-img-upload-btn" id="custom-hover-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
+						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_HOVER_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_HOVER_STAR_IMAGE]; ?>" id="custom-hover-star-img-preview" 
+								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>
+						
+					</tr>
+				</tbody>
+			</table>
+			
+			<table>
+				<tbody>
+					<tr>
+						<td style="padding-left: 0px !important;"><label for="custom-star-img-width"><?php _e( 'Image width', 'multi-rating' ); ?></label></td>
+						<td><input type="number" min="1" max="128" size="3" maxlength="3" id="custom-star-img-width" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>" class="small-text" />&nbsp;<?php _e( 'pixels', 'multi-rating'); ?></td>		
+						<td><label for="custom-star-img-height"><?php _e( 'Image height', 'multi-rating' ); ?></label></td>
+						<td><input type="number" min="1" max="128" size="3" maxlength="3" id="custom-star-img-height" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>" class="small-text" />&nbsp;<?php _e( 'pixels', 'multi-rating'); ?></td>	
+					</tr>
+				</tbody>
+			</table>
+			
+			<p class="description"><?php _e( 'Each image must be one star of the same size. Valid mime types are image/jpeg, image/png, image/bmp, image/tiff and image/x-icon.', 'multi-rating-pro' ); ?></p>
+			
+			<p><?php _e('Preview e.g. 2.5/5:', 'multi-rating'); ?>
+				<img src="<?php echo $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE]; ?>" width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px"/>
+				<img src="<?php echo $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE]; ?>" width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px"/>
+				<img src="<?php echo $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE]; ?>" width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px"/>
+				<img src="<?php echo $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE]; ?>" width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px"/>
+				<img src="<?php echo $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE]; ?>" width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px"/>
+			</p>
+		</div>
+		<?php
+	}
+	
+	/**
 	 * Which version of Font Awesome to use
 	 */
 	function field_font_awesome_version() {
 		?>
 		<select name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::FONT_AWESOME_VERSION_OPTION; ?>]">
+			<option value="4.2.0" <?php selected( '4.2.0', $this->style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION], true); ?>>4.2.0</option>
 			<option value="4.1.0" <?php selected( '4.1.0', $this->style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION], true); ?>>4.1.0</option>
 			<option value="4.0.3" <?php selected( '4.0.3', $this->style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION], true); ?>>4.0.3</option>
 			<option value="3.2.1" <?php selected( '3.2.1', $this->style_settings[Multi_Rating::FONT_AWESOME_VERSION_OPTION], true); ?>>3.2.1</option>
@@ -346,6 +429,56 @@ class MR_Settings {
 			$input[Multi_Rating::INCLUDE_FONT_AWESOME_OPTION] = true;
 		} else {
 			$input[Multi_Rating::INCLUDE_FONT_AWESOME_OPTION] = false;
+		}
+		
+		if ( isset( $input[Multi_Rating::USE_CUSTOM_STAR_IMAGES] ) && $input[Multi_Rating::USE_CUSTOM_STAR_IMAGES] == 'true' ) {
+			$input[Multi_Rating::USE_CUSTOM_STAR_IMAGES] = true;
+		} else {
+			$input[Multi_Rating::USE_CUSTOM_STAR_IMAGES] = false;
+		}
+		
+		if ( $input[Multi_Rating::USE_CUSTOM_STAR_IMAGES] == true ) {
+		
+			$style_settings = get_option( Multi_Rating::STYLE_SETTINGS);
+			
+			// make sure at least full, half and empty star images exist and are valid URL's
+			if ( filter_var( $input[Multi_Rating::CUSTOM_FULL_STAR_IMAGE], FILTER_VALIDATE_URL ) === false || 
+					filter_var( $input[Multi_Rating::CUSTOM_HALF_STAR_IMAGE], FILTER_VALIDATE_URL ) === false ||
+					filter_var( $input[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE], FILTER_VALIDATE_URL ) === false ) {
+				add_settings_error( Multi_Rating::STYLE_SETTINGS, 'validation_error_custom_images', __( 'Full star, half star and empty star custom images are required.', 'multi-rating' ), 'error' );
+			}
+			
+			// check file types
+			$valid_file_mime_types = array(
+					'image/jpeg',
+					'image/gif',
+					'image/png',
+					'image/bmp',
+					'image/tiff',
+					'image/x-icon'
+			);
+			if ( isset( $input[Multi_Rating::CUSTOM_FULL_STAR_IMAGE] ) ) {
+				$file_mime_type = wp_check_filetype( $input[Multi_Rating::CUSTOM_FULL_STAR_IMAGE] );
+				if ( ! in_array( $file_mime_type['type'], $valid_file_mime_types) ) {
+					add_settings_error( Multi_Rating::STYLE_SETTINGS, 'invalid_mime_type', __( 'Invalid image format. Valid mime types: image/jpeg, image/png, image/bmp, image/tiff and image/x-icon', 'multi-rating' ), 'error' );
+				}
+			}
+			
+			// check image height and width are valid numbers within 1 and 128
+			$custom_image_height = $input[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT];
+			$custom_image_width = $input[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH];
+			
+			if ( ! is_numeric( $custom_image_height) ) {
+				add_settings_error( Multi_Rating::STYLE_SETTINGS, 'non_numeric_custom_image_height', __( 'Custom image height must be numeric.', 'multi-rating' ), 'error' );
+			} else if ( intval($custom_image_height) < 1 || intval($custom_image_height) > 128 ) {
+				add_settings_error( Multi_Rating::STYLE_SETTINGS, 'range_error_custom_image_height', __( 'Custom image height cannot be less than 1 or greater than 128.', 'multi-rating' ), 'error' );
+			}
+		
+			if ( ! is_numeric($custom_image_width) ) {
+				add_settings_error( Multi_Rating::STYLE_SETTINGS, 'non_numeric_custom_image_width', __( 'Custom image width must be numeric.', 'multi-rating' ), 'error' );
+			} else if ( $custom_image_width < 1 || $custom_image_width > 128 ) {
+				add_settings_error( Multi_Rating::STYLE_SETTINGS, 'range_error_custom_image_width', __( 'Custom image width cannot be less than 1 or greater than 128.', 'multi-rating' ), 'error' );
+			}
 		}
 		
 		return $input;

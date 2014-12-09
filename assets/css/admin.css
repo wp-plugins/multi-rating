@@ -43,3 +43,9 @@ body.admin-color-classic .report-wrapper {
 #reports-form select {
 	max-width: 180px;
 }
+
+
+
+.clear-anchor {
+	margin-left: 10px;
+}

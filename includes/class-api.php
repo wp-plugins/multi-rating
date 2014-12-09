@@ -562,7 +562,7 @@ class Multi_Rating_API {
 				'taxonomy' => null,
 				'term_id' => 0,
 				'limit' => 10,
-				'result_type' => Multi_Rating::STAR_RATING_RESULT_TYPE
+				'result_type' => Multi_Rating::STAR_RATING_RESULT_TYPE,
 		) ) );
 		
 		if ( $term_id == 0 && $taxonomy != null ){
@@ -778,10 +778,10 @@ class Multi_Rating_API {
 				'class' => '',
 				'taxonomy' => null,
 				'term_id' => 0, // 0 = All
-				
-				// new
 				'filter_button_text' => $custom_text_settings[Multi_Rating::FILTER_BUTTON_TEXT_OPTION ],
-				'category_label_text' => $custom_text_settings[Multi_Rating::CATEGORY_LABEL_TEXT_OPTION ]
+				'category_label_text' => $custom_text_settings[Multi_Rating::CATEGORY_LABEL_TEXT_OPTION ],
+				'show_featured_img' => false,
+				'image_size' => 'thumbnail'
 		) ) );
 	
 		if ( is_string( $show_count ) ) {
@@ -798,6 +798,9 @@ class Multi_Rating_API {
 		}
 		if ( is_string( $show_title ) ) {
 			$show_title = $show_title == 'true' ? true : false;
+		}
+		if ( is_string( $show_featured_img ) ) {
+			$show_featured_img = $show_featured_img == 'true' ? true : false;
 		}
 		
 		// show the filter for categories
@@ -840,7 +843,9 @@ class Multi_Rating_API {
 				'term_id' => $term_id,
 				'taxonomy' => $taxonomy,
 				'filter_button_text' => $filter_button_text,
-				'category_label_text' => $category_label_text
+				'category_label_text' => $category_label_text,
+				'show_featured_img' => $show_featured_img,
+				'image_size' => $image_size
 		);
 		
 		ob_start();

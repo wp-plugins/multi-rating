@@ -3,11 +3,12 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: The best rating system plugin for WordPress. Multi Rating allows visitors to rate a post based on multiple criteria and questions.
-Version: 3.1.2
+Version: 3.1.3
 Author: Daniel Powney
 Author URI: http://danielpowney.com
 License: GPL2
 Text Domain: multi-rating
+Domain Path: languages
 */
 
 
@@ -37,7 +38,7 @@ class Multi_Rating {
 	 * Constants
 	 */
 	const
-	VERSION = '3.1.2',
+	VERSION = '3.1.3',
 	ID = 'multi-rating',
 
 	// tables
@@ -75,6 +76,13 @@ class Multi_Rating {
 	DO_ACTIVATION_REDIRECT_OPTION				= 'mr_do_activiation_redirect',
 	RATING_RESULTS_CACHE_OPTION					= 'mr_rating_results_cache',
 	HIDE_RATING_FORM_AFTER_SUBMIT_OPTION		= 'mr_hide_rating_form',
+	USE_CUSTOM_STAR_IMAGES						= 'mr_use_custom_star_images',
+	CUSTOM_FULL_STAR_IMAGE						= 'mr_custom_full_star_img',
+	CUSTOM_HALF_STAR_IMAGE						= 'mr_custom_half_star_img',
+	CUSTOM_EMPTY_STAR_IMAGE						= 'mr_custom_empty_star_img',
+	CUSTOM_HOVER_STAR_IMAGE						= 'mr_custom_hover_star_img',
+	CUSTOM_STAR_IMAGE_WIDTH						= 'mr_custom_star_img_width',
+	CUSTOM_STAR_IMAGE_HEIGHT					= 'mr_custom_star_img_height',
 	
 	//values
 	SCORE_RESULT_TYPE							= 'score',
@@ -376,6 +384,8 @@ class Multi_Rating {
     	// date picker
 		wp_enqueue_script('jquery-ui-datepicker');
 		wp_enqueue_style( 'jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css' );
+		
+		wp_enqueue_media();
 	}
 
 	/**
@@ -404,13 +414,16 @@ class Multi_Rating {
 				wp_enqueue_style( 'fontawesome', 'http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css' );
 			} else if ( $font_awesome_version == '4.1.0' ) {
 				wp_enqueue_style( 'fontawesome', 'http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css' );
+			} else if ( $font_awesome_version == '4.2.0' ) {
+				wp_enqueue_style( 'fontawesome', 'http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css' );
 			}
 		}
 		
 		$config_array = array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce' => wp_create_nonce( Multi_Rating::ID.'-nonce' ),
-				'icon_classes' => json_encode( $icon_classes )
+				'icon_classes' => json_encode( $icon_classes ),
+				'use_custom_star_images' => $style_settings[Multi_Rating::USE_CUSTOM_STAR_IMAGES]
 		);
 		
 		wp_enqueue_script( 'mr-frontend-script', plugins_url('assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'frontend.js', __FILE__), array('jquery'), Multi_Rating::VERSION, true );
@@ -438,8 +451,10 @@ class Multi_Rating {
 			
 			$star_rating_colour = $style_settings[Multi_Rating::STAR_RATING_COLOUR_OPTION];
 			$star_rating_hover_colour = $style_settings[Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION];
-			?>
 			
+			$this->get_custom_star_images_css();
+			?>
+
 			.mr-star-hover {
 				color: <?php echo $star_rating_hover_colour; ?> !important;
 			}
@@ -447,6 +462,53 @@ class Multi_Rating {
 				color: <?php echo $star_rating_colour; ?>;
 			}
 		</style>
+		<?php 
+	}
+	
+	/**
+	 * Helper function to get the custom star images CSS
+	 */
+	function get_custom_star_images_css() {
+	
+		$style_settings = (array) get_option( Multi_Rating::STYLE_SETTINGS );
+		echo $style_settings[Multi_Rating::CUSTOM_CSS_OPTION];
+	
+		$image_width = $style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH];
+		$image_height = $style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT];
+	
+		?>
+		.mr-custom-full-star {
+			background: url(<?php echo $style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE]; ?>) no-repeat;
+			width: <?php echo $image_width; ?>px;
+			height: <?php echo $image_height; ?>px;
+			background-size: <?php echo $image_width; ?>px <?php echo $image_height; ?>px;
+			image-rendering: -moz-crisp-edges;
+			display: inline-block;
+		}
+		.mr-custom-half-star {
+			background: url(<?php echo $style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE]; ?>) no-repeat;
+			width: <?php echo $image_width; ?>px;
+			height: <?php echo $image_height; ?>px;
+			background-size: <?php echo $image_width; ?>px <?php echo $image_height; ?>px;
+			image-rendering: -moz-crisp-edges;
+			display: inline-block;
+		}
+		.mr-custom-empty-star {
+			background: url(<?php echo $style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE]; ?>) no-repeat;
+			width: <?php echo $image_width; ?>px;
+			height: <?php echo $image_height; ?>px;
+			background-size: <?php echo $image_width; ?>px <?php echo $image_height; ?>px;
+			image-rendering: -moz-crisp-edges;
+			display: inline-block;
+		}
+		.mr-custom-hover-star {
+			background: url(<?php echo $style_settings[Multi_Rating::CUSTOM_HOVER_STAR_IMAGE]; ?>) no-repeat;
+			width: <?php echo $image_width; ?>px;
+			height: <?php echo $image_height; ?>px;
+			background-size: <?php echo $image_width; ?>px <?php echo $image_height; ?>px;
+			image-rendering: -moz-crisp-edges;		
+			display: inline-block;		
+		}
 		<?php 
 	}
 }

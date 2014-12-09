@@ -43,7 +43,7 @@ class MR_Utils {
 		
 		$icon_classes = array();
 		
-		if ( $font_awesome_version == '4.0.3' || $font_awesome_version == '4.1.0' ) {
+		if ( $font_awesome_version == '4.0.3' || $font_awesome_version == '4.1.0' || $font_awesome_version == '4.2.0' ) {
 			$icon_classes['star_full'] = 'fa fa-star mr-star-full';
 			$icon_classes['star_half'] = 'fa fa-star-half-o mr-star-half';
 			$icon_classes['star_empty'] = 'fa fa-star-o mr-star-empty';

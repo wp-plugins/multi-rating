@@ -69,7 +69,7 @@ function mr_about_screen() {
 	<div class="wrap about-wrap">
 			<h1><?php printf( __( 'Multi Rating v%s', 'multi-rating' ), Multi_Rating::VERSION ); ?></h1>
 		
-		<div class="about-text"><?php _e( 'The best rating system plugin for WordPress.', 'multi-rating' ); ?></div>
+		<div class="about-text"><?php _e( 'The best rating system plugin for WordPress.  Multi Rating allows visitors to rate a post based on multiple criteria and questions.', 'multi-rating' ); ?></div>
 			<h2 class="nav-tab-wrapper">
 			<?php
 			$current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'getting_started';
@@ -139,34 +139,44 @@ function mr_about_screen() {
 						<h4><?php _e( 'Custom Post Types', 'multi-rating' ); ?></h4>
 						<p><?php _e( 'If you want to use the plugin for pages and other post types you\'ll need to be enable them in the plugin settings.', 'multi-rating' ); ?></p>
 								
-						<h4><?php _e( 'Developer API', 'multi-rating' ); ?></h4>
-						<p><?php _e( 'The API functions are located in the class-api.php file which contains a static class called Multi_Rating_API.', 'multi-rating' ); ?></p>
-
 						<h4><?php _e( 'Custom Taxonomy', 'multi-rating' ); ?></h4>
 						<p><?php _e( 'Shortcodes and API support custom taxonomies e.g. [display_top_rating_results taxonomy="post_tag" term_id="1"]. The category_id attribute is a shortcut to taxonomy="category" and term_id="category_id".', 'multi-rating' ); ?></p>
-					</div>
-					<div>
+					
 						<h4><?php _e( 'I18n, WPML & Custom Text', 'multi-rating' ); ?></h4>
 						<p><?php _e( 'The plugin has been internationalized and is translation ready (.pot file in the languages directory). There\'s a WPML configuration file located in the languages directory for translating the custom text stored in the WP options table. You can also modify the default text and messages.', 'multi-rating' ); ?></p>
 			
-						<h4><?php _e( 'Rich Snippets', 'multi-rating' ); ?></h4>
-						<p><?php _e( '<a href="http://schema.org">schema.org</a> structured markup is be added to every page that allow search engines to display the aggregated rating results as rich snippets.', 'multi-rating' ); ?></p>										
-
-						<h4><?php _e( 'Action Hooks & Filters', 'multi-rating' ); ?></h4>
-						<p><?php _e( 'Developers can customize the default templates through action hooks and filters are availale for adding custom validation on rating form submit.', 'multi-rating' ); ?></p>										
 					</div>
-					<div class="last-feature">
+					<div>
+					
+						<h4><?php _e( 'Rich Snippets', 'multi-rating' ); ?></h4>
+						<p><?php _e( '<a href="http://schema.org">schema.org</a> structured markup is be added to every page that allow search engines to display the aggregated rating results as rich snippets.', 'multi-rating' ); ?></p>															
+						
+						
+						<h4><?php _e( 'Font Awesome', 'multi-rating' ); ?></h4>
+						<p><?php _e( 'Font Awesome versions 4.2.0, 4.1.0, 4.0.3 and 3.2.1 are supported by the plugin.', 'multi-rating' ); ?></p>	
+						
+						<h4><?php _e( 'Upload Custom Star Images', 'multi-rating' ); ?></h4>
+						<p><?php _e( 'You can upload your own star images to use instead of the using the default Font Awesome star icons.', 'multi-rating' ); ?></p>				
+					
 						<h4><?php _e( 'Export Rating Results', 'multi-rating' ); ?></h4>
 						<p><?php _e( 'You can export the rating results to a CSV file.', 'multi-rating' ); ?></p>
 						
+					</div>
+					<div class="last-feature">	
+					
 						<h4><?php _e( 'Reports' ); ?></h4>
 						<p><?php _e( 'You can view the number of rating entries per day over time.', 'multi-rating' ); ?></p>
 						
+										
 						<h4><?php _e( 'Meta-box', 'multi-rating' ); ?></h4>
 						<p><?php _e( 'There\'s a meta-box on the edit post page so that you can override the default settings (e.g. autu placement settings).', 'multi-rating' ); ?></p>
 					
-						<h4><?php _e( 'Font Awesome', 'multi-rating' ); ?></h4>
-						<p><?php _e( 'Font Awesome versions 4.1.0, 4.0.3 and 3.2.1 are supported by the plugin.', 'multi-rating' ); ?></p>	
+						<h4><?php _e( 'Developer API', 'multi-rating' ); ?></h4>
+						<p><?php _e( 'The API functions are located in the class-api.php file which contains a static class called Multi_Rating_API.', 'multi-rating' ); ?></p>
+						
+						<h4><?php _e( 'Action Hooks & Filters', 'multi-rating' ); ?></h4>
+						<p><?php _e( 'Developers can customize the default templates through action hooks and filters are availale for adding custom validation on rating form submit.', 'multi-rating' ); ?></p>										
+					
 					</div>
 			</div>
 			
@@ -187,7 +197,7 @@ function mr_about_screen() {
 		    <li><?php _e( 'Multiple rating forms with different rating items', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'WordPress comments system integration', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'Add custom fields to collect additional information', 'multi-rating' ); ?><span style="color: Red; font-size: 80%; margin-left: 5px;">(<?php _e('New', 'multi-rating' ); ?>)</span></li>
-		    <li><?php _e( 'Ratings moderation (approve or unapprove rating entries)', 'multi-rating' ); ?></li>
+		    <li><?php _e( 'Ratings moderation (approve or unapprove rating entries)', 'multi-rating' ); ?><span style="color: Red; font-size: 80%; margin-left: 5px;">(<?php _e('New', 'multi-rating' ); ?>)</span></li>
 			<li><?php _e( 'Logged in users can update or delete their existing ratings', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'New shortcodes, API functions and widgets (e.g. display user reviews and individual rating item results)', 'multi-rating' ); ?></li>
 		    <li><?php _e( 'Rating forms can optionally include a name, e-mail and comment fields', 'multi-rating' ); ?></li>

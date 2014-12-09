@@ -18,7 +18,7 @@ The best rating system plugin for WordPress. Multi Rating allows visitors to rat
 
 * 5 star ratings, percentage and score results
 * Multuple rating criteria and questions using star ratings, select drop-down lists and radio buttons to choose answers from
-* Font Awesome used for star rating icons
+* Font Awesome used for star rating icons or upload your own star rating images to use instead
 * Shortcodes to display the rating form, rating results and top rating results
 * schema.org structured markup is be added to every page that allow search engines to display the aggregated rating results as rich snippets
 * View the rating results, entries and selected values in the WP-admin
@@ -89,6 +89,14 @@ Full documentation available here http://danielpowney.com/multi-rating/
 9. Reports page
 
 == Changelog ==
+
+= 3.1.3 =
+* Added settings to upload your own star rating images to use instead of Font Awesome star icons
+* Added after_auto_placement action hook
+* Added mrp_can_apply_filter and mr_can_do_shortcode filters
+* Modified the Top Rating Results widget, [display_top_rating_results] shortcode and the display_top_rating_results() API function to be able to display the featured image of a post
+* Added more options to show feature image and thumbnail size to the Top Rating Results widget
+* Added Font Awesome 4.2.0 support
 
 = 3.1.2 =
 * Fixed show_count parameter not set correctly when displaying the top rating results

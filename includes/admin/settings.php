@@ -10,11 +10,12 @@ function mr_settings_screen() {
 		<h2><?php _e( 'Settings', 'multi-rating' ); ?></h2>
 		
 		<?php 
-		if ( isset( $_GET['updated'] ) && isset( $_GET['page'] ) ) {
-			add_settings_error('general', 'settings_updated', __( 'Settings saved.', 'multi-rating' ), 'updated');
-		}
 		
 		settings_errors();
+		
+		if ( count( $custom_settings_errors ) && isset( $_GET['updated'] ) && isset( $_GET['page'] ) ) {
+			add_settings_error('general', 'settings_updated', __( 'Settings saved.', 'multi-rating' ), 'updated');
+		}
 		
 		?>
 			<form method="post" name="<?php echo Multi_Rating::GENERAL_SETTINGS; ?>" action="options.php">

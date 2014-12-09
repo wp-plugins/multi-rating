@@ -10,8 +10,10 @@ function mr_filter_the_content( $content ) {
 
 	$general_settings = ( array ) get_option( Multi_Rating::GENERAL_SETTINGS );
 
-	if ( ! in_the_loop() || ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) )
+	$can_apply_filter = ! ( ! in_the_loop() || ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) );
+	if ( ! apply_filters( 'mrp_can_apply_filter', $can_apply_filter, 'the_content', $content ) ) {
 		return $content;
+	}
 
 	// get the post id
 	global $post;
@@ -68,10 +70,7 @@ function mr_filter_the_content( $content ) {
 		$filtered_content .= $rating_form;
 	}
 	
-	// only apply filter once.. hopefully, this is the post content...
-	if ( in_the_loop() && ( is_single() || is_page() || is_attachment() ) ) {
-		remove_filter( 'the_content', 'mr_filter_the_content' );
-	}
+	do_action( 'after_auto_placement', 'the_content', $post_id );
 
 	return $filtered_content;
 }
@@ -88,8 +87,10 @@ function mr_filter_the_title( $title ) {
 
 	$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
 
-	if ( ! in_the_loop() || ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) )
+	$can_apply_filter = ! ( ! in_the_loop() || ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) );
+	if ( ! apply_filters( 'mrp_can_apply_filter', $can_apply_filter, 'the_title', $content ) ) {
 		return $title;
+	}
 
 	// get the post id
 	global $post;
@@ -144,11 +145,25 @@ function mr_filter_the_title( $title ) {
 		$filtered_title .= $rating_result;
 	}
 	
-	// only apply filter once... hopefully, this is the post title...
-	if ( in_the_loop() && ( is_single() || is_page() || is_attachment() ) ) {
-		remove_filter( 'the_title', 'mr_filter_the_title' );
-	}
+	do_action( 'after_auto_placement', 'the_title', $post_id );
 
 	return $filtered_title;
 }
 add_filter( 'the_title', 'mr_filter_the_title' );
+
+
+
+/**
+ * Makes sure filter is only called once per post. Otherwise the rating results or rating form could be displayed
+ * multiple times depending on the theme compatibility. This filter can be removed eaisly if needed to suit your theme needs
+ *
+ * @param $filter
+ * @param $post_id
+ */
+function mr_check_auto_placement( $filter, $post_id )  {
+	// only apply filter once... hopefully, this is the post title...
+	if ( in_the_loop() && ( is_single() || is_page() || is_attachment() ) ) {
+		remove_filter( $filter, 'mr_filter_' . $filter );
+	}
+}
+add_action( 'after_auto_placement', 'mr_check_auto_placement', 10, 3);
