@@ -90,6 +90,9 @@ Full documentation available here http://danielpowney.com/multi-rating/
 
 == Changelog ==
 
+= 3.1.5 =
+* Removed undefined PHP variable notice in plugin settings page
+
 = 3.1.4 =
 * Fixed auto placement issue - undefined content in mrp_can_apply_filter
 

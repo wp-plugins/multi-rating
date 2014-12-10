@@ -13,7 +13,7 @@ function mr_settings_screen() {
 		
 		settings_errors();
 		
-		if ( count( $custom_settings_errors ) && isset( $_GET['updated'] ) && isset( $_GET['page'] ) ) {
+		if ( isset( $_GET['updated'] ) && isset( $_GET['page'] ) ) {
 			add_settings_error('general', 'settings_updated', __( 'Settings saved.', 'multi-rating' ), 'updated');
 		}
 		
