@@ -14,8 +14,38 @@ function mr_update_check() {
 	
 	if ( $previous_plugin_version != Multi_Rating::VERSION && $previous_plugin_version < 3.1 ) {
 		mr_upgrade_from_3_0_to_3_1();
+	}
 	
+	if ( $previous_plugin_version != Multi_Rating::VERSION && $previous_plugin_version < 3.2 ) {
+		mr_upgrade_to_3_2();
 		update_option( Multi_Rating::VERSION_OPTION, Multi_Rating::VERSION ); // latest version upgrade complete
+	}
+}
+
+/**
+ * Upgrade to 3.2
+ */
+function mr_upgrade_to_3_2() {
+	
+	try {
+		$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
+	
+		if ( isset( $general_settings['mr_ip_address_date_validation'] ) ) {
+			
+			$ip_address_date_validation = $general_settings['mr_ip_address_date_validation'];
+			$save_rating_restriction_types = array();
+			if ( $ip_address_date_validation == true ) {
+				$save_rating_restriction_types = array( 'ip_address' );
+			}
+			
+			$general_settings[Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION] = $save_rating_restriction_types;
+			unset( $general_settings['mr_ip_address_date_validation'] );
+		}
+		
+		update_option( Multi_Rating::GENERAL_SETTINGS, $general_settings);
+	
+	} catch (Exception $e) {
+		die( __( 'An error occured.', 'multi-rating' ) );
 	}
 }
 

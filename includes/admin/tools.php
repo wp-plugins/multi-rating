@@ -49,84 +49,90 @@ function mr_tools_screen() {
 			</div>
 		</div>
 		
-		<div class="metabox-holder">
-			<div class="postbox">
-				<h3><span><?php _e( 'Clear Database', 'multi-rating' ); ?></span></h3>
-				<div class="inside">
-					<p><?php _e( 'Delete rating results from the database.', 'multi-rating' ); ?></p>
-					
-					<form method="post" id="clear-database-form">
-						<p>
-							<input type="text" name="username" id="username" class="" autocomplete="off" placeholder="Username">
-							<input type="text" class="date-picker" autocomplete="off" name="from-date2" placeholder="From - dd/MM/yyyy" id="from-date2">
-							<input type="text" class="date-picker" autocomplete="off" name="to-date2" placeholder="To - dd/MM/yyyy" id="to-date2">
-							
-							<select name="post-id" id="post-id">
-								<option value=""><?php _e( 'All posts / pages', 'multi-rating' ); ?></option>
-								<?php	
-								global $wpdb;
-								$query = 'SELECT DISTINCT post_id FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME;
+		<?php 
+		
+		if ( current_user_can( 'manage_options' ) ) {
+			?>
+		
+			<div class="metabox-holder">
+				<div class="postbox">
+					<h3><span><?php _e( 'Clear Database', 'multi-rating' ); ?></span></h3>
+					<div class="inside">
+						<p><?php _e( 'Delete rating results from the database.', 'multi-rating' ); ?></p>
+						
+						<form method="post" id="clear-database-form">
+							<p>
+								<input type="text" name="username" id="username" class="" autocomplete="off" placeholder="Username">
+								<input type="text" class="date-picker" autocomplete="off" name="from-date2" placeholder="From - dd/MM/yyyy" id="from-date2">
+								<input type="text" class="date-picker" autocomplete="off" name="to-date2" placeholder="To - dd/MM/yyyy" id="to-date2">
 								
-								$rows = $wpdb->get_results( $query, ARRAY_A );
-								foreach ( $rows as $row ) {
-									$post = get_post( $row['post_id'] );
-									?>
-									<option value="<?php echo $post->ID; ?>">
-										<?php echo get_the_title( $post->ID ); ?>
-									</option>
-								<?php } ?>
-							</select>
-						</p>
-					
-						<p>
-							<input type="hidden" name="clear-database" id="clear-database" value="false" />
-							<?php 
-							submit_button( $text = __('Clear Database', 'multi-rating' ), $type = 'delete', $name = 'clear-database-btn', $wrap = false, $other_attributes = null );
-							?>
-						</p>
-					</form>
+								<select name="post-id" id="post-id">
+									<option value=""><?php _e( 'All posts / pages', 'multi-rating' ); ?></option>
+									<?php	
+									global $wpdb;
+									$query = 'SELECT DISTINCT post_id FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME;
+									
+									$rows = $wpdb->get_results( $query, ARRAY_A );
+									foreach ( $rows as $row ) {
+										$post = get_post( $row['post_id'] );
+										?>
+										<option value="<?php echo $post->ID; ?>">
+											<?php echo get_the_title( $post->ID ); ?>
+										</option>
+									<?php } ?>
+								</select>
+							</p>
+						
+							<p>
+								<input type="hidden" name="clear-database" id="clear-database" value="false" />
+								<?php 
+								submit_button( $text = __('Clear Database', 'multi-rating' ), $type = 'delete', $name = 'clear-database-btn', $wrap = false, $other_attributes = null );
+								?>
+							</p>
+						</form>
+					</div>
+				</div>
+			</div>
+			
+					<div class="metabox-holder">
+				<div class="postbox">
+					<h3><span><?php _e( 'Clear Cache', 'multi-rating' ); ?></span></h3>
+					<div class="inside">
+						<p><?php _e( 'Clear the cached rating results stored in the WordPress post meta table.', 'multi-rating' ); ?></p>
+						
+						<form method="post" id="clear-cache-form">
+							<p>
+								<select name="post-id" id="post-id">
+									<option value=""><?php _e( 'All posts / pages', 'multi-rating' ); ?></option>
+									<?php	
+									global $wpdb;
+									$query = 'SELECT DISTINCT post_id FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME;
+									
+									$rows = $wpdb->get_results( $query, ARRAY_A );
+				
+									foreach ( $rows as $row ) {
+										$post = get_post( $row['post_id'] );
+										?>
+										<option value="<?php echo $post->ID; ?>">
+											<?php echo get_the_title( $post->ID ); ?>
+										</option>
+									<?php } ?>
+								</select>
+							</p>
+							
+							<p>
+								<input type="hidden" name="clear-cache" id="clear-cache" value="false" />
+								<?php 
+								submit_button( __( 'Clear Cache', 'multi-rating' ), 'secondary', 'clear-cache-btn', false, null );
+								?>
+							</p>
+						</form>
+					</div><!-- .inside -->
 				</div>
 			</div>
 		</div>
-		
-				<div class="metabox-holder">
-			<div class="postbox">
-				<h3><span><?php _e( 'Clear Cache', 'multi-rating' ); ?></span></h3>
-				<div class="inside">
-					<p><?php _e( 'Clear the cached rating results stored in the WordPress post meta table.', 'multi-rating' ); ?></p>
-					
-					<form method="post" id="clear-cache-form">
-						<p>
-							<select name="post-id" id="post-id">
-								<option value=""><?php _e( 'All posts / pages', 'multi-rating' ); ?></option>
-								<?php	
-								global $wpdb;
-								$query = 'SELECT DISTINCT post_id FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME;
-								
-								$rows = $wpdb->get_results( $query, ARRAY_A );
-			
-								foreach ( $rows as $row ) {
-									$post = get_post( $row['post_id'] );
-									?>
-									<option value="<?php echo $post->ID; ?>">
-										<?php echo get_the_title( $post->ID ); ?>
-									</option>
-								<?php } ?>
-							</select>
-						</p>
-						
-						<p>
-							<input type="hidden" name="clear-cache" id="clear-cache" value="false" />
-							<?php 
-							submit_button( __( 'Clear Cache', 'multi-rating' ), 'secondary', 'clear-cache-btn', false, null );
-							?>
-						</p>
-					</form>
-				</div><!-- .inside -->
-			</div>
-		</div>
-	</div>
-	<?php
+		<?php
+	}
 }
 
 /**
@@ -187,6 +193,10 @@ function mr_export_rating_results() {
  */
 function mr_clear_database() {
 	
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	
 	$username = isset( $_POST['username'] ) ? $_POST['username'] : null;
 	$from_date = isset( $_POST['from-date2'] ) ? $_POST['from-date2'] : null;
 	$to_date = isset( $_POST['to-date2'] ) ? $_POST['to-date2'] : null;
@@ -239,6 +249,10 @@ function mr_clear_database() {
  * Clears rating results cache stored in the WordPress post meta table
  */
 function mr_clear_cache() {
+	
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
 
 	$post_id = isset( $_POST['post-id'] ) ? $_POST['post-id'] : null;
 

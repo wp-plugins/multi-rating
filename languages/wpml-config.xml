@@ -7,7 +7,7 @@
             <key name="mr_filter_button_text" />
             <key name="mr_category_label_text" />
             <key name="mr_rating_form_submit_success_message" />
-            <key name="mr_date_validation_fail_message" />
+            <key name="mr_save_rating_restriction_error_message" />
             <key name="mr_no_rating_results_text" />
         </key>
     </admin-texts>    

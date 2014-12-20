@@ -161,6 +161,9 @@ function mr_about_screen() {
 						<h4><?php _e( 'Export Rating Results', 'multi-rating' ); ?></h4>
 						<p><?php _e( 'You can export the rating results to a CSV file.', 'multi-rating' ); ?></p>
 						
+						<h4><?php _e( 'Edit Ratings', 'multi-rating' ); ?></h4>
+						<p><?php _e( 'Administrator and Editor user roles have the capability to edit ratings.', 'multi-rating' ); ?></p>
+						
 					</div>
 					<div class="last-feature">	
 					

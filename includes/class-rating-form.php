@@ -203,7 +203,8 @@ class MR_Rating_Form {
 			// stores any validation results, custom validation results can be added through filters
 			$validation_results = array();
 			
-			$validation_results = MR_Utils::validate_ip_address_datetime_check( $validation_results, $post_id );
+			// FIXME if I'm a logged in user, I can't update
+			$validation_results = MR_Utils::validate_save_rating_restricton( $validation_results, $post_id );
 			
 			$validation_results = apply_filters( 'mr_after_rating_form_validation_save', $validation_results, $data );
 			
@@ -238,6 +239,18 @@ class MR_Rating_Form {
 				), array('%d', '%d', '%d') );
 			}
 			
+			// Set cookie if restriction type is used
+			foreach ( $general_settings[Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION] as $save_rating_restriction_type ) {
+				if ( $save_rating_restriction_type == 'cookie' ) {
+					if( ! headers_sent() ) {
+						$save_rating_restriction_hours = $general_settings[Multi_Rating::SAVE_RATING_RESTRICTION_HOURS_OPTION];
+						setcookie(Multi_Rating::POST_SAVE_RATING_COOKIE . '-' . $post_id, true, time() + ( 60 * 60 * $save_rating_restriction_hours ), 
+								COOKIEPATH, COOKIE_DOMAIN, false, true);
+					}
+					break;
+				}
+			}
+			
 			$rating_items = Multi_Rating_API::get_rating_items( array( 'post_id' => $post_id ) );
 			
 			$rating_result  = Multi_Rating_API::calculate_rating_result( array(
@@ -259,7 +272,7 @@ class MR_Rating_Form {
 			$message = $custom_text_settings[ Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION];
 			if (strpos($message, '%') !== false) {
 				$message = MR_Utils::substitute_message( $message, $user, 
-						Multi_Rating_API::calculate_rating_item_entry_result($rating_item_entry_id, $rating_items ) );
+						Multi_Rating_API::calculate_rating_item_entry_result( $rating_item_entry_id, $rating_items ) );
 			}
 	
 			$data['rating_result'] = $rating_result;

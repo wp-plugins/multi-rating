@@ -3,7 +3,7 @@ Contributors: dpowney
 Donate link: http://www.danielpowney.com/donate
 Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippet, testimonial, review, hReview, multi rating, feedback, user rating
 Requires at least: 3.0.1
-Tested up to: 4.0
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -32,7 +32,7 @@ The best rating system plugin for WordPress. Multi Rating allows visitors to rat
 * Export rating results to CSV file
 * Custom taxonomy support
 * API functions & action hooks for using Multi Rating in your theme
-* Edit ratings in WP-admin
+* Edit ratings in WP-admin (Editor & Administrator user roles)
 
 Here's a live demo: http://danielpowney.com/multi-rating/
 
@@ -90,11 +90,15 @@ Full documentation available here http://danielpowney.com/multi-rating/
 
 == Changelog ==
 
+= 3.2 =
+* Refactored save rating restrictions to allow using cookies and or an IP address within a specified time in hours
+* Added edit_ratings capability to allow Editor role to be able to edit ratings
+
 = 3.1.5 =
 * Removed undefined PHP variable notice in plugin settings page
 
 = 3.1.4 =
-* Fixed auto placement issue - undefined content in mrp_can_apply_filter
+* Fixed auto placement issue - undefined content in mr_can_apply_filter
 
 = 3.1.3 =
 * Added settings to upload your own star rating images to use instead of Font Awesome star icons

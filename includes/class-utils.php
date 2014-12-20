@@ -84,42 +84,62 @@ class MR_Utils {
 	}
 	
 	/**
-	 * Perform IP address date/time validation check
+	 * Perform cookie and IP address restriction type checks
 	 *
 	 * @param array validation_results
 	 * @param int $post_id
 	 */
-	public static function validate_ip_address_datetime_check( $validation_results, $post_id ) {
+	public static function validate_save_rating_restricton( $validation_results, $post_id ) {
 	
 		$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
-		$ip_address_datetime_validation_check = $general_settings[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION];
-	
-		if ( $ip_address_datetime_validation_check == true ) {
-			global $wpdb;
-	
-			// check IP address has not submitted a rating for the post ID within 24 hours
-			$ip_address = MR_Utils::get_ip_address();
-			$entry_date_mysql = current_time('mysql');
-				
-			$previous_day_date = strtotime( $entry_date_mysql ) - ( 1 * 1 * 24 * 60 * 60 );
-			$previous_day_date_mysql = date( 'Y-m-d H:i:s', $previous_day_date );
-	
-			$ip_address_check_query = 'SELECT * FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' WHERE ip_address = "'
-					. $ip_address . '" AND post_id =' . $post_id . ' AND entry_date >= "' . $previous_day_date_mysql . '"';
-			$rows = $wpdb->get_results( $ip_address_check_query );
-	
-			if ( count( $rows ) > 0 ) {
+		
+		$hours = $general_settings[Multi_Rating::SAVE_RATING_RESTRICTION_HOURS_OPTION];
+		$ip_address = MR_Utils::get_ip_address();
+		$save_rating_restriction_types = $general_settings[Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION];
+		
+		foreach ( $save_rating_restriction_types as $save_rating_restriction_type ) {
+			
+			if ( ( $save_rating_restriction_type == 'ip_address' && MR_Utils::ip_address_validation_check( $ip_address, $post_id, $hours ) == true )
+					|| ( $save_rating_restriction_type == 'cookie' && MR_Utils::cookie_validation_check( $post_id ) == true ) ) {
+					
 				$custom_text_settings = (array) get_option( Multi_Rating::CUSTOM_TEXT_SETTINGS );
-	
+				
 				array_push( $validation_results, array(
-						'severity' => 'error',
-						'name' => 'ip_address_datetime_error',
-						'message' => $custom_text_settings[ Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION ]
-				) );
+							'severity' => 'error',
+							'name' => 'save_rating_restriction_error',
+							'message' => $custom_text_settings[ Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION ]
+					) );
 			}
-		}
+		} 
 	
 		return $validation_results;
+	}
+	
+	/**
+	 * Checks whether save rating cookie exists for a post
+	 * 
+	 * @param $post_id
+	 */
+	public static function cookie_validation_check( $post_id ) {
+		return isset($_COOKIE[Multi_Rating::POST_SAVE_RATING_COOKIE . '-' . $post_id]);
+	}
+
+	/**
+	 * Check IP address has not saved a rating form with the post ID within specified hours
+	 */
+	public static function ip_address_validation_check( $ip_address, $post_id, $hours ) {
+		global $wpdb;
+
+		$entry_date_mysql = current_time('mysql');
+		
+		$previous_day_date = strtotime( $entry_date_mysql ) - ( 1 * 1 * 60 * 60 * $hours );
+		$previous_day_date_mysql = date( 'Y-m-d H:i:s', $previous_day_date );
+		
+		$ip_address_check_query = 'SELECT * FROM ' . $wpdb->prefix . Multi_Rating::RATING_ITEM_ENTRY_TBL_NAME . ' WHERE ip_address = "'
+				. $ip_address . '" AND post_id =' . $post_id . ' AND entry_date >= "' . $previous_day_date_mysql . '"';
+		$rows = $wpdb->get_results( $ip_address_check_query );
+		
+		return ( count( $rows ) > 0 );
 	}
 	
 	/**

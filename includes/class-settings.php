@@ -80,13 +80,14 @@ class MR_Settings {
 				Multi_Rating::FILTER_BUTTON_TEXT_OPTION					=> __( 'Filter', 'multi-rating' ),
 				Multi_Rating::CATEGORY_LABEL_TEXT_OPTION				=> __( 'Category', 'multi-rating' ),
 				Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION => __( 'Your rating was %adjusted_star_result%/5.', 'multi-rating'),
-				Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION 		=> __( 'You cannot submit a rating form for the same post multiple times.', 'multi-rating' ),
+				Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION => __( 'You cannot submit a rating form for the same post multiple times.', 'multi-rating' ),
 				Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION 			=> __( 'No rating results yet', 'multi-rating' )
 		), $this->custom_text_settings );
 	
 	
 		$this->general_settings = array_merge( array(
-				Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION 		=> true,
+				Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION		=> array( 'ip_address' ),
+				Multi_Rating::SAVE_RATING_RESTRICTION_HOURS_OPTION		=> 24,
 				Multi_Rating::POST_TYPES_OPTION 						=> 'post',
 				Multi_Rating::RATING_RESULTS_CACHE_OPTION				=> true,
 				Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION 		=> true,
@@ -108,8 +109,8 @@ class MR_Settings {
 	
 		add_settings_section( 'section_general', __( 'General Settings', 'multi-rating' ), array( &$this, 'section_general_desc' ), Multi_Rating::GENERAL_SETTINGS );
 	
-		add_settings_field( Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION, __( 'Rating form IP address & date validation', 'multi-rating' ), array( &$this, 'field_ip_address_date_validation' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 		add_settings_field( Multi_Rating::POST_TYPES_OPTION, __( 'Post types', 'multi-rating' ), array( &$this, 'field_post_types' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
+		add_settings_field( Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION, __( 'Save rating restriction', 'multi-rating' ), array( &$this, 'field_save_rating_restriction' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 		add_settings_field( Multi_Rating::RATING_RESULTS_CACHE_OPTION, __( 'Enable rating results cache', 'multi-rating' ), array( &$this, 'field_rating_results_cache' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 		add_settings_field( Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION, __( 'Hide rating form after submit', 'multi-rating' ), array( &$this, 'field_hide_rating_form_after_submit' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 	}
@@ -121,12 +122,32 @@ class MR_Settings {
 	}
 	
 	/**
-	 * IP address & date validation setting
+	 * Save rating restriction
 	 */
-	function field_ip_address_date_validation() {
+	function field_save_rating_restriction() {
+		
+		$save_rating_restrictions_types = array(
+				'ip_address' => __( 'IP Address', 'multi-rating' ), 
+				'cookie' => __( 'Cookie', 'multi-rating'
+		) );
+
+		$save_rating_restriction_types_checked = $this->general_settings[Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION];
+		foreach ( $save_rating_restrictions_types as $save_rating_restrictions_type => $save_rating_restrictions_label) {
+			echo '<input type="checkbox" name="' . Multi_Rating::GENERAL_SETTINGS . '[' . Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION . '][]" value="' . $save_rating_restrictions_type . '"';
+			if ( is_array($save_rating_restriction_types_checked ) ) {
+				if ( in_array($save_rating_restrictions_type, $save_rating_restriction_types_checked)) {
+					echo 'checked="checked"';
+				}
+			} else {
+				checked( $save_rating_restrictions_type, $save_rating_restriction_types_checked, true );
+			}
+			echo ' />&nbsp;<label class="checkbox-label">' . $save_rating_restrictions_label . '</label><br />';
+		}
 		?>
-		<input type="checkbox" name="<?php echo Multi_Rating::GENERAL_SETTINGS; ?>[<?php echo Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION; ?>]" value="true" <?php checked(true, $this->general_settings[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION], true); ?> />
-		<p class="description"><?php _e( 'Restrict the same IP address from submitting the same rating form for the same post multiple times.', 'multi-rating' ); ?></p>
+		<br />
+		<label><?php _e('Hours', 'multi-rating'); ?></label>&nbsp;<input class="small-text" type="number" min="1" name="<?php echo Multi_Rating::GENERAL_SETTINGS; ?>[<?php echo Multi_Rating::SAVE_RATING_RESTRICTION_HOURS_OPTION; ?>]" value="<?php echo $this->general_settings[Multi_Rating::SAVE_RATING_RESTRICTION_HOURS_OPTION]; ?>" />
+		<p class="description"><?php _e( 'Restrict saving a rating form for the same post multiple times. It is recommended to use both IP Address and cookie restriction types.', 'multi-rating' ); ?></p>
+		
 		<?php 
 	}
 	/**
@@ -138,12 +159,12 @@ class MR_Settings {
 	
 		foreach ( $post_types as $post_type ) {
 			echo '<input type="checkbox" name="' . Multi_Rating::GENERAL_SETTINGS . '[' . Multi_Rating::POST_TYPES_OPTION . '][]" value="' . $post_type . '"';
-			if (is_array($post_types_checked)) {
-				if (in_array($post_type, $post_types_checked)) {
+			if ( is_array( $post_types_checked ) ) {
+				if ( in_array( $post_type, $post_types_checked ) ) {
 					echo 'checked="checked"';
 				}
 			} else {
-				checked($post_type, $post_types_checked, true );
+				checked( $post_type, $post_types_checked, true );
 			}
 			echo ' />&nbsp;<label class="checkbox-label">' . $post_type . '</label>';
 		}
@@ -178,11 +199,20 @@ class MR_Settings {
 	 */
 	function sanitize_general_settings( $input ) {
 		
-		// ip address datetime validation
-		if ( isset( $input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] ) && $input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] == 'true' ) {
-			$input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] = true;
-		} else {
-			$input[Multi_Rating::IP_ADDRESS_DATE_VALIDATION_OPTION] = false;
+		if ( ! isset( $input[Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION] ) ) {
+			$input[Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION] = array();
+		}
+		
+		if ( count($input[Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION] ) > 0 ) {
+			if ( ! is_numeric( $input[Multi_Rating::SAVE_RATING_RESTRICTION_HOURS_OPTION] ) ) {
+				add_settings_error(Multi_Rating::GENERAL_SETTINGS, 'non_numeric_save_rating_restriction_hours', __( 'Save rating restriction hours must be numeric.', 'multi-rating' ) );
+			} else if ( $input[Multi_Rating::SAVE_RATING_RESTRICTION_HOURS_OPTION] <= 0 ){
+				add_settings_error(Multi_Rating::GENERAL_SETTINGS, 'invalid_save_rating_restriction_hours', __( 'Save rating restriction hours must be greater than 0.', 'multi-rating' ) );
+			}
+		}
+		
+		if ( ! isset( $input[Multi_Rating::POST_TYPES_OPTION] ) ) {
+			$input[Multi_Rating::POST_TYPES_OPTION] = array();
 		}
 		
 		// rating reulsts cache
@@ -221,7 +251,7 @@ class MR_Settings {
 	 */
 	function section_position_desc() {
 		?>
-		<p><?php _e( 'These settings allow you to automatically place the rating form and rating results on every post or page in default positions.', 'multi-rating' ); ?></p>
+		<p class="description"><?php _e( 'These settings allow you to automatically place the rating form and rating results on every post or page in default positions.', 'multi-rating' ); ?></p>
 		<?php
 	}
 	
@@ -304,7 +334,8 @@ class MR_Settings {
 	function field_use_custom_star_images() {
 		?>
 		<input type="checkbox" id="use-custom-star-images" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::USE_CUSTOM_STAR_IMAGES; ?>]" value="true" <?php checked(true, $this->style_settings[Multi_Rating::USE_CUSTOM_STAR_IMAGES], true); ?> />
-		<p class="description"><?php _e( 'You can upload your own star images to use instead of the using the default Font Awesome star icons.', 'multi-rating' ); ?></p>
+		<p class="description"><?php _e( 'You can upload your own star images to use instead of the using the default Font Awesome star icons.', 'multi-rating' ); ?><br />
+		<?php printf( __( '<a href="%1$s" target="_blank">Learn how to setup your own Custom Star Rating images.</a>', 'multi-rating' ), 'http://danielpowney.com/docs/add-custom-star-rating-images/' ); ?></p>
 
 		<div id="custom-star-images-details" <?php 
 		if ( $this->style_settings[Multi_Rating::USE_CUSTOM_STAR_IMAGES] == false ) {
@@ -319,15 +350,13 @@ class MR_Settings {
 						<td><input type="submit" name="custom-full-star-img-upload-btn" id="custom-full-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
 						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE]; ?>" id="custom-full-star-img-preview" 
 								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>
-						
 					</tr>
 					<tr>
 						<td style="padding-left: 0px !important;"><label for="custom-half-star-img"><?php _e( 'Half star', 'multi-rating'); ?></label></td>
 						<td><input type="url" id="custom-half-star-img" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_HALF_STAR_IMAGE; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE]; ?>" readonly class="regular-text" /></td>
 						<td><input type="submit" name="custom-half-star-img-upload-btn" id="custom-half-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
 						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE]; ?>" id="custom-half-star-img-preview" 
-								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>
-						
+								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>						
 					</tr>
 					<tr>
 						<td style="padding-left: 0px !important;"><label for="custom-empty-star-img"><?php _e( 'Empty star', 'multi-rating'); ?></label></td>
@@ -335,7 +364,6 @@ class MR_Settings {
 						<td><input type="submit" name="custom-empty-star-img-upload-btn" id="custom-empty-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
 						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE]; ?>" id="custom-empty-star-img-preview" 
 								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>
-						
 					</tr>
 					<tr>
 						<td style="padding-left: 0px !important;"><label for="custom-hover-star-img"><?php _e( 'Hover star', 'multi-rating'); ?></label></td>
@@ -343,7 +371,6 @@ class MR_Settings {
 						<td><input type="submit" name="custom-hover-star-img-upload-btn" id="custom-hover-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
 						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_HOVER_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_HOVER_STAR_IMAGE]; ?>" id="custom-hover-star-img-preview" 
 								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>
-						
 					</tr>
 				</tbody>
 			</table>
@@ -499,7 +526,7 @@ class MR_Settings {
 		add_settings_field( Multi_Rating::FILTER_BUTTON_TEXT_OPTION, __( 'Filter button text', 'multi-rating' ), array( &$this, 'field_filter_button_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::CATEGORY_LABEL_TEXT_OPTION, __( 'Category label text', 'multi-rating' ), array( &$this, 'field_category_label_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION, __( 'Rating form submit success message', 'multi-rating' ), array( &$this, 'field_rating_form_submit_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
-		add_settings_field( Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION, __( 'Date validation failure message', 'multi-rating' ), array( &$this, 'field_date_validation_fail_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION, __( 'Save rating restriction error message', 'multi-rating' ), array( &$this, 'field_save_rating_restriction_error_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION, __( 'No rating results text' , 'multi-rating' ), array( &$this, 'field_no_rating_results_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		add_settings_field( Multi_Rating::CHAR_ENCODING_OPTION, __( 'Character encoding', 'multi-rating' ), array( &$this, 'field_char_encoding' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		
@@ -550,11 +577,11 @@ class MR_Settings {
 	}
 	
 	/**
-	 * Date validation failure message setting
+	 * Error message for the save rating restrictiong option
 	 */
-	public function field_date_validation_fail_message() {
+	public function field_save_rating_restriction_error_message() {
 		?>
-		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::DATE_VALIDATION_FAIL_MESSAGE_OPTION]; ?>" />
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION]; ?>" />
 		<?php
 	}
 	

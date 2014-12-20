@@ -317,7 +317,11 @@ class MR_Rating_Entry_Table extends WP_List_Table {
 	 */
 	function get_bulk_actions() {
 		
-		$bulk_actions = array( 'delete' => __('Delete', 'multi-rating') );
+		$bulk_actions = array(); 
+		
+		if ( current_user_can( 'manage_options' ) ) {
+			$bulk_actions = array_merge( array( 'delete' => __( 'Delete', 'multi-rating' ) ), $bulk_actions);
+		}
 		
 		return $bulk_actions;
 		
@@ -327,6 +331,10 @@ class MR_Rating_Entry_Table extends WP_List_Table {
 	 * Handles bulk actions
 	 */
 	function process_bulk_action() {
+		
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return; // should not get here
+		}
 		
 		if ( $this->current_action() === 'delete') {
 			

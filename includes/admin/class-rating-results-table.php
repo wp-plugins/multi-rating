@@ -102,14 +102,19 @@ class MR_Rating_Results_Table extends WP_List_Table {
 	 */
 	function get_columns() {
 		
-		return $columns= array(
-				MR_Rating_Results_Table::CHECKBOX_COLUMN => '<input type="checkbox" />',
+		$columns= array(
 				MR_Rating_Results_Table::POST_ID_COLUMN => __( 'Post', 'multi-rating' ),
 				MR_Rating_Results_Table::RATING_RESULT_COLUMN => __( 'Rating Result', 'multi-rating' ),
 				MR_Rating_Results_Table::ENTRIES_COUNT_COLUMN => __( 'Entries', 'multi-rating' ),
 				MR_Rating_Results_Table::ACTION_COLUMN => __( 'Action', 'multi-rating' ),
 				MR_Rating_Results_Table::SHORTCODE_COLUMN => __( 'Shortcode', 'multi-rating' )
 		);
+		
+		if ( current_user_can( 'manage_options' ) ) {
+			$columns = array_merge( array( MR_Rating_Results_Table::CHECKBOX_COLUMN => '<input type="checkbox" />' ), $columns );
+		}
+		
+		return $columns;
 	}
 
 	/**
@@ -120,8 +125,10 @@ class MR_Rating_Results_Table extends WP_List_Table {
 		global $wpdb;
 		
 		// Process any bulk actions first
-		$this->process_bulk_action();
-
+		if ( current_user_can( 'manage_options' ) ) {
+			$this->process_bulk_action();
+		}
+		
 		// Register the columns
 		$columns = $this->get_columns();
 		$hidden = array( );
@@ -363,9 +370,13 @@ class MR_Rating_Results_Table extends WP_List_Table {
 	 */
 	function get_bulk_actions() {
 		
-		$bulk_actions = array(
-				'delete'    => __( 'Delete', 'multi-rating' )
-		);
+		$bulk_actions = array();
+		
+		if ( current_user_can( 'manage_options' ) ) {
+			$bulk_actions = array(
+					'delete'    => __( 'Delete', 'multi-rating' )
+			);
+		}
 		
 		return $bulk_actions;
 	}
@@ -374,6 +385,10 @@ class MR_Rating_Results_Table extends WP_List_Table {
 	 * Handles bulk actions
 	 */
 	function process_bulk_action() {
+		
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return; // should not get here
+		}
 		
 		if ( $this->current_action() ==='delete' ) {
 			global $wpdb;

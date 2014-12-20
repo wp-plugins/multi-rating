@@ -3,7 +3,7 @@
 Plugin Name: Multi Rating
 Plugin URI: http://wordpress.org/plugins/multi-rating/
 Description: The best rating system plugin for WordPress. Multi Rating allows visitors to rate a post based on multiple criteria and questions.
-Version: 3.1.5
+Version: 3.2
 Author: Daniel Powney
 Author URI: http://danielpowney.com
 License: GPL2
@@ -38,7 +38,7 @@ class Multi_Rating {
 	 * Constants
 	 */
 	const
-	VERSION = '3.1.5',
+	VERSION = '3.2',
 	ID = 'multi-rating',
 
 	// tables
@@ -62,7 +62,6 @@ class Multi_Rating {
 	CHAR_ENCODING_OPTION 						= 'mr_char_encoding',
 	RATING_FORM_TITLE_TEXT_OPTION 				= 'mr_rating_form_title_text',
 	TOP_RATING_RESULTS_TITLE_TEXT_OPTION 		= 'mr_top_rating_results_title_text',
-	IP_ADDRESS_DATE_VALIDATION_OPTION			= 'mr_ip_address_date_validation',
 	POST_TYPES_OPTION							= 'mr_post_types',
 	SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION		= 'mr_rating_form_button_text',
 	FILTER_BUTTON_TEXT_OPTION					= 'mr_filter_button_text',
@@ -83,6 +82,9 @@ class Multi_Rating {
 	CUSTOM_HOVER_STAR_IMAGE						= 'mr_custom_hover_star_img',
 	CUSTOM_STAR_IMAGE_WIDTH						= 'mr_custom_star_img_width',
 	CUSTOM_STAR_IMAGE_HEIGHT					= 'mr_custom_star_img_height',
+	SAVE_RATING_RESTRICTION_TYPES_OPTION		= 'mr_save_rating_restriction_types',
+	SAVE_RATING_RESTRICTION_HOURS_OPTION		= 'mr_save_rating_restriction_hours',
+	SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION = 'mr_save_rating_restriction_error_message',
 	
 	//values
 	SCORE_RESULT_TYPE							= 'score',
@@ -110,8 +112,10 @@ class Multi_Rating {
 	// post meta box
 	RATING_FORM_POSITION_POST_META				= 'rating_form_position',
 	RATING_RESULTS_POSITION_POST_META			= 'rating_results_position',
+	RATING_RESULTS_POST_META_KEY				= 'mr_rating_results',
 	
-	RATING_RESULTS_POST_META_KEY				= 'mr_rating_results';
+	// cookies
+	POST_SAVE_RATING_COOKIE						= 'mrp_post_save_rating';
 	
 	/**
 	 *
@@ -292,6 +296,13 @@ class Multi_Rating {
 		) ENGINE=InnoDB AUTO_INCREMENT=1;';
 		dbDelta( $sql_create_rating_item_entry_value_tbl );
 		
+		// Adds mr_edit_ratings capability to allow Editor role to be able to edit ratings
+		$editor_role = get_role( 'editor' );
+		$administrator_role = get_role( 'administrator' );
+		
+		$editor_role->add_cap( 'mr_edit_ratings' );
+		$administrator_role->add_cap( 'mr_edit_ratings' );
+		
 	}
 	
 	/**
@@ -335,16 +346,16 @@ class Multi_Rating {
 	 */
 	public function add_admin_menus() {
 		
-		add_menu_page( __( 'Multi Rating', 'multi-rating' ), __( 'Multi Rating', 'multi-rating' ), 'manage_options', Multi_Rating::RATING_RESULTS_PAGE_SLUG, 'mr_rating_results_screen', '', null );
-		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, '', '', 'manage_options', Multi_Rating::RATING_RESULTS_PAGE_SLUG, 'mr_rating_results_screen' );
-		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Rating Results', 'multi-rating' ), __( 'Rating Results', 'multi-rating' ), 'manage_options', Multi_Rating::RATING_RESULTS_PAGE_SLUG, 'mr_rating_results_screen' );
-		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Rating Items', 'multi-rating' ), __( 'Rating Items', 'multi-rating' ),'manage_options', Multi_Rating::RATING_ITEMS_PAGE_SLUG, 'mr_rating_items_screen' );
+		add_menu_page( __( 'Multi Rating', 'multi-rating' ), __( 'Multi Rating', 'multi-rating' ), 'mr_edit_ratings', Multi_Rating::RATING_RESULTS_PAGE_SLUG, 'mr_rating_results_screen', '', null );
+		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, '', '', 'mr_edit_ratings', Multi_Rating::RATING_RESULTS_PAGE_SLUG, 'mr_rating_results_screen' );
+		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Rating Results', 'multi-rating' ), __( 'Rating Results', 'multi-rating' ), 'mr_edit_ratings', Multi_Rating::RATING_RESULTS_PAGE_SLUG, 'mr_rating_results_screen' );
+		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Rating Items', 'multi-rating' ), __( 'Rating Items', 'multi-rating' ), 'manage_options', Multi_Rating::RATING_ITEMS_PAGE_SLUG, 'mr_rating_items_screen' );
 		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Add New Rating Item', 'multi-rating' ), __( 'Add New Rating Item', 'multi-rating' ), 'manage_options', Multi_Rating::ADD_NEW_RATING_ITEM_PAGE_SLUG, 'mr_add_new_rating_item_screen' );
 		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Settings', 'multi-rating' ), __( 'Settings', 'multi-rating' ), 'manage_options', Multi_Rating::SETTINGS_PAGE_SLUG, 'mr_settings_screen' );
-		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Reports', 'multi-rating' ), __( 'Reports', 'multi-rating' ), 'manage_options', Multi_Rating::REPORTS_PAGE_SLUG, 'mr_reports_screen' );
-		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Tools', 'multi-rating' ), __( 'Tools', 'multi-rating' ), 'manage_options', Multi_Rating::TOOLS_PAGE_SLUG, 'mr_tools_screen' );
-		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'About', 'multi-rating' ), __( 'About', 'multi-rating' ), 'manage_options', Multi_Rating::ABOUT_PAGE_SLUG, 'mr_about_screen' );
-		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Edit Rating', 'multi-rating' ), '', 'manage_options', Multi_Rating::EDIT_RATING_PAGE_SLUG, 'mr_edit_rating_screen' );	
+		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Reports', 'multi-rating' ), __( 'Reports', 'multi-rating' ), 'mr_edit_ratings', Multi_Rating::REPORTS_PAGE_SLUG, 'mr_reports_screen' );
+		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Tools', 'multi-rating' ), __( 'Tools', 'multi-rating' ), 'mr_edit_ratings', Multi_Rating::TOOLS_PAGE_SLUG, 'mr_tools_screen' );
+		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'About', 'multi-rating' ), __( 'About', 'multi-rating' ), 'mr_edit_ratings', Multi_Rating::ABOUT_PAGE_SLUG, 'mr_about_screen' );
+		add_submenu_page( Multi_Rating::RATING_RESULTS_PAGE_SLUG, __( 'Edit Rating', 'multi-rating' ), '', 'mr_edit_ratings', Multi_Rating::EDIT_RATING_PAGE_SLUG, 'mr_edit_rating_screen' );	
 	}
 
 	/**
