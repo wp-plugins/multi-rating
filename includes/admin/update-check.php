@@ -26,6 +26,8 @@ function mr_update_check() {
  * Upgrade to 3.2
  */
 function mr_upgrade_to_3_2() {
+
+	Multi_Rating::activate_plugin();
 	
 	try {
 		$general_settings = (array) get_option( Multi_Rating::GENERAL_SETTINGS );
