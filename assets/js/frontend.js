@@ -1,5 +1,8 @@
 jQuery(document).ready(function() {	
 
+	// supporting different versions of Font Awesome icons
+	var icon_classes = jQuery.parseJSON(mr_frontend_data.icon_classes);
+	
 	jQuery(".rating-form :button").click(function(e) {
 	
 		var ratingItems = [];
@@ -35,10 +38,15 @@ jQuery(document).ready(function() {
 				postId : postId,
 				sequence : sequence
 			};
+		
+		var spinnerId = 'mr-spinner-' + postId +'-' + sequence;
+		
+		jQuery('<i style="margin-left: 10px;" id="' + spinnerId + '" class="' + icon_classes.spinner + '"></i>').insertAfter('input#' + btnId);
 	
-			jQuery.post(mr_frontend_data.ajax_url, data, function(response) {
-				handle_rating_form_submit_response(response);
-			});
+	
+		jQuery.post(mr_frontend_data.ajax_url, data, function(response) {
+			handle_rating_form_submit_response(response);
+		});
 	});
 	
 	/**
@@ -87,6 +95,9 @@ jQuery(document).ready(function() {
 		if ( jsonResponse.status == 'success' && jsonResponse.data.hide_rating_form == true && ratingForm) {
 			ratingForm.remove();
 		}
+
+		var spinnerId = 'mr-spinner-' + jsonResponse.data.post_id + "-" + jsonResponse.data.sequence;;
+		jQuery("#" + spinnerId).remove();
 	}
 	
 	
@@ -95,8 +106,6 @@ jQuery(document).ready(function() {
 	 */
 	var ratingItemStatus = {};
 	
-	// supporting different versions of Font Awesome icons
-	var icon_classes = jQuery.parseJSON(mr_frontend_data.icon_classes);
 	var useCustomStarImages = jQuery.parseJSON(mr_frontend_data.use_custom_star_images);
 	
 	jQuery(".mr-star-rating-select .mr-star-empty, .mr-star-rating-select .mr-star-full").click(function(e) {

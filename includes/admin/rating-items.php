@@ -89,8 +89,7 @@ function mr_add_new_rating_item_screen() {
 					<tr valign="top">
 						<th scope="row"><?php _e( 'Description', 'multi-rating' ); ?></th>
 						<td>
-							<textarea id="desciption" name="desciption" type="text" maxlength="255" cols="100" placeholder="<?php _e( 'Enter description' , 'multi-rating' ); ?>"></textarea>	
-							<p class="description"><?php _e( 'Enter a description.' , 'multi-rating' ); ?></p>
+							<textarea id="desciption" name="desciption" type="text" maxlength="255" cols="100" placeholder="<?php _e( 'Enter a description...' , 'multi-rating' ); ?>" required ></textarea>	
 						</td>
 					</tr>
 					<tr valign="top">
@@ -101,29 +100,29 @@ function mr_add_new_rating_item_screen() {
 								<option value="radio"><?php _e( 'Radio', 'multi-rating' ); ?></option>
 								<option value="star_rating"><?php _e( 'Star Rating', 'multi-rating' ); ?></option>
 							</select>
-						<p class="description"><?php _e( 'Do you want to use a select drop-down list, radio buttons or star rating icons from Font Awesome?', 'multi-rating' );?></p>
+						<label><?php _e( 'Do you want to use a select drop-down list, radio buttons or star rating icons from Font Awesome?', 'multi-rating' );?></label>
 						</td>
 					</tr>
 				<tr valign="top">
 						<th scope="row"><?php _e( 'Max Option Value', 'multi-rating' ); ?></th>
 						<td>
-							<input id="max-option-value" name="max-option-value" type="text" value="5" placeholder="<?php _e( 'Enter max option value' , 'multi-rating' ); ?>"/>
-							<p class="description"><?php _e( 'If the max option value is set to 5, then the rating item options would be 0, 1, 2, 3, 4 and 5.', 'multi-rating' ); ?></p>
+							<input id="max-option-value" name="max-option-value" type="number" value="5" min="0" placeholder="<?php _e( 'Enter max option value' , 'multi-rating' ); ?>" class="small-text" required />
+							<label><?php _e( 'If the max option value is set to 5, then the rating item options would be 0, 1, 2, 3, 4 and 5.', 'multi-rating' ); ?></label>
 						</td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><?php _e( 'Default Option Value', 'multi-rating' ); ?></th>
 						<td>
-							<input id="default-option-value" name="default-option-value" type="text" value="5" placeholder="<?php _e( 'Enter default option value' , 'multi-rating' ); ?>"/>
-							<p class="description"><?php _e( 'This is used to default the selected option value.' , 'multi-rating' ); ?></p>	
+							<input id="default-option-value" name="default-option-value" type="number" value="5" min="0" placeholder="<?php _e( 'Enter default option value' , 'multi-rating' ); ?>" class="small-text" required />
+							<label><?php _e( 'This is used to default the selected option value.' , 'multi-rating' ); ?></label>	
 						</td>
 						</td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><?php _e( 'Weight', 'multi-rating' ); ?></th>
 						<td>
-							<input id="weight" name="weight" type="text" value="1" placeholder="<?php _e( 'Enter weight', 'multi-rating' ); ?>" />
-							<p class="description"><?php _e( 'All rating items are rated equally by default. Modifying the weight of a rating item will adjust the rating results accordingly. Decimal values can be used.', 'multi-rating' ); ?></p>	
+							<input id="weight" name="weight" type="number" value="1" min="0" placeholder="<?php _e( 'Enter weight', 'multi-rating' ); ?>" class="small-text" required />
+							<label><?php _e( 'All rating items are rated equally by default. Modifying the weight of a rating item will adjust the rating results accordingly.', 'multi-rating' ); ?></label>	
 						</td>
 					</tr>
 				</tbody>

@@ -90,6 +90,10 @@ Full documentation available here http://danielpowney.com/multi-rating/
 
 == Changelog ==
 
+= 3.2.1 =
+* Added loading spinner when saving rating form
+* Improved styles in plugin settings page
+
 = 3.2 =
 * Refactored save rating restrictions to allow using cookies and or an IP address within a specified time in hours
 * Added edit_ratings capability to allow Editor role to be able to edit ratings

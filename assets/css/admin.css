@@ -49,3 +49,8 @@ body.admin-color-classic .report-wrapper {
 .clear-anchor {
 	margin-left: 10px;
 }
+
+div#custom-star-images-details td {
+	padding-bottom: 0px !important;
+	padding-top: 10px !important;
+}

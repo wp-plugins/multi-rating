@@ -109,10 +109,10 @@ class MR_Settings {
 	
 		add_settings_section( 'section_general', __( 'General Settings', 'multi-rating' ), array( &$this, 'section_general_desc' ), Multi_Rating::GENERAL_SETTINGS );
 	
-		add_settings_field( Multi_Rating::POST_TYPES_OPTION, __( 'Post types', 'multi-rating' ), array( &$this, 'field_post_types' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
-		add_settings_field( Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION, __( 'Save rating restriction', 'multi-rating' ), array( &$this, 'field_save_rating_restriction' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
-		add_settings_field( Multi_Rating::RATING_RESULTS_CACHE_OPTION, __( 'Enable rating results cache', 'multi-rating' ), array( &$this, 'field_rating_results_cache' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
-		add_settings_field( Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION, __( 'Hide rating form after submit', 'multi-rating' ), array( &$this, 'field_hide_rating_form_after_submit' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
+		add_settings_field( Multi_Rating::POST_TYPES_OPTION, __( 'Enabled Post Types', 'multi-rating' ), array( &$this, 'field_post_types' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
+		add_settings_field( Multi_Rating::SAVE_RATING_RESTRICTION_TYPES_OPTION, __( 'Rating Restriction', 'multi-rating' ), array( &$this, 'field_save_rating_restriction' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
+		add_settings_field( Multi_Rating::RATING_RESULTS_CACHE_OPTION, __( 'Rating Results Cache', 'multi-rating' ), array( &$this, 'field_rating_results_cache' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
+		add_settings_field( Multi_Rating::HIDE_RATING_FORM_AFTER_SUBMIT_OPTION, __( 'Hide Rating Form', 'multi-rating' ), array( &$this, 'field_hide_rating_form_after_submit' ), Multi_Rating::GENERAL_SETTINGS, 'section_general' );
 	}
 	
 	/**
@@ -144,9 +144,8 @@ class MR_Settings {
 			echo ' />&nbsp;<label class="checkbox-label">' . $save_rating_restrictions_label . '</label><br />';
 		}
 		?>
-		<br />
 		<label><?php _e('Hours', 'multi-rating'); ?></label>&nbsp;<input class="small-text" type="number" min="1" name="<?php echo Multi_Rating::GENERAL_SETTINGS; ?>[<?php echo Multi_Rating::SAVE_RATING_RESTRICTION_HOURS_OPTION; ?>]" value="<?php echo $this->general_settings[Multi_Rating::SAVE_RATING_RESTRICTION_HOURS_OPTION]; ?>" />
-		<p class="description"><?php _e( 'Restrict saving a rating form for the same post multiple times. It is recommended to use both IP Address and cookie restriction types.', 'multi-rating' ); ?></p>
+		<p><?php _e( 'Restrict saving a rating form for the same post multiple times.', 'multi-rating' ); ?></p>
 		
 		<?php 
 	}
@@ -168,10 +167,6 @@ class MR_Settings {
 			}
 			echo ' />&nbsp;<label class="checkbox-label">' . $post_type . '</label>';
 		}
-	
-		?>
-		<p class="description"><?php _e('Select the post types to be enabled.', 'multi-rating'); ?></p>
-		<?php 
 	}
 	/**
 	 * Rating results cache
@@ -179,7 +174,7 @@ class MR_Settings {
 	function field_rating_results_cache() {
 	?>
 		<input type="checkbox" name="<?php echo Multi_Rating::GENERAL_SETTINGS;?>[<?php echo Multi_Rating::RATING_RESULTS_CACHE_OPTION; ?>]" value="true" <?php checked(true, $this->general_settings[Multi_Rating::RATING_RESULTS_CACHE_OPTION], true); ?> />
-		<p class="description"><?php printf( __( 'Enable the rating results to be cached in the WordPress post meta table. The cache is refreshed whenever the rating form is submitted. You can also use the <a href="admin.php?page=%s">Tools</a> to clear the rating results cache.', 'multi-rating' ), Multi_Rating::TOOLS_PAGE_SLUG ); ?></p>
+		<label><?php printf( __( 'Enable the rating results to be cached in the WordPress post meta table. The cache is refreshed whenever the rating form is submitted. You can also use the <a href="admin.php?page=%s">Tools</a> to clear the rating results cache.', 'multi-rating' ), Multi_Rating::TOOLS_PAGE_SLUG ); ?></label>
 		<?php 
 	}
 	/**
@@ -242,8 +237,8 @@ class MR_Settings {
 	
 		add_settings_section( 'section_position', __( 'Auto Placement Settings', 'multi-rating' ), array( &$this, 'section_position_desc' ), Multi_Rating::POSITION_SETTINGS );
 	
-		add_settings_field( Multi_Rating::RATING_RESULTS_POSITION_OPTION, __( 'Rating results position', 'multi-rating' ), array( &$this, 'field_rating_results_position' ), Multi_Rating::POSITION_SETTINGS, 'section_position' );
-		add_settings_field( Multi_Rating::RATING_FORM_POSITION_OPTION, __( 'Rating form position', 'multi-rating' ), array( &$this, 'field_rating_form_position' ), Multi_Rating::POSITION_SETTINGS, 'section_position' );
+		add_settings_field( Multi_Rating::RATING_RESULTS_POSITION_OPTION, __( 'Rating Results Position', 'multi-rating' ), array( &$this, 'field_rating_results_position' ), Multi_Rating::POSITION_SETTINGS, 'section_position' );
+		add_settings_field( Multi_Rating::RATING_FORM_POSITION_OPTION, __( 'Rating Form Position', 'multi-rating' ), array( &$this, 'field_rating_form_position' ), Multi_Rating::POSITION_SETTINGS, 'section_position' );
 	}
 	
 	/**
@@ -265,7 +260,7 @@ class MR_Settings {
 			<option value="before_title" <?php selected( 'before_title', $this->position_settings[Multi_Rating::RATING_RESULTS_POSITION_OPTION], true ); ?>><?php _e( 'Before title', 'multi-rating' ); ?></option>
 			<option value="after_title" <?php selected( 'after_title', $this->position_settings[Multi_Rating::RATING_RESULTS_POSITION_OPTION], true ); ?>><?php _e( 'After title', 'multi-rating' ); ?></option>
 		</select>
-		<p class="description"><?php _e( 'Choose to automatically display the rating result before or after the post title for all enabled post types.', 'multi-rating' ); ?></p>
+		<label><?php _e( 'Choose to automatically display the rating result before or after the post title for all enabled post types.', 'multi-rating' ); ?></label>
 		<?php
 	}
 	
@@ -279,7 +274,7 @@ class MR_Settings {
 			<option value="before_content" <?php selected('before_content', $this->position_settings[Multi_Rating::RATING_FORM_POSITION_OPTION], true); ?>><?php _e( 'Before content', 'multi-rating' ); ?></option>
 			<option value="after_content" <?php selected('after_content', $this->position_settings[Multi_Rating::RATING_FORM_POSITION_OPTION], true); ?>><?php _e( 'After content', 'multi-rating' ); ?></option>
 		</select>
-		<p class="description"><?php _e( 'Choose to automatically display the rating form before or after the post content for all enabled post types.', 'multi-rating' ); ?></p>
+		<label><?php _e( 'Choose to automatically display the rating form before or after the post content for all enabled post types.', 'multi-rating' ); ?></label>
 		<?php
 	}
 	
@@ -305,11 +300,11 @@ class MR_Settings {
 		add_settings_section( 'section_style', __( 'Style Settings', 'multi-rating' ), array( &$this, 'section_style_desc' ), Multi_Rating::STYLE_SETTINGS );
 
 		add_settings_field( Multi_Rating::CUSTOM_CSS_OPTION, __( 'Custom CSS', 'multi-rating' ), array( &$this, 'field_custom_css' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
-		add_settings_field( Multi_Rating::STAR_RATING_COLOUR_OPTION, __( 'Star rating color', 'multi-rating' ), array( &$this, 'field_star_rating_colour' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
-		add_settings_field( Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION, __( 'Star rating on hover color', 'multi-rating' ), array( &$this, 'field_star_rating_hover_colour' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
-		add_settings_field( Multi_Rating::INCLUDE_FONT_AWESOME_OPTION, __( 'Include loading Font Awesome', 'multi-rating' ), array( &$this, 'field_include_font_awesome' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
-		add_settings_field( Multi_Rating::FONT_AWESOME_VERSION_OPTION, __( 'Font Awesome version', 'multi-rating' ), array( &$this, 'field_font_awesome_version' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
-		add_settings_field( Multi_Rating::USE_CUSTOM_STAR_IMAGES, __( 'Use custom star images', 'multi-rating' ), array( &$this, 'field_use_custom_star_images' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
+		add_settings_field( Multi_Rating::STAR_RATING_COLOUR_OPTION, __( 'Star Rating Color', 'multi-rating' ), array( &$this, 'field_star_rating_colour' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
+		add_settings_field( Multi_Rating::STAR_RATING_HOVER_COLOUR_OPTION, __( 'Star Rating On Hover Color', 'multi-rating' ), array( &$this, 'field_star_rating_hover_colour' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
+		add_settings_field( Multi_Rating::INCLUDE_FONT_AWESOME_OPTION, __( 'Load Font Awesome Library?', 'multi-rating' ), array( &$this, 'field_include_font_awesome' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
+		add_settings_field( Multi_Rating::FONT_AWESOME_VERSION_OPTION, __( 'Font Awesome Version', 'multi-rating' ), array( &$this, 'field_font_awesome_version' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
+		add_settings_field( Multi_Rating::USE_CUSTOM_STAR_IMAGES, __( 'Use Custom Star Images', 'multi-rating' ), array( &$this, 'field_use_custom_star_images' ), Multi_Rating::STYLE_SETTINGS, 'section_style' );
 	}
 	
 	/**
@@ -324,7 +319,7 @@ class MR_Settings {
 	function field_include_font_awesome() {
 		?>
 		<input type="checkbox" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::INCLUDE_FONT_AWESOME_OPTION; ?>]" value="true" <?php checked(true, $this->style_settings[Multi_Rating::INCLUDE_FONT_AWESOME_OPTION], true); ?> />
-		<p class="description"><?php _e( 'Do you want the plugin to include loading of the Font Awesome CSS?', 'multi-rating' ); ?></p>
+		<label><?php _e( 'Do you want the plugin to include loading of the Font Awesome CSS?', 'multi-rating' ); ?></label>
 		<?php
 	}
 	
@@ -334,39 +329,39 @@ class MR_Settings {
 	function field_use_custom_star_images() {
 		?>
 		<input type="checkbox" id="use-custom-star-images" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::USE_CUSTOM_STAR_IMAGES; ?>]" value="true" <?php checked(true, $this->style_settings[Multi_Rating::USE_CUSTOM_STAR_IMAGES], true); ?> />
-		<p class="description"><?php _e( 'You can upload your own star images to use instead of the using the default Font Awesome star icons.', 'multi-rating' ); ?><br />
-		<?php printf( __( '<a href="%1$s" target="_blank">Learn how to setup your own Custom Star Rating images.</a>', 'multi-rating' ), 'http://danielpowney.com/docs/add-custom-star-rating-images/' ); ?></p>
+		<label><?php _e( 'You can upload your own star images to use instead of the using the default Font Awesome star icons.', 'multi-rating' ); ?></label>
 
 		<div id="custom-star-images-details" <?php 
 		if ( $this->style_settings[Multi_Rating::USE_CUSTOM_STAR_IMAGES] == false ) {
 		 echo ' class="hidden"';
 		}
-		?>>		
+		?>>
+			<br />		
 			<table>
 				<tbody>
 					<tr>
-						<td style="padding-left: 0px !important;"><label for="custom-full-star-img"><?php _e( 'Full star', 'multi-rating'); ?></label></td>
+						<td style="padding-left: 0px !important;"><label for="custom-full-star-img"><?php _e( 'Full Star', 'multi-rating'); ?></label></td>
 						<td><input type="url" id="custom-full-star-img" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_FULL_STAR_IMAGE; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE]; ?>" readonly class="regular-text" /></td>
 						<td><input type="submit" name="custom-full-star-img-upload-btn" id="custom-full-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
 						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE]; ?>" id="custom-full-star-img-preview" 
 								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>
 					</tr>
 					<tr>
-						<td style="padding-left: 0px !important;"><label for="custom-half-star-img"><?php _e( 'Half star', 'multi-rating'); ?></label></td>
+						<td style="padding-left: 0px !important;"><label for="custom-half-star-img"><?php _e( 'Half Star', 'multi-rating'); ?></label></td>
 						<td><input type="url" id="custom-half-star-img" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_HALF_STAR_IMAGE; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE]; ?>" readonly class="regular-text" /></td>
 						<td><input type="submit" name="custom-half-star-img-upload-btn" id="custom-half-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
 						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE]; ?>" id="custom-half-star-img-preview" 
 								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>						
 					</tr>
 					<tr>
-						<td style="padding-left: 0px !important;"><label for="custom-empty-star-img"><?php _e( 'Empty star', 'multi-rating'); ?></label></td>
+						<td style="padding-left: 0px !important;"><label for="custom-empty-star-img"><?php _e( 'Empty Star', 'multi-rating'); ?></label></td>
 						<td><input type="url" id="custom-empty-star-img" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE]; ?>" readonly class="regular-text" /></td>
 						<td><input type="submit" name="custom-empty-star-img-upload-btn" id="custom-empty-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
 						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE]; ?>" id="custom-empty-star-img-preview" 
 								width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px";"/></td>
 					</tr>
 					<tr>
-						<td style="padding-left: 0px !important;"><label for="custom-hover-star-img"><?php _e( 'Hover star', 'multi-rating'); ?></label></td>
+						<td style="padding-left: 0px !important;"><label for="custom-hover-star-img"><?php _e( 'Hover Star', 'multi-rating'); ?></label></td>
 						<td><input type="url" id="custom-hover-star-img" name="<?php echo Multi_Rating::STYLE_SETTINGS; ?>[<?php echo Multi_Rating::CUSTOM_HOVER_STAR_IMAGE; ?>]" value="<?php echo $this->style_settings[Multi_Rating::CUSTOM_HOVER_STAR_IMAGE]; ?>" readonly class="regular-text" /></td>
 						<td><input type="submit" name="custom-hover-star-img-upload-btn" id="custom-hover-star-img-upload-btn" class="button" value="<?php _e('Upload', 'multi-rating' ); ?>"></td>
 						<td><img src="<?php if ( strlen( $this->style_settings[Multi_Rating::CUSTOM_HOVER_STAR_IMAGE] ) > 0 ) echo $this->style_settings[Multi_Rating::CUSTOM_HOVER_STAR_IMAGE]; ?>" id="custom-hover-star-img-preview" 
@@ -386,9 +381,9 @@ class MR_Settings {
 				</tbody>
 			</table>
 			
-			<p class="description"><?php _e( 'Each image must be one star of the same size. Valid mime types are image/jpeg, image/png, image/bmp, image/tiff and image/x-icon.', 'multi-rating-pro' ); ?></p>
-			
-			<p><?php _e('Preview e.g. 2.5/5:', 'multi-rating'); ?>
+			<br />
+			<p><?php _e( 'Each image must be one star of the same size. Valid mime types are image/jpeg, image/png, image/bmp, image/tiff and image/x-icon.', 'multi-rating-pro' ); ?><br />
+			<?php _e('Preview e.g. 2.5/5:', 'multi-rating'); ?>
 				<img src="<?php echo $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE]; ?>" width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px"/>
 				<img src="<?php echo $this->style_settings[Multi_Rating::CUSTOM_FULL_STAR_IMAGE]; ?>" width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px"/>
 				<img src="<?php echo $this->style_settings[Multi_Rating::CUSTOM_HALF_STAR_IMAGE]; ?>" width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px"/>
@@ -396,6 +391,7 @@ class MR_Settings {
 				<img src="<?php echo $this->style_settings[Multi_Rating::CUSTOM_EMPTY_STAR_IMAGE]; ?>" width="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_WIDTH]; ?>px" height="<?php echo $this->style_settings[Multi_Rating::CUSTOM_STAR_IMAGE_HEIGHT]; ?>px"/>
 			</p>
 		</div>
+		<p><?php printf( __( '<a href="%1$s" target="_blank">Learn how to setup your own Custom Star Rating images.</a>', 'multi-rating' ), 'http://danielpowney.com/docs/add-custom-star-rating-images/' ); ?></p>
 		<?php
 	}
 	
@@ -520,15 +516,15 @@ class MR_Settings {
 	
 		add_settings_section( 'section_custom_text', __('Custom Text Settings', 'multi-rating' ), array( &$this, 'section_custom_text_desc' ), Multi_Rating::CUSTOM_TEXT_SETTINGS );
 	
-		add_settings_field( Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION, __( 'Rating form title', 'multi-rating' ), array( &$this, 'field_rating_form_title_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
-		add_settings_field( Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION, __( 'Top Rating Results title', 'multi-rating' ), array( &$this, 'field_top_rating_results_title_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
-		add_settings_field( Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION, __( 'Rating form submit button text', 'multi-rating' ), array( &$this, 'field_rating_form_submit_button_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
-		add_settings_field( Multi_Rating::FILTER_BUTTON_TEXT_OPTION, __( 'Filter button text', 'multi-rating' ), array( &$this, 'field_filter_button_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
-		add_settings_field( Multi_Rating::CATEGORY_LABEL_TEXT_OPTION, __( 'Category label text', 'multi-rating' ), array( &$this, 'field_category_label_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
-		add_settings_field( Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION, __( 'Rating form submit success message', 'multi-rating' ), array( &$this, 'field_rating_form_submit_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
-		add_settings_field( Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION, __( 'Save rating restriction error message', 'multi-rating' ), array( &$this, 'field_save_rating_restriction_error_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
-		add_settings_field( Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION, __( 'No rating results text' , 'multi-rating' ), array( &$this, 'field_no_rating_results_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
-		add_settings_field( Multi_Rating::CHAR_ENCODING_OPTION, __( 'Character encoding', 'multi-rating' ), array( &$this, 'field_char_encoding' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::RATING_FORM_TITLE_TEXT_OPTION, __( 'Rating Form Title', 'multi-rating' ), array( &$this, 'field_rating_form_title_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::TOP_RATING_RESULTS_TITLE_TEXT_OPTION, __( 'Top Rating Results Title', 'multi-rating' ), array( &$this, 'field_top_rating_results_title_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::SUBMIT_RATING_FORM_BUTTON_TEXT_OPTION, __( 'Rating Form Submit Button Text', 'multi-rating' ), array( &$this, 'field_rating_form_submit_button_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::FILTER_BUTTON_TEXT_OPTION, __( 'Filter Button Text', 'multi-rating' ), array( &$this, 'field_filter_button_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::CATEGORY_LABEL_TEXT_OPTION, __( 'Category Label Text', 'multi-rating' ), array( &$this, 'field_category_label_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION, __( 'Rating Form Submit Success Message', 'multi-rating' ), array( &$this, 'field_rating_form_submit_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION, __( 'Rating Restriction Error Message', 'multi-rating' ), array( &$this, 'field_save_rating_restriction_error_message' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::NO_RATING_RESULTS_TEXT_OPTION, __( 'No Rating Results Text' , 'multi-rating' ), array( &$this, 'field_no_rating_results_text' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
+		add_settings_field( Multi_Rating::CHAR_ENCODING_OPTION, __( 'Character Encoding', 'multi-rating' ), array( &$this, 'field_char_encoding' ), Multi_Rating::CUSTOM_TEXT_SETTINGS, 'section_custom_text' );
 		
 	}
 	
@@ -571,7 +567,7 @@ class MR_Settings {
 	 */
 	public function field_rating_form_submit_message() {
 		?>
-		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION]; ?>" />
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION; ?>]" class="large-text" value="<?php echo $this->custom_text_settings[Multi_Rating::RATING_FORM_SUBMIT_SUCCESS_MESSAGE_OPTION]; ?>" />
 		<p class="description"><?php _e( 'Substitutions: %star_result%, %adjusted_star_result%, %score_result%, %adjusted_score_result%, %percentage_result%, %adjusted_percentage_result% and %total_max_option_value%. e.g. "Your rating was %adjusted_star_result%/5".', 'multi-rating' ); ?>
 		<?php
 	}
@@ -581,7 +577,7 @@ class MR_Settings {
 	 */
 	public function field_save_rating_restriction_error_message() {
 		?>
-		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION; ?>]" class="regular-text" value="<?php echo $this->custom_text_settings[Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION]; ?>" />
+		<input type="text" name="<?php echo Multi_Rating::CUSTOM_TEXT_SETTINGS; ?>[<?php echo Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION; ?>]" class="large-text" value="<?php echo $this->custom_text_settings[Multi_Rating::SAVE_RATING_RESTRICTION_ERROR_MESSAGE_OPTION]; ?>" />
 		<?php
 	}
 	

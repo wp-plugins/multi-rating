@@ -48,11 +48,13 @@ class MR_Utils {
 			$icon_classes['star_half'] = 'fa fa-star-half-o mr-star-half';
 			$icon_classes['star_empty'] = 'fa fa-star-o mr-star-empty';
 			$icon_classes['minus'] = 'fa fa-minus-circle mr-minus';
+			$icon_classes['spinner'] = 'fa fa-spinner fa-spin mr-spinner';
 		} else if ( $font_awesome_version == '3.2.1' ) {
 			$icon_classes['star_full'] = 'icon-star mr-star-full';
 			$icon_classes['star_half'] = 'icon-star-half-full mr-star-half';
 			$icon_classes['star_empty'] = 'icon-star-empty mr-star-empty';
 			$icon_classes['minus'] = 'icon-minus-sign mr-minus';
+			$icon_classes['spinner'] = 'icon-spinner icon-spin mr-spinner';
 		}
 		
 		return $icon_classes;
