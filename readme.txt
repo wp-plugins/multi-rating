@@ -1,4 +1,4 @@
-=== Multi Rating - Stars Ratings, Select & Radio Options  ===
+=== Multi Rating ===
 Contributors: dpowney
 Donate link: http://www.danielpowney.com/donate
 Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippet, testimonial, review, hReview, multi rating, feedback, user rating
