@@ -49,9 +49,9 @@ The plugin is i18n translation ready. Different versions of Font Awesome are sup
 * [mr_rating_result post_id="100" no_rating_results_text="No rating result yet" show_rich_snippets="false"]
 * [mr_rating_results_list]
 * [mr_rating_results_list title="Top Ratings" sort_by="highest_rated" limit="10"]
-* [mr_rating_results_list title="Ratings" sort_by="most_entries" limit="5" before_title="<h3>" after_title="</h3>" ]
+* [mr_rating_results_list title="Ratings" sort_by="most_entries" limit="5"]
 
-Github Repositpory: http://github.com/danielpowney/multi-rating
+Github: http://github.com/danielpowney/multi-rating
 
 = Multi Rating Pro =
 
@@ -84,20 +84,20 @@ Check it out here http://danielpowney.com/downloads/multi-rating-pro/
 Full documentation available here http://danielpowney.com/multi-rating/
 
 == Screenshots ==
-1. Auto placement of rating results after post title and rating form after post content. Twenty Fifteen theme.	
-2. Rating results in WP-admin for each post.
-3. Rating Results List widget options include displaying the post feature image, a rank, changing the result type (star rating out of 5, score or percentage), different sorting mechanisms (highest rated, lowest rated etc...), set widget title and much more.
-4. Rating items table.
-5. General settings.
-6. Graphical report on the number of entries per day.
-7. Edit post page. Add shortcodes in the editor. The Multi Rating meta-box can set the auto placement settings per post to override the default settings.
-8. Rating Results List Widget. Twenty Fifteen theme
-11. Rating Results List shortcode. [mr_rating_results_list show_filter="true" title="Top Ratings" sort_by="highest_rated"]
-22. Every rating entry can be viewed in WP-admin and edited
-55. Style settings include star rating select and on hover colors, load Font Awesome library CDN, version of Font Awesome and the ability to set custom star rating images to use instead of Font Awesome icons.
-66. The plugin has several tools including exporting rating results to a CSV file, clearing the rating results cache and deleting rating results in bulk
-555. Custom text setting.
-666. WP-admin plugin menu.
+1. Auto placement of rating results after post title and rating form after post content. Twenty Fifteen theme. 1
+2. Rating Results List shortcode. [mr_rating_results_list show_filter="true" title="Top Ratings" sort_by="highest_rated"] 11
+3. Rating results in WP-admin for each post. 2
+4. Every rating entry can be viewed in WP-admin and edited 22
+5. Rating Results List widget options include displaying the post feature image, a rank, changing the result type (star rating out of 5, score or percentage), different sorting mechanisms (highest rated, lowest rated etc...), set widget title and much more. 3
+6. Rating items table. 4
+7. General settings. 5
+8. Style settings include star rating select and on hover colors, load Font Awesome library CDN, version of Font Awesome and the ability to set custom star rating images to use instead of Font Awesome icons. 555
+9. Custom text setting. 555
+10. Graphical report on the number of entries per day. 6
+11. The plugin has several tools including exporting rating results to a CSV file, clearing the rating results cache and deleting rating results in bulk 66
+12. WP-admin plugin menu. 666
+13. Edit post page. Add shortcodes in the editor. The Multi Rating meta-box can set the auto placement settings per post to override the default settings. 7
+14. Rating Results List Widget. Twenty Fifteen theme. 8
 
 == Changelog ==
 
