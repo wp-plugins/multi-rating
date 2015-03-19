@@ -2,8 +2,8 @@
 Contributors: dpowney
 Donate link: http://www.danielpowney.com/donate
 Tags: rating, multi-rating, post rating, star, multi, criteria, rich snippet, testimonial, review, hReview, multi rating, feedback, user rating, wpml, feedback, question, star rating, 5 star, font awesome
-Requires at least: 3.0.1
-Tested up to: 4.1
+Requires at least: 3.8
+Tested up to: 4.1.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -98,6 +98,8 @@ Full documentation available here http://danielpowney.com/multi-rating/
 12. WP-admin plugin menu. 666
 13. Edit post page. Add shortcodes in the editor. The Multi Rating meta-box can set the auto placement settings per post to override the default settings. 7
 14. Rating Results List Widget. Twenty Fifteen theme. 8
+
+== Upgrade Notice ==
 
 == Changelog ==
 
@@ -261,10 +263,10 @@ Full documentation available here http://danielpowney.com/multi-rating/
 = 1.1.4 (19/12/2013) =
 * New: Added support for character encoding of rating items in db
 
-= 1.1.3 = (14/12/2013)
+= 1.1.3 (14/12/2013) =
 * Bug: Fixed post title on top rating results widget
 
-= 1.1.2 = (14/12/2013)
+= 1.1.2 = (14/12/2013) =
 * Bug: Removed debugging comment accidentally left behind
 
 = 1.1.1 (12/12/2013) =
