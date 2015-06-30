@@ -51,14 +51,13 @@ The plugin is i18n translation ready. Different versions of Font Awesome are sup
 * [mr_rating_results_list title="Top Ratings" sort_by="highest_rated" limit="10"]
 * [mr_rating_results_list title="Ratings" sort_by="most_entries" limit="5"]
 
-Github: http://github.com/danielpowney/multi-rating
-
 = Multi Rating Pro =
 
 The following key features are available in the Pro version:
 
 * Multiple rating forms with different rating items
 * WordPress comments system integration
+* Bayesian average ratings
 * Add custom fields to collect additional information
 * Ratings moderation (approve or unapprove rating entries)
 * Logged in users can update or delete their existing ratings
@@ -73,6 +72,8 @@ The following key features are available in the Pro version:
 * Allow/disallow anonymous user ratings option
 
 Check it out here http://danielpowney.com/downloads/multi-rating-pro/
+
+Github: http://github.com/danielpowney/multi-rating
 
 == Installation ==
 
@@ -103,6 +104,13 @@ Full documentation available here http://danielpowney.com/multi-rating/
 == Upgrade Notice ==
 
 == Changelog ==
+
+= 4.1.1 (30/06/2015) =
+* New: Added JS dialog to confirm clearing rating entries in the Tools
+* Bug: Fixed several WPML issues (i.e. unable to submit ratings) where the original post in the default language was not always returned calling icl_object_id.
+* Bug: Fixed preserve max option value in rating-result.php template
+* Bug: Added number_format() to rating-result.php template for showing count of entries
+* Bug: Optimized db indexes for better performance
 
 = 4.1 =
 * Tweak: Added option for rating form error message color
