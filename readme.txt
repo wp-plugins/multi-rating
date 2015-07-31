@@ -70,7 +70,7 @@ The following key features are available in the Pro version:
 * Thumbs up/thumbs down rating item type (e.g. like/dislike)
 * Display a breakdown of rating item results in 3 layouts
 * Allow/disallow anonymous user ratings option
-* Embed CAPTCHA in the rating form and Wordpress comment form
+* Embed CAPTCHA in the rating form and Wordpress comment form (add-on)
 
 Check it out here http://danielpowney.com/downloads/multi-rating-pro/
 
